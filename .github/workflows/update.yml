@@ -1,0 +1,65 @@
+name: Update & Deploy
+
+on:
+  schedule:
+    - cron: "30 7 * * 1-5"   # 16:30 KST — 한국장 마감(15:30) 후
+    - cron: "30 22 * * 1-5"  # 07:30 KST — 미국장 마감(05:00/06:00 KST) 후
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore: ["dashboard/public/data/**", "**.md"]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: update-deploy
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+      - name: Fetch data & score
+        run: python -m beta_model.export --refresh
+
+      # 결과를 커밋해 두면 일별 모델 기록이 남고, 저장소가 활동 상태로 유지되어
+      # 60일 무활동 시 예약 워크플로가 꺼지는 것도 막는다.
+      - name: Commit latest scores
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dashboard/public/data/beta_model.json
+          git diff --cached --quiet || git commit -m "data: $(date -u +'%Y-%m-%d %H:%M') UTC update"
+          git push
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+      - run: npm ci && npm run build
+        working-directory: dashboard
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dashboard/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

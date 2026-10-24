@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --color-ink: #0b0f19;
+  --color-panel: #111827;
+  --color-line: #1f2937;
+}
+
+body { background: #0b0f19; color: #e5e7eb; }
+.num { font-variant-numeric: tabular-nums; }
+
+input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; width: 100%; }
+input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 9999px; background: var(--track, #1f2937); }
+input[type="range"]::-moz-range-track { height: 6px; border-radius: 9999px; background: var(--track, #1f2937); }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; margin-top: -6px; width: 18px; height: 18px; border-radius: 9999px;
+  background: #f9fafb; border: 3px solid var(--thumb, #10b981); box-shadow: 0 0 12px var(--thumb, #10b981);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px; border-radius: 9999px; background: #f9fafb;
+  border: 3px solid var(--thumb, #10b981); box-shadow: 0 0 12px var(--thumb, #10b981);
+}
+input[type="range"]:focus-visible { outline: 2px solid #22d3ee; outline-offset: 4px; border-radius: 9999px; }

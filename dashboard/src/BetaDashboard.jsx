@@ -1,0 +1,605 @@
+import { useEffect, useMemo, useState } from 'react'
+import {
+  ArcElement, CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Tooltip,
+} from 'chart.js'
+import { Doughnut, Line } from 'react-chartjs-2'
+import {
+  Activity, AlertTriangle, Calculator, Compass, Gauge, Info, RotateCcw, ShieldAlert, ShieldCheck,
+  TrendingDown, TrendingUp, Zap,
+} from 'lucide-react'
+import { allocate, DEFAULT_PARAMS, FALLBACK_REGIMES, rebalance } from './model.js'
+
+ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
+
+// ---------------------------------------------------------------- tokens
+const C = {
+  emerald: '#10b981', rose: '#f43f5e', amber: '#f59e0b', cyan: '#22d3ee',
+  slate: '#64748b', grid: 'rgba(148,163,184,0.10)', tick: '#94a3b8', panel: '#111827',
+}
+const REGIME_STYLE = {
+  1: { color: C.emerald, Icon: TrendingUp, ring: 'ring-emerald-500/40', glow: 'shadow-[0_0_40px_-12px_#10b981]' },
+  2: { color: C.amber, Icon: AlertTriangle, ring: 'ring-amber-500/40', glow: 'shadow-[0_0_40px_-12px_#f59e0b]' },
+  3: { color: C.cyan, Icon: ShieldCheck, ring: 'ring-cyan-400/40', glow: 'shadow-[0_0_40px_-12px_#22d3ee]' },
+  4: { color: C.rose, Icon: ShieldAlert, ring: 'ring-rose-500/40', glow: 'shadow-[0_0_40px_-12px_#f43f5e]' },
+}
+const PRESETS = [
+  { id: 'us-bull', label: 'US Bull Market', sub: '미국 강세', trend: 0.8, risk: 0.15, Icon: TrendingUp, color: C.emerald },
+  { id: 'pre-cut', label: 'Late-Cycle Caution', sub: '상승 중 불안', trend: 0.5, risk: 0.7, Icon: AlertTriangle, color: C.amber },
+  { id: 'kr-def', label: 'KR Defensive Hold', sub: '한국 하락 방어', trend: -0.6, risk: 0.3, Icon: ShieldCheck, color: C.cyan },
+  { id: 'panic', label: 'Panic / Buy the Dip', sub: '공포 국면', trend: -0.9, risk: 0.9, Icon: Zap, color: C.rose },
+]
+const TREND_LABELS = { alignment: '이동평균 정배열', drawdown: '52주 고점 대비', momentum: '3개월 모멘텀' }
+const RISK_LABELS = { vol_index: '변동성 지수', realized_vol: '실현 변동성', rates: '미 10년물 급등', fx: '원/달러 급등', credit: '하이일드 스프레드' }
+const MACRO_META = {
+  VIX: { label: 'VIX', fmt: (v) => v.toFixed(2), chg: (v) => v.toFixed(2), bad: 1 },
+  VKOSPI: { label: 'VKOSPI', fmt: (v) => v.toFixed(2), chg: (v) => v.toFixed(2), bad: 1 },
+  US10Y: { label: '미 10년물', fmt: (v) => `${v.toFixed(2)}%`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
+  USDKRW: { label: '원/달러', fmt: (v) => v.toLocaleString('ko-KR', { maximumFractionDigits: 1 }), chg: (v) => v.toFixed(1), bad: 1 },
+  DXY: { label: '달러 인덱스', fmt: (v) => v.toFixed(2), chg: (v) => v.toFixed(2), bad: 1 },
+  HY_SPREAD: { label: 'HY 스프레드', fmt: (v) => `${v.toFixed(2)}%`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
+}
+
+const pct = (x, d = 0) => `${(x * 100).toFixed(d)}%`
+const signed = (x, d = 2) => `${x >= 0 ? '+' : ''}${x.toFixed(d)}`
+const riskColor = (r) => (r < 0.33 ? C.emerald : r < 0.66 ? C.amber : C.rose)
+
+// ---------------------------------------------------------------- data hook
+function useModelData() {
+  const [state, setState] = useState({ loading: true, data: null, error: null })
+  useEffect(() => {
+    fetch(`./data/beta_model.json?t=${Date.now()}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((data) => setState({ loading: false, data, error: null }))
+      .catch((error) => setState({ loading: false, data: null, error }))
+  }, [])
+  return state
+}
+
+// ---------------------------------------------------------------- primitives
+function Panel({ title, icon: Icon, right, children, className = '' }) {
+  return (
+    <section className={`min-w-0 rounded-2xl border border-line bg-panel/80 p-4 sm:p-5 ${className}`}>
+      {(title || right) && (
+        <header className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-200">
+            {Icon && <Icon size={16} className="text-slate-400" aria-hidden />}
+            {title}
+          </h2>
+          {right}
+        </header>
+      )}
+      {children}
+    </section>
+  )
+}
+
+function ScoreSlider({ label, value, min, max, step, onChange, color, hint, live }) {
+  const fill = ((value - min) / (max - min)) * 100
+  const livePos = live == null ? null : ((live - min) / (max - min)) * 100
+  return (
+    <div>
+      <div className="mb-2 flex items-baseline justify-between">
+        <label className="text-xs font-medium text-slate-400">{label}</label>
+        <span className="num font-mono text-2xl font-semibold" style={{ color, textShadow: `0 0 18px ${color}66` }}>
+          {min < 0 ? signed(value) : value.toFixed(2)}
+        </span>
+      </div>
+      <div className="relative">
+        <input
+          type="range" min={min} max={max} step={step} value={value} aria-label={label}
+          onChange={(e) => onChange(parseFloat(e.target.value))}
+          style={{ '--thumb': color, '--track': `linear-gradient(90deg, ${color} 0%, ${color} ${fill}%, #1f2937 ${fill}%)` }}
+        />
+        {livePos != null && (
+          <span
+            className="pointer-events-none absolute top-[-3px] h-3 w-0.5 rounded bg-slate-300"
+            style={{ left: `calc(${livePos}% - 1px)` }} title={`실측값 ${live.toFixed(2)}`}
+          />
+        )}
+      </div>
+      <div className="mt-1.5 flex justify-between text-[11px] text-slate-500">
+        <span>{min}</span><span>{hint}</span><span>{max}</span>
+      </div>
+    </div>
+  )
+}
+
+function ComponentBar({ label, value, diverging, weight }) {
+  if (value == null) {
+    return (
+      <div className="flex items-center justify-between text-xs text-slate-500">
+        <span>{label}</span><span>데이터 없음</span>
+      </div>
+    )
+  }
+  const color = diverging ? (value >= 0 ? C.emerald : C.rose) : riskColor(value)
+  const width = diverging ? Math.abs(value) * 50 : value * 100
+  const left = diverging ? (value >= 0 ? 50 : 50 - width) : 0
+  return (
+    <div>
+      <div className="mb-1 flex items-baseline justify-between text-xs">
+        <span className="text-slate-300">
+          {label}
+          {weight != null && <span className="ml-1.5 text-slate-500">×{weight.toFixed(2)}</span>}
+        </span>
+        <span className="num font-mono text-slate-200">{diverging ? signed(value) : value.toFixed(2)}</span>
+      </div>
+      <div className="relative h-2 rounded-full bg-slate-800">
+        {diverging && <span className="absolute left-1/2 top-[-2px] h-3 w-px bg-slate-500" />}
+        <span className="absolute top-0 h-2 rounded-full" style={{ left: `${left}%`, width: `${width}%`, background: color }} />
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- charts
+function AllocationDonut({ stock, cash }) {
+  const data = {
+    labels: ['주식', '현금(MMF)'],
+    datasets: [{
+      data: [stock * 100, cash * 100],
+      backgroundColor: [C.emerald, C.slate],
+      borderColor: C.panel, borderWidth: 2, borderRadius: 4, spacing: 2,
+      hoverOffset: 4,
+    }],
+  }
+  const options = {
+    cutout: '74%', rotation: -90, circumference: 360, maintainAspectRatio: false,
+    animation: { duration: 350 },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: (c) => ` ${c.label} ${c.parsed.toFixed(1)}%` } },
+    },
+  }
+  return (
+    <div className="relative mx-auto aspect-square w-full max-w-[240px]">
+      <Doughnut data={data} options={options} aria-label={`주식 ${pct(stock)}, 현금 ${pct(cash)}`} />
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+        <span className="text-xs text-slate-400">주식 비중</span>
+        <span className="num font-mono text-4xl font-bold text-emerald-400" style={{ textShadow: `0 0 24px ${C.emerald}88` }}>
+          {pct(stock)}
+        </span>
+        <span className="num mt-0.5 text-xs text-slate-400">현금 {pct(cash)}</span>
+      </div>
+    </div>
+  )
+}
+
+function RangeBar({ floor, cap, base, stock }) {
+  // 60~100% 구간에서 base(추세만) → stock(위험 차감 후) 위치를 보여준다
+  const pos = (v) => `${((v - floor) / (cap - floor)) * 100}%`
+  return (
+    <div className="mt-4">
+      <div className="relative h-2 rounded-full bg-slate-800">
+        <span className="absolute top-0 h-2 rounded-full bg-rose-500/50"
+          style={{ left: pos(Math.min(stock, base)), width: `calc(${pos(Math.max(Math.min(base, cap), stock))} - ${pos(stock)})` }} />
+        <span className="absolute top-[-4px] h-4 w-1 rounded bg-slate-300" style={{ left: `calc(${pos(Math.min(base, cap))} - 2px)` }} title="추세 기준 비중" />
+        <span className="absolute top-[-5px] h-[18px] w-[18px] -translate-x-1/2 rounded-full border-2 border-emerald-300 bg-emerald-500"
+          style={{ left: pos(stock), boxShadow: `0 0 12px ${C.emerald}` }} />
+      </div>
+      <div className="mt-2 flex justify-between text-[11px] text-slate-500">
+        <span>60% 최대 방어</span><span>100% 풀 투자</span>
+      </div>
+    </div>
+  )
+}
+
+function QuadrantMap({ trend, risk, live, threshold }) {
+  const W = 220, H = 160, pad = 6
+  const x = (t) => pad + ((t + 1) / 2) * (W - 2 * pad)
+  const y = (r) => pad + (1 - r) * (H - 2 * pad)
+  const ty = y(threshold)
+  const cells = [
+    { n: 2, x: x(0), y: pad, w: x(1) - x(0), h: ty - pad, c: C.amber },
+    { n: 1, x: x(0), y: ty, w: x(1) - x(0), h: H - pad - ty, c: C.emerald },
+    { n: 4, x: pad, y: pad, w: x(0) - pad, h: ty - pad, c: C.rose },
+    { n: 3, x: pad, y: ty, w: x(0) - pad, h: H - pad - ty, c: C.cyan },
+  ]
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="추세-위험 국면 지도">
+      {cells.map((c) => (
+        <g key={c.n}>
+          <rect x={c.x + 1} y={c.y + 1} width={c.w - 2} height={c.h - 2} rx="6" fill={c.c} fillOpacity="0.08" stroke={c.c} strokeOpacity="0.25" />
+          <text x={c.x + 8} y={c.y + 16} fill={c.c} fontSize="11" fontWeight="600">{c.n}</text>
+        </g>
+      ))}
+      {live && (
+        <circle cx={x(live.trend)} cy={y(live.risk)} r="5" fill="none" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="2 2">
+          <title>실측 {signed(live.trend)} / {live.risk.toFixed(2)}</title>
+        </circle>
+      )}
+      <circle cx={x(trend)} cy={y(risk)} r="6" fill="#f8fafc" stroke={C.panel} strokeWidth="2" style={{ filter: 'drop-shadow(0 0 6px #f8fafc)' }} />
+      <text x={W - pad - 6} y={H - pad - 6} textAnchor="end" fill={C.tick} fontSize="9">추세 →</text>
+      <text x={W - pad - 6} y={pad + 14} textAnchor="end" fill={C.tick} fontSize="9">↑ 위험</text>
+    </svg>
+  )
+}
+
+const lineBase = {
+  maintainAspectRatio: false, animation: false,
+  interaction: { mode: 'index', intersect: false },
+  elements: { point: { radius: 0, hoverRadius: 4, hitRadius: 8 }, line: { borderWidth: 2, tension: 0.15 } },
+  scales: {
+    x: { ticks: { color: C.tick, maxTicksLimit: typeof window !== 'undefined' && window.innerWidth < 640 ? 3 : 6, maxRotation: 0, autoSkipPadding: 12 }, grid: { display: false }, border: { color: C.grid } },
+    y: { ticks: { color: C.tick }, grid: { color: C.grid }, border: { display: false } },
+  },
+  plugins: {
+    legend: { display: true, position: 'top', align: 'end', labels: { color: '#cbd5e1', boxWidth: 12, boxHeight: 2, font: { size: 11 } } },
+    tooltip: { backgroundColor: '#0b0f19ee', borderColor: '#334155', borderWidth: 1, padding: 10 },
+  },
+}
+
+function HistoryCharts({ history, label }) {
+  const labels = history.map((h) => h.date.slice(2))
+  const weight = {
+    labels,
+    datasets: [
+      { label: '집행 비중', data: history.map((h) => h.executed * 100), borderColor: C.emerald,
+        backgroundColor: 'rgba(16,185,129,0.10)', fill: { target: { value: 60 } } },
+      { label: '목표 비중', data: history.map((h) => h.target * 100), borderColor: C.slate, borderDash: [4, 3], borderWidth: 1.5 },
+    ],
+  }
+  const scores = {
+    labels,
+    datasets: [
+      { label: '추세 점수', data: history.map((h) => h.trend), borderColor: C.cyan },
+      { label: '위험 점수', data: history.map((h) => h.risk), borderColor: C.rose },
+    ],
+  }
+  const index = {
+    labels,
+    datasets: [{ label, data: history.map((h) => h.index), borderColor: '#cbd5e1', borderWidth: 1.5 }],
+  }
+  const pctY = { ...lineBase, scales: { ...lineBase.scales, y: { ...lineBase.scales.y, min: 55, max: 100, ticks: { color: C.tick, callback: (v) => `${v}%` } } },
+    plugins: { ...lineBase.plugins, tooltip: { ...lineBase.plugins.tooltip, callbacks: { label: (c) => ` ${c.dataset.label} ${c.parsed.y.toFixed(1)}%` } } } }
+  const scoreY = { ...lineBase, scales: { ...lineBase.scales, y: { ...lineBase.scales.y, min: -1, max: 1 } },
+    plugins: { ...lineBase.plugins, tooltip: { ...lineBase.plugins.tooltip, callbacks: { label: (c) => ` ${c.dataset.label} ${c.parsed.y.toFixed(2)}` } } } }
+  const idxY = { ...lineBase, plugins: { ...lineBase.plugins, legend: { display: false } } }
+  return (
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="min-w-0 lg:col-span-3">
+        <p className="mb-1 text-xs text-slate-400">주식 비중 (종가 신호 → 익일 집행, 줄일 땐 즉시·채울 땐 하루 +{2}%p)</p>
+        <div className="h-56 sm:h-64"><Line data={weight} options={pctY} /></div>
+      </div>
+      <div className="min-w-0 lg:col-span-2">
+        <p className="mb-1 text-xs text-slate-400">추세 · 위험 점수</p>
+        <div className="h-44"><Line data={scores} options={scoreY} /></div>
+      </div>
+      <div className="min-w-0">
+        <p className="mb-1 text-xs text-slate-400">{label}</p>
+        <div className="h-44"><Line data={index} options={idxY} /></div>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------- calculator
+function RebalanceCalculator({ targetWeight, params }) {
+  const [currency, setCurrency] = useState('KRW')
+  const [total, setTotal] = useState('100000000')
+  const [current, setCurrent] = useState('90000000')
+  const fmt = useMemo(() => new Intl.NumberFormat(currency === 'KRW' ? 'ko-KR' : 'en-US', {
+    style: 'currency', currency, maximumFractionDigits: currency === 'KRW' ? 0 : 2,
+  }), [currency])
+  const num = (s) => parseFloat(String(s).replace(/[^0-9.]/g, '')) || 0
+  const res = rebalance(num(total), num(current), targetWeight, params)
+
+  const switchCurrency = (c) => {
+    if (c === currency) return
+    setCurrency(c)
+    if (c === 'USD') { setTotal('100000'); setCurrent('90000') } else { setTotal('100000000'); setCurrent('90000000') }
+  }
+  const actionStyle = { BUY: 'text-emerald-400', SELL: 'text-rose-400', HOLD: 'text-slate-300' }
+  const actionText = { BUY: '매수', SELL: '매도', HOLD: '유지' }
+
+  return (
+    <Panel title="리밸런싱 계산기" icon={Calculator}
+      right={
+        <div className="flex rounded-lg border border-line p-0.5 text-xs" role="group" aria-label="통화">
+          {['KRW', 'USD'].map((c) => (
+            <button key={c} onClick={() => switchCurrency(c)}
+              className={`rounded-md px-2.5 py-1 font-medium transition ${currency === c ? 'bg-cyan-500/15 text-cyan-300' : 'text-slate-400 hover:text-slate-200'}`}>
+              {c}
+            </button>
+          ))}
+        </div>
+      }>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {[['총 자산', total, setTotal], ['현재 주식 평가액', current, setCurrent]].map(([lab, v, set]) => (
+          <label key={lab} className="block">
+            <span className="text-xs text-slate-400">{lab}</span>
+            <input inputMode="decimal" value={Number(num(v)).toLocaleString(currency === 'KRW' ? 'ko-KR' : 'en-US')}
+              onChange={(e) => set(e.target.value)}
+              className="num mt-1 w-full rounded-lg border border-line bg-ink px-3 py-2 font-mono text-slate-100 outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20" />
+          </label>
+        ))}
+      </div>
+      {res ? (
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl bg-ink/70 p-3">
+            <p className="text-xs text-slate-400">목표 주식</p>
+            <p className="num font-mono text-lg text-emerald-300">{fmt.format(res.targetValue)}</p>
+            <p className="text-[11px] text-slate-500">{pct(targetWeight, 1)} (현재 {pct(res.curWeight, 1)})</p>
+          </div>
+          <div className="rounded-xl bg-ink/70 p-3">
+            <p className="text-xs text-slate-400">목표 현금 (MMF)</p>
+            <p className="num font-mono text-lg text-slate-200">{fmt.format(res.cashValue)}</p>
+            <p className="text-[11px] text-slate-500">{pct(1 - targetWeight, 1)}</p>
+          </div>
+          <div className="rounded-xl bg-ink/70 p-3">
+            <p className="text-xs text-slate-400">다음 거래일 주문</p>
+            <p className={`num font-mono text-lg font-semibold ${actionStyle[res.action]}`}>
+              {actionText[res.action]} {res.action !== 'HOLD' && fmt.format(res.amount)}
+            </p>
+            <p className="text-[11px] text-slate-500">
+              {res.action === 'BUY' && `천천히: 약 ${res.days}거래일 분할 (하루 ${fmt.format(res.amount / res.days)})`}
+              {res.action === 'SELL' && '빠르게: 다음 거래일 일괄 집행'}
+              {res.action === 'HOLD' && `차이 ${pct(params.rebalance_band)} 미만 — 매매 불필요`}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <p className="mt-4 text-sm text-slate-500">총 자산을 입력하세요.</p>
+      )}
+    </Panel>
+  )
+}
+
+// ---------------------------------------------------------------- page
+export default function BetaDashboard() {
+  const { loading, data, error } = useModelData()
+  const [market, setMarket] = useState('US')
+  const [trend, setTrend] = useState(0.5)
+  const [risk, setRisk] = useState(0.3)
+  const [activePreset, setActivePreset] = useState(null)
+
+  const params = data?.params ?? DEFAULT_PARAMS
+  const regimes = data?.regimes ?? FALLBACK_REGIMES
+  const m = data?.markets?.[market]
+  const live = m ? { trend: m.allocation.trend_score, risk: m.allocation.risk_score } : null
+  const isLive = live && Math.abs(trend - live.trend) < 1e-9 && Math.abs(risk - live.risk) < 1e-9
+
+  // 데이터 로드 또는 시장 전환 시 실측 점수로 슬라이더를 맞춘다
+  useEffect(() => {
+    if (live) { setTrend(live.trend); setRisk(live.risk); setActivePreset(null) }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data, market])
+
+  const a = allocate(trend, risk, params)
+  const reg = regimes[a.regime]
+  const rs = REGIME_STYLE[a.regime]
+
+  const applyPreset = (p) => { setTrend(p.trend); setRisk(p.risk); setActivePreset(p.id) }
+  const resetLive = () => { if (live) { setTrend(live.trend); setRisk(live.risk); setActivePreset(null) } }
+
+  return (
+    <div className="min-h-screen bg-ink bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.08),transparent_55%)]">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
+        {/* Header */}
+        <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-emerald-400">
+              <Compass size={14} aria-hidden /> Beta Model
+            </p>
+            <h1 className="mt-1 text-2xl font-bold text-slate-50 sm:text-3xl">추세 × 위험 자산배분 대시보드</h1>
+            <p className="mt-1 text-sm text-slate-400">
+              핸들(추세 −1~+1)로 방향을, 브레이크(위험 0~1)로 속도를 정한다 · 주식 60~100%, 나머지는 MMF
+            </p>
+          </div>
+          <div className="flex flex-col items-start gap-2 sm:items-end">
+            <div className="flex rounded-xl border border-line bg-panel p-1" role="tablist" aria-label="시장">
+              {['US', 'KR'].map((k) => (
+                <button key={k} role="tab" aria-selected={market === k} onClick={() => setMarket(k)}
+                  className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition ${market === k ? 'bg-emerald-500/15 text-emerald-300 shadow-[0_0_16px_-6px_#10b981]' : 'text-slate-400 hover:text-slate-200'}`}>
+                  {k === 'US' ? '🇺🇸 미국' : '🇰🇷 한국'}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-slate-500">
+              {loading ? '데이터 로딩 중…' : m ? `기준일 ${m.as_of} 종가 · 갱신 ${data.meta.fetched_at?.slice(0, 16).replace('T', ' ')} KST` : '데모 모드'}
+            </p>
+          </div>
+        </header>
+
+        {error && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
+            <Info size={18} className="mt-0.5 shrink-0" aria-hidden />
+            <div>
+              실측 데이터를 찾지 못해 데모 모드로 표시합니다. 프로젝트 루트에서 <code className="rounded bg-black/30 px-1.5 py-0.5 font-mono">python -m beta_model.export</code> 를 실행한 뒤 새로고침하세요.
+            </div>
+          </div>
+        )}
+        {data?.meta?.vkospi_source === 'proxy' && market === 'KR' && (
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-line bg-panel p-3 text-xs text-slate-400">
+            <Info size={16} className="mt-0.5 shrink-0 text-cyan-400" aria-hidden />
+            VKOSPI는 무료 API가 없어 KOSPI200 20일 실현변동성×1.15로 대체 계산 중입니다. 실제 값을 쓰려면 <code className="font-mono">data/vkospi.csv</code>(Date,Close)를 넣으세요.
+          </div>
+        )}
+
+        {/* Row 1: Regime / Allocation / Controls */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <section className={`min-w-0 rounded-2xl border border-line bg-panel/80 p-5 ring-1 ${rs.ring} ${rs.glow} md:col-span-2 xl:col-span-1`}>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-medium text-slate-400">현재 국면</p>
+                <h2 className="mt-1 flex items-center gap-2 text-xl font-bold" style={{ color: rs.color }}>
+                  <rs.Icon size={22} aria-hidden /> 국면 {a.regime} · {reg.name}
+                </h2>
+              </div>
+              {!isLive && live && (
+                <span className="shrink-0 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2 py-0.5 text-[11px] text-cyan-300">시뮬레이션</span>
+              )}
+            </div>
+            <p className="mt-2 text-sm text-slate-300">{reg.summary}</p>
+            <ol className="mt-4 space-y-2">
+              {reg.actions.map((act, i) => (
+                <li key={act} className="flex gap-3 text-sm text-slate-200">
+                  <span className="num flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-ink" style={{ background: rs.color }}>{i + 1}</span>
+                  {act}
+                </li>
+              ))}
+            </ol>
+            <div className="mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
+              <QuadrantMap trend={a.trend} risk={a.risk} live={isLive ? null : live} threshold={params.risk_threshold} />
+              <ul className="space-y-1 text-[11px] text-slate-400">
+                {[1, 2, 3, 4].map((n) => (
+                  <li key={n} className={`flex items-center gap-1.5 ${n === a.regime ? 'font-semibold text-slate-100' : ''}`}>
+                    <span className="h-2 w-2 rounded-sm" style={{ background: REGIME_STYLE[n].color }} />{n}. {regimes[n].name}
+                  </li>
+                ))}
+                {!isLive && live && <li className="pt-1 text-slate-500">◌ 실측 위치</li>}
+              </ul>
+            </div>
+          </section>
+
+          <Panel title="주식 vs 현금 배분" icon={Gauge}>
+            <AllocationDonut stock={a.stock} cash={a.cash} />
+            <div className="mt-3 flex justify-center gap-4 text-xs text-slate-300">
+              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: C.emerald }} />주식 {pct(a.stock, 1)}</span>
+              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: C.slate }} />현금(MMF) {pct(a.cash, 1)}</span>
+            </div>
+            <RangeBar floor={params.floor} cap={params.cap} base={a.base} stock={a.stock} />
+            <dl className="num mt-4 grid grid-cols-3 gap-2 text-center font-mono text-xs">
+              <div className="rounded-lg bg-ink/70 p-2"><dt className="font-sans text-slate-500">추세 기준</dt><dd className="text-slate-200">{pct(a.base, 1)}</dd></div>
+              <div className="rounded-lg bg-ink/70 p-2"><dt className="font-sans text-slate-500">위험 차감</dt><dd className="text-rose-300">−{pct(a.deduction, 1)}</dd></div>
+              <div className="rounded-lg bg-ink/70 p-2"><dt className="font-sans text-slate-500">최종</dt><dd className="text-emerald-300">{pct(a.stock, 1)}</dd></div>
+            </dl>
+            {m && isLive && m.executed_weight != null && Math.abs(m.executed_weight - a.stock) > 0.001 && (
+              <p className="mt-3 text-[11px] text-slate-400">
+                속도 조절 반영 현재 집행 비중: <span className="num font-mono text-emerald-300">{pct(m.executed_weight, 1)}</span>
+                {m.executed_weight < a.stock ? ' — 목표까지 천천히 채우는 중' : ' — 다음 거래일 목표로 하향'}
+              </p>
+            )}
+          </Panel>
+
+          <Panel title="점수 시뮬레이터" icon={Activity}
+            right={live && (
+              <button onClick={resetLive} disabled={isLive}
+                className="flex items-center gap-1 rounded-lg border border-line px-2 py-1 text-xs text-slate-300 transition hover:border-emerald-500/50 hover:text-emerald-300 disabled:opacity-40">
+                <RotateCcw size={12} aria-hidden /> 실측값
+              </button>
+            )}>
+            <div className="space-y-6">
+              <ScoreSlider label="추세 점수 (핸들)" value={trend} min={-1} max={1} step={0.01}
+                onChange={(v) => { setTrend(v); setActivePreset(null) }}
+                color={trend >= 0 ? C.emerald : C.rose} hint="0 = 중립" live={live?.trend} />
+              <ScoreSlider label="위험 점수 (브레이크)" value={risk} min={0} max={1} step={0.01}
+                onChange={(v) => { setRisk(v); setActivePreset(null) }}
+                color={riskColor(risk)} hint={`${params.risk_threshold} = 경계`} live={live?.risk} />
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-2">
+              {PRESETS.map((p) => (
+                <button key={p.id} onClick={() => applyPreset(p)}
+                  className={`flex items-center gap-2 rounded-xl border p-2.5 text-left transition hover:bg-white/5 ${activePreset === p.id ? 'bg-white/5' : 'border-line'}`}
+                  style={activePreset === p.id ? { borderColor: p.color, boxShadow: `0 0 16px -6px ${p.color}` } : undefined}>
+                  <p.Icon size={16} style={{ color: p.color }} className="shrink-0" aria-hidden />
+                  <span className="min-w-0">
+                    <span className="block truncate text-xs font-semibold text-slate-100">{p.label}</span>
+                    <span className="block text-[11px] text-slate-500">{p.sub}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </Panel>
+        </div>
+
+        {/* Row 2: Score breakdown + macro */}
+        {m && (
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <Panel title={`추세 구성 · ${m.label}`} icon={m.allocation.trend_score >= 0 ? TrendingUp : TrendingDown}
+              right={<span className="num font-mono text-sm" style={{ color: m.allocation.trend_score >= 0 ? C.emerald : C.rose }}>{signed(m.allocation.trend_score)}</span>}>
+              <div className="space-y-3">
+                {Object.entries(m.trend_components).map(([k, v]) => (
+                  <ComponentBar key={k} label={TREND_LABELS[k] ?? k} value={v} diverging />
+                ))}
+              </div>
+              <div className="mt-4 overflow-x-auto">
+                <table className="num w-full text-right font-mono text-xs">
+                  <thead className="font-sans text-slate-500">
+                    <tr><th className="pb-1 text-left font-medium">지수</th><th className="font-medium">종가</th><th className="font-medium">고점比</th><th className="font-medium">3M</th><th className="font-medium">점수</th></tr>
+                  </thead>
+                  <tbody className="text-slate-300">
+                    {Object.entries(m.indices).map(([k, f]) => (
+                      <tr key={k} className="border-t border-line">
+                        <td className="py-1.5 text-left font-sans">{k}</td>
+                        <td>{f.close.toLocaleString()}</td>
+                        <td className={f.drawdown < -0.1 ? 'text-rose-300' : ''}>{pct(f.drawdown, 1)}</td>
+                        <td className={f.roc_3m >= 0 ? 'text-emerald-300' : 'text-rose-300'}>{pct(f.roc_3m, 1)}</td>
+                        <td>{signed(f.trend_score)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Panel>
+
+            <Panel title={`위험 구성 · ${m.label}`} icon={ShieldAlert}
+              right={<span className="num font-mono text-sm" style={{ color: riskColor(m.allocation.risk_score) }}>{m.allocation.risk_score.toFixed(2)}</span>}>
+              <div className="space-y-3">
+                {Object.entries(m.risk_components).map(([k, v]) => (
+                  <ComponentBar key={k} label={RISK_LABELS[k] ?? k} value={v} weight={m.risk_weights[k]} />
+                ))}
+              </div>
+              <p className="mt-4 text-[11px] leading-relaxed text-slate-500">
+                변동성 지수는 252일 백분위와 절대 레벨을 반반, HY 스프레드는 Z점수와 절대 레벨을 반반 반영. 금리·환율은 10일 상승분만 위험으로 봅니다.
+              </p>
+            </Panel>
+
+            <Panel title="매크로 체크" icon={Activity} className="md:col-span-2 xl:col-span-1">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-2">
+                {Object.entries(data.macro).map(([k, v]) => {
+                  const meta = MACRO_META[k]
+                  if (!meta || v.value == null) return null
+                  const up = (v.chg_10d ?? 0) > 0
+                  return (
+                    <div key={k} className="rounded-xl bg-ink/70 p-3">
+                      <p className="text-[11px] text-slate-400">{meta.label}{k === 'VKOSPI' && data.meta.vkospi_source === 'proxy' ? '*' : ''}</p>
+                      <p className="num font-mono text-base text-slate-100">{meta.fmt(v.value)}</p>
+                      {v.chg_10d != null && (
+                        <p className={`num flex items-center gap-1 font-mono text-[11px] ${up ? 'text-rose-300' : 'text-emerald-300'}`}>
+                          {up ? <TrendingUp size={11} aria-hidden /> : <TrendingDown size={11} aria-hidden />}
+                          {up ? '+' : ''}{meta.chg(v.chg_10d)} <span className="font-sans text-slate-500">10일</span>
+                        </p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </Panel>
+          </div>
+        )}
+
+        {/* Row 3: history */}
+        {m && (
+          <Panel title={`최근 1년 모델 추이 · ${m.label}`} icon={TrendingUp} className="mt-4">
+            <HistoryCharts history={m.history} label={m.indices[Object.keys(m.indices)[0]] ? `${Object.keys(m.indices)[0]} 지수` : '지수'} />
+          </Panel>
+        )}
+
+        {/* Row 4: calculator + principles */}
+        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <div className="min-w-0 lg:col-span-2"><RebalanceCalculator targetWeight={a.stock} params={params} /></div>
+          <Panel title="계좌 운용 4원칙" icon={ShieldCheck}>
+            <ul className="space-y-3 text-sm">
+              {[
+                ['비중 범위', '주식 60~100%. 레버리지·마이너스 현금 금지'],
+                ['속도 조절', '줄일 때는 빠르게, 채울 때는 천천히'],
+                ['매매 시점', '신호는 종가 확인, 매매는 다음 거래일'],
+                ['현금 관리', 'MMF·단기채로 보관해 즉시 투입 대기'],
+              ].map(([t, d]) => (
+                <li key={t}>
+                  <p className="font-semibold text-slate-100">{t}</p>
+                  <p className="text-slate-400">{d}</p>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+        </div>
+
+        <footer className="mt-8 text-center text-[11px] leading-relaxed text-slate-600">
+          성상현 「매크로비욘드」 베타 모델 아이디어를 구현한 개인 참고용 도구입니다. 투자 권유가 아니며, 점수 산식과 임계값은 임의로 설정한 값입니다.
+        </footer>
+      </div>
+    </div>
+  )
+}

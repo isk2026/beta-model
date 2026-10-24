@@ -1,0 +1,6 @@
+pandas>=2.2
+numpy>=1.26
+yfinance>=0.2.40
+finance-datareader>=0.9.90
+pytest>=8.0
+tzdata>=2024.1
