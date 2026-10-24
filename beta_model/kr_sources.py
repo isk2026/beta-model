@@ -19,6 +19,7 @@ import json
 import logging
 import os
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -123,10 +124,26 @@ def parse_vkospi(payload: dict) -> float | None:
 
 
 def fetch_vkospi_day(d: date, key: str, retries: int = 3) -> float | None:
+    """하루치 VKOSPI. 키 오류/서비스 미승인(HTTP 401)은 PermissionError.
+
+    respMsg 'Unauthorized Key' = 키 자체가 틀림, 'Unauthorized API Call' = 키는 맞지만 해당 API 이용신청 미승인.
+    """
     url = f"{KRX_URL}?{urllib.parse.urlencode({'AUTH_KEY': key, 'basDd': f'{d:%Y%m%d}'})}"
     for attempt in range(retries):
         try:
             return parse_vkospi(_get_json(url))
+        except urllib.error.HTTPError as exc:
+            if exc.code in (401, 403):
+                try:
+                    body = json.loads(exc.read().decode("utf-8"))
+                except Exception:  # noqa: BLE001
+                    body = {"respMsg": f"HTTP {exc.code}", "respCode": str(exc.code)}
+                parse_vkospi(body)  # PermissionError 로 변환
+                raise PermissionError(f"KRX: HTTP {exc.code}") from exc
+            if attempt == retries - 1:
+                log.warning("KRX %s 실패: %s", d, exc)
+                return None
+            time.sleep(1 + attempt)
         except PermissionError:
             raise
         except Exception as exc:  # noqa: BLE001
@@ -178,7 +195,9 @@ def check() -> None:
         try:
             print(f"  VKOSPI {d}: {fetch_vkospi_day(d, krx)}")
         except PermissionError as exc:
-            print(f"  {exc} → openapi.krx.co.kr 에서 '파생상품지수 시세정보' 이용신청 승인 여부를 확인하세요")
+            hint = ("키는 유효, API 이용신청 미승인 → openapi.krx.co.kr 마이페이지에서 '파생상품지수 시세정보' 승인 확인"
+                    if "API Call" in str(exc) else "키 값 확인")
+            print(f"  {exc} → {hint}")
     if VKOSPI_CSV.exists():
         df = pd.read_csv(VKOSPI_CSV)
         print(f"data/vkospi.csv: {len(df)}행 ({df['Date'].min()} ~ {df['Date'].max()})")
@@ -191,8 +210,12 @@ def main() -> None:
     args = ap.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     if args.update_vkospi:
-        n = update_vkospi_csv()
-        print(f"VKOSPI {n}행 추가 → {VKOSPI_CSV}")
+        try:
+            n = update_vkospi_csv()
+            print(f"VKOSPI {n}행 추가 → {VKOSPI_CSV}")
+        except PermissionError as exc:
+            # 자동 갱신이 멈추지 않도록 경고만 남기고 기존 CSV/proxy로 계속 진행
+            print(f"::warning::VKOSPI 갱신 건너뜀 — {exc}")
     if args.check or not args.update_vkospi:
         check()
 
