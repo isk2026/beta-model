@@ -82,6 +82,20 @@ npm run dev                             # http://localhost:5173
   "위험 점수가 꺾이면 위험 차감을 해제"하는 자동 규칙을 시험했지만 효과가 미미하고 회전율만 늘어 채택하지 않았다 → 수동 판단 영역.
 - 미국 위험 점수의 예측력은 약하다(위험 상위 25%의 향후 20일 최저수익 −3.8% vs 하위 25% −1.7%). 한국은 더 뚜렷하다.
 
+## 한국 데이터 인증키 (선택)
+
+키가 없어도 동작하지만, 넣으면 한국 위험 점수가 실제 데이터로 바뀐다.
+
+| 키 | 발급처 | 용도 |
+|---|---|---|
+| `ECOS_API_KEY` | [한국은행 ECOS Open API](https://ecos.bok.or.kr/api/) → 인증키 신청 (즉시) | 회사채 AA− 3년 − 국고채 3년 (국내 신용 스프레드), CD 91일 (원화 현금 수익률) |
+| `KRX_API_KEY` | [KRX Open API](https://openapi.krx.co.kr) → 인증키 신청 + **'파생상품지수 시세정보' 이용신청** (승인 필요) | 실제 VKOSPI (2010~), 그 이전은 실제값 비율로 보정한 proxy |
+
+- 로컬: 프로젝트 루트 `.env` 파일에 `ECOS_API_KEY=...`, `KRX_API_KEY=...` (git 제외됨)
+- GitHub Actions: `gh secret set ECOS_API_KEY` / `gh secret set KRX_API_KEY` (값은 프롬프트로 입력)
+- 점검: `python -m beta_model.kr_sources --check`
+- VKOSPI 최초 백필(약 4,000회 호출, 수 분): `python -m beta_model.kr_sources --update-vkospi` → `data/vkospi.csv` 커밋
+
 ## 데이터 한계
 
 - **VKOSPI**: 무료 API(yfinance/FDR)가 없어 KOSPI200 20일 실현변동성 × 1.15로 대체한다.

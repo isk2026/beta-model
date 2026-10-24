@@ -26,13 +26,13 @@ import numpy as np
 import pandas as pd
 
 from . import config
+from .kr_sources import VKOSPI_CSV, fetch_ecos_all
 
 log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 CACHE_FILE = DATA_DIR / "cache" / "raw.pkl"
-VKOSPI_CSV = DATA_DIR / "vkospi.csv"
 VKOSPI_PROXY_RATIO = 1.15  # 내재변동성은 통상 실현변동성보다 10~20% 높다
 
 
@@ -121,15 +121,26 @@ def fetch_fdr(symbol: str, start: datetime) -> pd.Series:
 
 
 def load_vkospi(kospi200: pd.Series) -> tuple[pd.Series, str]:
-    """VKOSPI 시리즈와 출처('csv' | 'proxy')를 반환."""
-    if VKOSPI_CSV.exists():
-        df = pd.read_csv(VKOSPI_CSV, parse_dates=[0], index_col=0)
-        s = pd.to_numeric(df.iloc[:, 0], errors="coerce").dropna()
-        if len(s) > config.TRADING_DAYS:
-            return s.rename("VKOSPI"), "csv"
+    """VKOSPI 시리즈와 출처를 반환.
+
+    - 'krx': data/vkospi.csv (KRX 실제값). 그 이전 구간은 proxy를 실제값과의
+      겹치는 기간 중앙값 비율로 보정해 이어 붙인다 → 'krx+proxy'
+    - 'proxy': KOSPI200 20일 실현변동성 × 1.15
+    """
+    rv = realized_vol(kospi200.dropna(), 20) * 100
+    proxy = (rv * VKOSPI_PROXY_RATIO).rename("VKOSPI")
+    if not VKOSPI_CSV.exists():
+        return proxy, "proxy"
+    df = pd.read_csv(VKOSPI_CSV, parse_dates=["Date"], index_col="Date")
+    real = pd.to_numeric(df["Close"], errors="coerce").dropna()
+    if len(real) <= config.TRADING_DAYS:
         log.warning("vkospi.csv 데이터가 252일 미만이라 proxy 사용")
-    rv = realized_vol(kospi200.dropna(), 20) * 100 * VKOSPI_PROXY_RATIO
-    return rv.rename("VKOSPI"), "proxy"
+        return proxy, "proxy"
+    overlap = pd.concat([real, rv], axis=1, join="inner").dropna()
+    ratio = float((overlap.iloc[:, 0] / overlap.iloc[:, 1]).median()) if len(overlap) > 60 else VKOSPI_PROXY_RATIO
+    early = (rv * ratio)[rv.index < real.index[0]]
+    combined = pd.concat([early, real]).rename("VKOSPI")
+    return combined, ("krx+proxy" if len(early) else "krx")
 
 
 def fetch_raw(use_cache: bool = True, max_age_hours: float = 6) -> tuple[pd.DataFrame, dict]:
@@ -152,12 +163,16 @@ def fetch_raw(use_cache: bool = True, max_age_hours: float = 6) -> tuple[pd.Data
             raw = raw.join(fetch_fred(sid, start).rename(name), how="outer")
         except Exception as exc:  # noqa: BLE001
             log.error("FRED %s 수집 실패: %s", sid, exc)
+    ecos = fetch_ecos_all(start.date())
+    if not ecos.empty:
+        raw = raw.join(ecos, how="outer")
     base = raw["KOSPI200"] if raw.get("KOSPI200", pd.Series()).notna().sum() > 60 else raw["KOSPI"]
     vk, vk_src = load_vkospi(base)
     raw = raw.join(vk, how="outer")
     meta = {
         "fetched_at": datetime.now(ZoneInfo("Asia/Seoul")).isoformat(timespec="minutes"),
         "vkospi_source": vk_src,
+        "kr_credit_source": "ecos" if "KR_CREDIT" in raw else None,
         "tickers": config.YF_TICKERS | config.FDR_SYMBOLS | {k: f"FRED:{v}" for k, v in config.FRED_SERIES.items()},
     }
     CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)

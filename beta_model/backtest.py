@@ -6,7 +6,7 @@
 가정 (보수적으로 잡음):
 - t일 종가 신호 → t+1일 종가에 집행 → t+2일 수익부터 반영 (하루 추가 지연으로 미국 데이터의 시차·체결 지연을 흡수)
 - 매매비용: 비중 변화 1.0당 `cost_bps` (기본 10bp, 편도)
-- 현금 수익: 미국 = 3개월 국채(DTB3), 한국 = 3개월 금리(월간)
+- 현금 수익: 미국 = 3개월 국채(DTB3), 한국 = CD 91일(ECOS, 없으면 FRED 3개월 금리 월간)
 - 지수는 가격지수(배당 제외). 보유 그대로와 모델 모두 같은 지수로 비교한다.
 """
 
@@ -59,7 +59,10 @@ def simulate(md: MarketData, market: str, spec: ModelSpec, cost_bps: float = 10.
     main = config.MARKETS[market]["indices"][0]
     px = md.features[main]["close"].reindex(executed.index)
     ret = px.pct_change().fillna(0.0)
-    cash = (md.prices[CASH_SERIES[market]].reindex(executed.index).ffill() / 100 / config.TRADING_DAYS).fillna(0.0)
+    cash_rate = md.prices[CASH_SERIES[market]]
+    if market == "KR" and "CD91" in md.prices:   # ECOS 일별 CD 금리가 있으면 우선
+        cash_rate = md.prices["CD91"].combine_first(cash_rate)
+    cash = (cash_rate.reindex(executed.index).ffill() / 100 / config.TRADING_DAYS).fillna(0.0)
     held = executed.shift(1).bfill()                        # t 집행분은 t+1 수익부터
     trade = executed.diff().abs().fillna(0.0)
     strat = held * ret + (1 - held) * cash - trade * cost_bps / 1e4

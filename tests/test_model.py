@@ -163,3 +163,48 @@ def test_backtest_sanity():
     assert static_mix(df)["weight"].iloc[0] == pytest.approx(df["weight"].mean())
     for e in drawdown_episodes(df, min_depth=-0.01):
         assert e["bh"] <= -0.01 and e["peak"] < e["trough"]
+
+
+# ------------------------------------------------------------- KR sources
+def test_parse_ecos_and_errors():
+    from beta_model.kr_sources import parse_ecos
+    ok = {"StatisticSearch": {"row": [
+        {"TIME": "20261021", "DATA_VALUE": "4.515"}, {"TIME": "20261020", "DATA_VALUE": "4.534"}]}}
+    s = parse_ecos(ok)
+    assert list(s.index.strftime("%Y%m%d")) == ["20261020", "20261021"] and s.iloc[-1] == pytest.approx(4.515)
+    assert parse_ecos({"RESULT": {"CODE": "INFO-200", "MESSAGE": "해당하는 데이터가 없습니다."}}).empty
+
+
+def test_parse_vkospi():
+    from beta_model.kr_sources import parse_vkospi
+    payload = {"OutBlock_1": [
+        {"IDX_NM": "코스피 200 선물지수", "CLSPRC_IDX": "1,234.5"},
+        {"IDX_NM": "코스피 200 변동성지수", "CLSPRC_IDX": "23.41"},
+    ]}
+    assert parse_vkospi(payload) == pytest.approx(23.41)
+    assert parse_vkospi({"OutBlock_1": []}) is None
+    with pytest.raises(PermissionError):
+        parse_vkospi({"respMsg": "Unauthorized Key", "respCode": "401"})
+
+
+def test_kr_credit_blends_only_for_kr():
+    raw = _raw(trend=0.0, vol_level=15)
+    base_us = BetaModelScoringEngine(build_market_data(raw)).risk_components("US")["credit"]
+    base_kr = BetaModelScoringEngine(build_market_data(raw)).risk_components("KR")["credit"]
+    raw["KR_CREDIT"] = np.r_[np.full(N - 20, 0.6), np.full(20, 2.5)]  # 국내 신용 경색
+    e = BetaModelScoringEngine(build_market_data(raw))
+    assert e.risk_components("US")["credit"].iloc[-1] == pytest.approx(base_us.iloc[-1])
+    assert e.risk_components("KR")["credit"].iloc[-1] > base_kr.iloc[-1] + 0.3
+
+
+def test_vkospi_csv_spliced_with_scaled_proxy(tmp_path, monkeypatch):
+    from beta_model import data_pipeline
+    idx = pd.bdate_range("2020-01-01", periods=800)
+    k200 = pd.Series(300 * np.exp(np.cumsum(np.random.default_rng(1).normal(0, 0.01, 800))), index=idx)
+    rv = data_pipeline.realized_vol(k200, 20) * 100
+    csv = tmp_path / "vkospi.csv"
+    pd.DataFrame({"Date": idx[400:], "Close": (rv * 1.3).iloc[400:].values}).to_csv(csv, index=False)
+    monkeypatch.setattr(data_pipeline, "VKOSPI_CSV", csv)
+    s, src = data_pipeline.load_vkospi(k200)
+    assert src == "krx+proxy"
+    assert s.loc[idx[399]] == pytest.approx(rv.loc[idx[399]] * 1.3, rel=1e-6)  # 실제값 비율로 보정된 proxy

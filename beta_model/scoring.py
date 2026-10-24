@@ -122,20 +122,24 @@ class BetaModelScoringEngine:
         fx_chg = p["USDKRW"] / p["USDKRW"].shift(w) - 1
         fx = pd.Series(linear_map(fx_chg, 0.0, rp.fx_spike_full), index=idx)
 
-        if rp.credit_series in p:
-            cs = p[rp.credit_series]
-            credit = (
-                0.5 * pd.Series(linear_map(rolling_zscore(cs), 0.0, rp.credit_z_full), index=idx)
-                + 0.5 * pd.Series(linear_map(cs, rp.credit_level_lo, rp.credit_level_hi), index=idx)
-            )
-            credit = credit.where(cs.notna())
-        else:
-            credit = pd.Series(np.nan, index=idx)
+        credit = self._spread_score(p.get(rp.credit_series), rp.credit_level_lo, rp.credit_level_hi, idx)
+        if market == "KR" and rp.kr_credit_series in p:
+            kr = self._spread_score(p[rp.kr_credit_series], rp.kr_credit_level_lo, rp.kr_credit_level_hi, idx)
+            b = rp.kr_credit_blend
+            credit = ((1 - b) * credit + b * kr).fillna(credit)
 
         return pd.DataFrame({
             "vol_index": vol_index, "realized_vol": realized,
             "rates": rates, "fx": fx, "credit": credit,
         })
+
+    def _spread_score(self, spread: pd.Series | None, lo: float, hi: float, idx: pd.Index) -> pd.Series:
+        """신용 스프레드 → 0~1: Z점수(상대) 50% + 절대 레벨 50%."""
+        if spread is None:
+            return pd.Series(np.nan, index=idx)
+        z = pd.Series(linear_map(rolling_zscore(spread), 0.0, self.rp.credit_z_full), index=idx)
+        level = pd.Series(linear_map(spread, lo, hi), index=idx)
+        return (0.5 * z + 0.5 * level).where(spread.notna())
 
     def risk_score(self, market: str) -> pd.DataFrame:
         """가중 합성 위험 점수. 결측 구성요소는 남은 가중치로 재정규화."""

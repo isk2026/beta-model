@@ -78,6 +78,12 @@ class RiskParams:
     credit_z_full: float = 2.0        # 스프레드 Z=2 → 1.0 (상대)
     credit_level_lo: float = 2.5      # Baa−10Y 2.5%p 이하 → 0 (절대, 1990~ 상위 25% 수준까지는 평시)
     credit_level_hi: float = 4.5      # 4.5%p 이상 → 1 (2008 6.2, 2020 4.3, 2001 3.5)
+    # 한국 시장은 국내 신용(회사채 AA− 3년 − 국고채 3년, ECOS)을 미국 Baa와 반반 섞는다.
+    # ECOS 키가 없거나 데이터 이전 구간이면 미국 Baa만 쓴다.
+    kr_credit_series: str = "KR_CREDIT"
+    kr_credit_blend: float = 0.5
+    kr_credit_level_lo: float = 1.0   # %p, 평시(2014~2019 0.4~0.7) 위
+    kr_credit_level_hi: float = 2.0   # %p, 2022년 레고랜드 사태 1.5 안팎, 2008년 4%p대
     # 시장별 가중치 (합 1.0)
     weights: dict = field(default_factory=lambda: {
         "US": {"vol_index": 0.35, "realized_vol": 0.15, "rates": 0.15, "fx": 0.10, "credit": 0.25},

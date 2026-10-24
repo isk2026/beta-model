@@ -38,6 +38,7 @@ const MACRO_META = {
   USDKRW: { label: '원/달러', fmt: (v) => v.toLocaleString('ko-KR', { maximumFractionDigits: 1 }), chg: (v) => v.toFixed(1), bad: 1 },
   DXY: { label: '달러 인덱스', fmt: (v) => v.toFixed(2), chg: (v) => v.toFixed(2), bad: 1 },
   BAA_SPREAD: { label: 'Baa 스프레드', fmt: (v) => `${v.toFixed(2)}%p`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
+  KR_CREDIT: { label: '국내 신용 AA−', fmt: (v) => `${v.toFixed(2)}%p`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
   HY_SPREAD: { label: 'HY 스프레드(참고)', fmt: (v) => `${v.toFixed(2)}%`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
 }
 
@@ -567,11 +568,12 @@ export default function BetaDashboard() {
               right={<span className="num font-mono text-sm" style={{ color: riskColor(m.allocation.risk_score) }}>{m.allocation.risk_score.toFixed(2)}</span>}>
               <div className="space-y-3">
                 {Object.entries(m.risk_components).map(([k, v]) => (
-                  <ComponentBar key={k} label={RISK_LABELS[k] ?? k} value={v} weight={m.risk_weights[k]} />
+                  <ComponentBar key={k} value={v} weight={m.risk_weights[k]}
+                    label={k === 'credit' && market === 'KR' && data.meta.kr_credit_source ? '신용 스프레드 (Baa·국내 AA−)' : (RISK_LABELS[k] ?? k)} />
                 ))}
               </div>
               <p className="mt-4 text-[11px] leading-relaxed text-slate-500">
-                변동성 지수는 252일 백분위와 절대 레벨을, 신용(Baa 회사채−미 10년물)은 Z점수와 절대 레벨(2.5~4.5%p)을 반반 반영. 금리·환율은 10일 상승분만 위험으로 봅니다.
+                변동성 지수는 252일 백분위와 절대 레벨을, 신용(Baa 회사채−미 10년물{market === 'KR' && data.meta.kr_credit_source ? ' + 국내 AA−−국고 3년' : ''})은 Z점수와 절대 레벨을 반반 반영. 금리·환율은 10일 상승분만 위험으로 봅니다.
               </p>
             </Panel>
 

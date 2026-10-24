@@ -30,9 +30,18 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python -m pytest -q
+      # 인증키는 저장소 Settings → Secrets and variables → Actions 에 등록 (없으면 자동으로 대체값 사용)
+      - name: Update VKOSPI (KRX)
+        env:
+          KRX_API_KEY: ${{ secrets.KRX_API_KEY }}
+        run: python -m beta_model.kr_sources --update-vkospi
       - name: Fetch data & score
+        env:
+          ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
         run: python -m beta_model.export --refresh
       - name: Backtest (1990~)
+        env:
+          ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
         run: python -m beta_model.backtest
 
       # 결과를 커밋해 두면 일별 모델 기록이 남고, 저장소가 활동 상태로 유지되어
@@ -42,6 +51,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add dashboard/public/data/beta_model.json dashboard/public/data/backtest.json
+          if [ -f data/vkospi.csv ]; then git add data/vkospi.csv; fi
           git diff --cached --quiet || git commit -m "data: $(date -u +'%Y-%m-%d %H:%M') UTC update"
           git push
 
