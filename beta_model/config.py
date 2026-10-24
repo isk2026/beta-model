@@ -42,7 +42,7 @@ FRED_SERIES: dict[str, str] = {
 MARKETS: dict[str, dict] = {
     "US": {"label": "미국", "indices": ["SPX", "NDX"], "vol_index": "VIX", "cash": "UST3M"},
     # 기술주 중심 포트폴리오용. 비중은 실제 보유 비율에 맞게 수정 (대시보드에서도 조정 가능)
-    "US_TECH": {"label": "미국(기술)", "indices": ["QQQ", "SOXX"], "index_weights": {"QQQ": 0.6, "SOXX": 0.4},
+    "US_TECH": {"label": "미국(기술)", "indices": ["QQQ", "SOXX"], "index_weights": {"QQQ": 0.4, "SOXX": 0.6},
                 "vol_index": "VIX", "cash": "UST3M"},
     "KR": {"label": "한국", "indices": ["KOSPI", "KOSDAQ"], "vol_index": "VKOSPI", "cash": "KR3M"},
 }
