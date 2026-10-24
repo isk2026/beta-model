@@ -18,7 +18,7 @@ from . import config
 from .allocation import REGIME_INFO, Regime, allocate, regime_series, smooth_weights, target_stock_weight
 from .data_pipeline import ROOT, MarketData, build_market_data, fetch_raw
 from .scenarios import run_scenarios
-from .sectors import fetch_sectors, sector_payload
+from .sectors import fetch_sectors, satellite_payload, sector_payload
 from .signals import build_alert, live_payload, next_weight, update_log
 from .scoring import BetaModelScoringEngine
 
@@ -116,7 +116,14 @@ def main() -> None:
     payload = build_payload(md)
     payload["scenarios"] = run_scenarios(raw, meta)
     try:  # 섹터 모니터는 참고 정보 — 실패해도 본 모델 갱신은 계속
-        payload["sectors"] = sector_payload(fetch_sectors(use_cache=not args.refresh))
+        spx = fetch_sectors(use_cache=not args.refresh)
+        payload["sectors"] = sector_payload(spx)
+        try:  # 옵트인 위성 비중(검증상 근거 없음) — 실패해도 섹터 모니터는 유지
+            us_trend = BetaModelScoringEngine(md).trend_score("US")["trend_score"]
+            payload["sectors"]["satellite"] = satellite_payload(
+                payload["sectors"], spx, payload["markets"]["US"]["allocation"]["trend_score"], us_trend)
+        except Exception as exc:  # noqa: BLE001
+            logging.error("섹터 위성 비중 실패: %s", exc)
     except Exception as exc:  # noqa: BLE001
         logging.error("섹터 모니터 실패: %s", exc)
     log, fresh = update_log(payload, run_at=meta.get("fetched_at", ""))

@@ -1,4 +1,5 @@
-import { Layers, Star } from 'lucide-react'
+import { useState } from 'react'
+import { AlertTriangle, Layers, Star } from 'lucide-react'
 
 const pct = (x, d = 0) => (x == null ? '–' : `${x >= 0 ? '+' : ''}${(x * 100).toFixed(d)}%`)
 const trendCls = (t) => (t >= 0.3 ? 'text-emerald-300' : t > 0 ? 'text-emerald-200/70' : t > -0.3 ? 'text-rose-200/70' : 'text-rose-300')
@@ -15,8 +16,119 @@ function ScoreBar({ v }) {
   )
 }
 
+// ---------------------------------------------------------------- 옵트인 위성 비중
+const SAT_KEY = 'beta-model:sector-satellite'
+
+// 기본 꺼짐. 브라우저 저장소가 막혀 있어도 동작 (토글만 기억 못 함)
+export function useSatelliteToggle() {
+  const [on, setOn] = useState(() => {
+    try { return localStorage.getItem(SAT_KEY) === '1' } catch { return false }
+  })
+  const set = (v) => {
+    setOn(v)
+    try { localStorage.setItem(SAT_KEY, v ? '1' : '0') } catch { /* 무시 */ }
+  }
+  return [on, set]
+}
+
+export const coreLabel = (market) => (market === 'US_TECH' ? 'QQQ/SOXX 기술 포트' : 'SPY/지수 ETF')
+
+// 주식 비중(stock)을 코어 + 주도 섹터로 나눈 포트 전체 대비 비중. 주식/현금 합계는 그대로.
+export function satelliteLines(sat, stock, market) {
+  if (!sat) return []
+  return [
+    { key: 'core', label: coreLabel(market), weight: stock * sat.core, core: true },
+    ...sat.legs.map((l) => ({ key: l.ticker, label: `${l.name} ${l.ticker}`, weight: stock * l.weight })),
+  ]
+}
+
+const p1 = (x) => (x == null ? '–' : `${(x * 100).toFixed(1)}%`)
+
+function EvidenceTable({ bt }) {
+  const rows = [['표본 내', bt.in_sample], ['표본 외', bt.out_of_sample]]
+  return (
+    <table className="num mt-2 w-full text-right font-mono text-[10px] sm:text-[11px]">
+      <thead className="font-sans text-slate-500">
+        <tr><th className="text-left font-medium">구간</th><th className="font-medium">전략</th><th className="font-medium">연복리</th><th className="font-medium">샤프</th><th className="font-medium">MDD</th></tr>
+      </thead>
+      <tbody className="text-slate-300">
+        {rows.flatMap(([lab, seg]) => [['SPY', seg.spy], ['위성 규칙', seg.rule]].map(([name, v], i) => {
+          const worse = name !== 'SPY' && v.cagr < seg.spy.cagr
+          return (
+            <tr key={lab + name} className={i === 0 ? 'border-t border-line' : ''}>
+              <td className="py-0.5 text-left font-sans text-slate-400">{i === 0 ? <>{lab} <span className="block text-slate-500 sm:inline">{seg.period}</span></> : ''}</td>
+              <td className="font-sans">{name}</td>
+              <td className={worse ? 'text-rose-300' : ''}>{p1(v.cagr)}</td>
+              <td>{v.sharpe.toFixed(2)}</td>
+              <td>{p1(v.mdd)}</td>
+            </tr>
+          )
+        }))}
+      </tbody>
+    </table>
+  )
+}
+
+function SatelliteBox({ sat, on, setOn, stock, market }) {
+  const lines = satelliteLines(sat, stock, market)
+  return (
+    <div className="mt-4 rounded-xl border border-line bg-ink/60 p-3">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-slate-200">주도 섹터 위성 비중 <span className="font-normal text-slate-500">(옵트인 · 기본 꺼짐)</span></p>
+          <p className="text-[10px] text-slate-500">주식 중 {Math.round(sat.max_fraction * 100)}% × 미국 추세(0~1)를 주도 섹터 {sat.n}개에 균등 · 주식/현금 비중은 그대로</p>
+        </div>
+        <button type="button" role="switch" aria-checked={on} onClick={() => setOn(!on)}
+          className={`relative h-6 w-11 shrink-0 rounded-full transition ${on ? 'bg-amber-500/70' : 'bg-slate-700'}`}>
+          <span className="sr-only">주도 섹터 위성 비중 표시</span>
+          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${on ? 'left-[22px]' : 'left-0.5'}`} />
+        </button>
+      </div>
+
+      {on && (
+        <div className="mt-3 space-y-3">
+          <p className="flex items-start gap-1.5 rounded-lg border border-rose-500/40 bg-rose-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-rose-200">
+            <AlertTriangle size={13} className="mt-px shrink-0" aria-hidden /> 검증상 근거 없음 — 2013년 이후 SPY 대비 열위
+          </p>
+          <div>
+            <p className="mb-1 text-[11px] text-slate-400">
+              현재 주식 {p1(stock)}를 나누면 (위성 = 주식의 {p1(sat.fraction)}, 미국 추세 {sat.us_trend >= 0 ? '+' : ''}{sat.us_trend.toFixed(2)}) · 포트 전체 대비
+            </p>
+            <ul className="space-y-1 text-[11px]">
+              {lines.map((l) => (
+                <li key={l.key} className="flex min-w-0 items-center gap-2">
+                  <span className={`min-w-0 flex-1 truncate ${l.core ? 'text-slate-200' : 'text-amber-200'}`}>{l.core ? '' : '★ '}{l.label}</span>
+                  <span className="hidden h-1.5 w-24 shrink-0 rounded-full bg-slate-800 sm:block" aria-hidden>
+                    <span className={`block h-1.5 rounded-full ${l.core ? 'bg-emerald-500' : 'bg-amber-400'}`} style={{ width: `${Math.min(l.weight, 1) * 100}%` }} />
+                  </span>
+                  <span className="num w-14 shrink-0 text-right font-mono text-slate-100">{p1(l.weight)}</span>
+                </li>
+              ))}
+              <li className="flex items-center gap-2 border-t border-line pt-1 text-slate-500">
+                <span className="flex-1">현금</span><span className="num w-14 shrink-0 text-right font-mono">{p1(1 - stock)}</span>
+              </li>
+            </ul>
+            {sat.legs.length < sat.n && (
+              <p className="mt-1 text-[10px] text-slate-500">주도 섹터가 {sat.legs.length}개뿐이라 남는 몫은 코어에 둡니다.</p>
+            )}
+            {market === 'US_TECH' && (
+              <p className="mt-1 text-[10px] text-slate-500">백테스트는 SPY 코어 기준입니다. 기술주 포트 코어로는 검증하지 않았습니다.</p>
+            )}
+          </div>
+          {sat.backtest && (
+            <div className="min-w-0 overflow-x-auto">
+              <p className="text-[10px] text-slate-500">{sat.backtest.rule}</p>
+              <EvidenceTable bt={sat.backtest} />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // 미국 섹터 ETF 상대강도·추세 — 참고 정보 (배분 규칙에는 포함하지 않음)
-export default function SectorPanel({ sectors, market }) {
+export default function SectorPanel({ sectors, market, stock, satOn = false, setSatOn }) {
   if (!sectors || market === 'KR') return null
   const months = Object.keys(sectors.rank_history)
   return (
@@ -112,6 +224,10 @@ export default function SectorPanel({ sectors, market }) {
         배분하는 규칙 6가지를 1999년부터 검증한 결과, 2012년까지는 SPY보다 나았지만 2013년 이후에는 모두 SPY에 못 미쳤습니다(연 14.8% vs 13.7~14.5%).
         섹터 순위는 시장 분위기를 읽는 용도로만 보세요.
       </p>
+
+      {sectors.satellite && setSatOn && stock != null && (
+        <SatelliteBox sat={sectors.satellite} on={satOn} setOn={setSatOn} stock={stock} market={market} />
+      )}
     </section>
   )
 }
