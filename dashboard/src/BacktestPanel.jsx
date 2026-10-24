@@ -84,19 +84,21 @@ export default function BacktestPanel({ market }) {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
-        <div className="min-w-0 lg:col-span-3">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-5">
+        <div className="min-w-0 xl:col-span-3">
           <p className="mb-1 text-xs text-slate-400">1원이 몇 배가 됐나 (로그 스케일, 비용·현금이자 반영)</p>
           <Curve curve={mk.curve} label={mk.index} />
         </div>
-        <div className="min-w-0 lg:col-span-2">
+        <div className="min-w-0 xl:col-span-2">
           <div className="overflow-x-auto">
             <table className="num w-full text-right font-mono text-xs">
               <thead className="font-sans text-slate-500">
                 <tr>
                   <th className="pb-1.5 text-left font-medium">전략</th>
                   <th className="font-medium">연수익</th><th className="font-medium">최대낙폭</th>
-                  <th className="font-medium">샤프</th><th className="font-medium">회전율</th>
+                  <th className="font-medium">샤프</th><th className="font-medium" title="하락 변동성만 위험으로 본 샤프">소르티노</th>
+                  <th className="font-medium" title="시장이 내린 달에 몇 %를 따라 내렸나 (낮을수록 방어)">하락포착</th>
+                  <th className="font-medium">회전율</th>
                 </tr>
               </thead>
               <tbody className="text-slate-300">
@@ -104,6 +106,8 @@ export default function BacktestPanel({ market }) {
                   <tr key={name} className={`border-t border-line ${kind === 'cur' ? 'text-emerald-300' : ''}`}>
                     <td className="py-1.5 text-left font-sans">{name}</td>
                     <td>{pct(r.cagr)}</td><td>{pct(r.mdd)}</td><td>{r.sharpe.toFixed(2)}</td>
+                    <td>{r.sortino?.toFixed(2) ?? '–'}</td>
+                    <td>{r.down_capture == null ? '100%' : pct(r.down_capture, 0)}</td>
                     <td>{r.turnover == null ? '–' : pct(r.turnover, 0)}</td>
                   </tr>
                 ))}

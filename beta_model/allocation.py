@@ -63,6 +63,33 @@ def classify_regime(trend: float, risk: float, p: AllocationParams = config.ALLO
     return Regime.DOWN_DEFENSE if calm else Regime.MAX_DEFENSE
 
 
+def regime_series(trend: pd.Series, risk: pd.Series, p: AllocationParams = config.ALLOCATION) -> pd.Series:
+    """히스테리시스를 적용한 국면 시계열.
+
+    추세: 하락 상태에서 trend ≥ thr+h 이면 상승 전환, 상승 상태에서 trend < thr−h 이면 하락 전환.
+    위험: 같은 방식으로 risk_threshold ± risk_hysteresis.
+    시작 상태는 단순 판정(classify_regime)과 같다.
+    """
+    out = np.full(len(trend), np.nan)
+    up = calm = None
+    for i, (t, r) in enumerate(zip(trend.to_numpy(), risk.to_numpy())):
+        if np.isnan(t) or np.isnan(r):
+            continue
+        if up is None:
+            up, calm = t >= p.trend_threshold, r < p.risk_threshold
+        else:
+            if up and t < p.trend_threshold - p.trend_hysteresis:
+                up = False
+            elif not up and t >= p.trend_threshold + p.trend_hysteresis:
+                up = True
+            if calm and r >= p.risk_threshold + p.risk_hysteresis:
+                calm = False
+            elif not calm and r < p.risk_threshold - p.risk_hysteresis:
+                calm = True
+        out[i] = (1 if calm else 2) if up else (3 if calm else 4)
+    return pd.Series(out, index=trend.index, name="regime")
+
+
 @dataclass(frozen=True)
 class Allocation:
     trend_score: float

@@ -37,8 +37,8 @@ FRED_SERIES: dict[str, str] = {
 
 # 시장별 구성: 추세는 지수 평균, 위험은 시장별 변동성 지수 + 공통 매크로
 MARKETS: dict[str, dict] = {
-    "US": {"label": "미국", "indices": ["SPX", "NDX"], "vol_index": "VIX"},
-    "KR": {"label": "한국", "indices": ["KOSPI", "KOSDAQ"], "vol_index": "VKOSPI"},
+    "US": {"label": "미국", "indices": ["SPX", "NDX"], "vol_index": "VIX", "cash": "UST3M"},
+    "KR": {"label": "한국", "indices": ["KOSPI", "KOSDAQ"], "vol_index": "VKOSPI", "cash": "KR3M"},
 }
 
 HISTORY_START = "1990-01-01"  # 백테스트용 장기 이력 (VIX 시작점)
@@ -107,15 +107,22 @@ class AllocationParams:
     risk_span: float = 0.20
     floor: float = 0.60
     cap: float = 1.00
-    # 국면 판정 경계
+    # 국면 판정 경계 + 히스테리시스(이중 임계값): 상승 국면은 +h 이상에서 진입, −h 이하에서 이탈.
+    # 경계 근처에서 국면 라벨·행동 지침이 매일 뒤바뀌는 것을 막는다 (비중 공식에는 영향 없음).
     trend_threshold: float = 0.0
     risk_threshold: float = 0.5
+    trend_hysteresis: float = 0.10
+    risk_hysteresis: float = 0.05
     # 속도 조절: 줄일 때는 즉시, 채울 때는 하루 최대 +N%p
     max_daily_increase: float = 0.02
     # 리밸런싱 무시 구간 (목표와 현재 차이가 이보다 작으면 매매 안 함)
     rebalance_band: float = 0.03
     # 집행 시뮬레이션에도 무시 구간 적용 여부 (False = 매일 목표 추종)
     band_in_execution: bool = True
+    # 현금 중 달러(미 단기국채·달러 MMF) 비율 — 한국 시장(원화 투자자)에만 적용.
+    # 코스피 급락 때 원/달러가 오르는 경향(일간 상관 −0.21)으로 위기 방어에 기여.
+    # 백테스트: 표본 내 MDD가 50%에서 −40.1%→−35.0%로 포화(그 이상은 환 노출만 증가) → 50%.
+    cash_usd_share: float = 0.5
 
 
 TREND = TrendParams()

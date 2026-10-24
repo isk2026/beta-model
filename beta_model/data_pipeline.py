@@ -206,12 +206,12 @@ def compute_features(close: pd.Series) -> pd.DataFrame:
     return df
 
 
-def build_market_data(raw: pd.DataFrame, meta: dict | None = None) -> MarketData:
+def build_market_data(raw: pd.DataFrame, meta: dict | None = None, markets: dict = config.MARKETS) -> MarketData:
     """원시 데이터 → 공통 달력 정렬 + ffill + 지표 계산."""
     raw = raw.sort_index()
     raw = raw[~raw.index.duplicated(keep="last")]
     # 공통 달력: 미국/한국 주식 거래일의 합집합 (주말 FX 등 잡음 제거)
-    equity_cols = [c for m in config.MARKETS.values() for c in m["indices"] if c in raw]
+    equity_cols = [c for m in markets.values() for c in m["indices"] if c in raw]
     calendar = raw[equity_cols].dropna(how="all").index
 
     features: dict[str, pd.DataFrame] = {}

@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: "30 7 * * 1-5"   # 16:30 KST — 한국장 마감(15:30) 후
     - cron: "30 22 * * 1-5"  # 07:30 KST — 미국장 마감(05:00/06:00 KST) 후
+    - cron: "0 23 * * 6"     # 일 08:00 KST — 주간 견고성 검증
   workflow_dispatch:
   push:
     branches: [main]
@@ -13,6 +14,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  issues: write
 
 concurrency:
   group: update-deploy
@@ -43,6 +45,24 @@ jobs:
         env:
           ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
         run: python -m beta_model.backtest
+      - name: Robustness validation (weekly / manual)
+        if: github.event.schedule == '0 23 * * 6' || github.event_name == 'workflow_dispatch'
+        env:
+          ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
+        run: python -m beta_model.validation
+
+      # 국면 전환·매매 신호가 있으면 data/alert.md 가 생긴다 → Issue (저장소 Watch 시 메일·앱 푸시)
+      - name: Alert
+        if: hashFiles('data/alert.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          gh issue create --title "Beta Model 신호 $(TZ=Asia/Seoul date +'%Y-%m-%d %H:%M') KST" --body-file data/alert.md || true
+          if [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ]; then
+            curl -s -o /dev/null "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"               --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" --data-urlencode "text@data/alert.md" || true
+          fi
 
       # 결과를 커밋해 두면 일별 모델 기록이 남고, 저장소가 활동 상태로 유지되어
       # 60일 무활동 시 예약 워크플로가 꺼지는 것도 막는다.
@@ -50,7 +70,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dashboard/public/data/beta_model.json dashboard/public/data/backtest.json
+          git add dashboard/public/data/beta_model.json dashboard/public/data/backtest.json data/signal_log.csv
+          if [ -f dashboard/public/data/validation.json ]; then git add dashboard/public/data/validation.json; fi
           if [ -f data/vkospi.csv ]; then git add data/vkospi.csv; fi
           git diff --cached --quiet || git commit -m "data: $(date -u +'%Y-%m-%d %H:%M') UTC update"
           git push

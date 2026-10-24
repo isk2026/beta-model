@@ -9,13 +9,16 @@ import {
 } from 'lucide-react'
 import { allocate, DEFAULT_PARAMS, FALLBACK_REGIMES, rebalance } from './model.js'
 import BacktestPanel from './BacktestPanel.jsx'
+import ScenarioPanel from './ScenarioPanel.jsx'
+import ValidationPanel from './ValidationPanel.jsx'
+import LivePanel from './LivePanel.jsx'
 
 ChartJS.register(ArcElement, CategoryScale, LinearScale, LogarithmicScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
 // ---------------------------------------------------------------- tokens
 const C = {
   emerald: '#10b981', rose: '#f43f5e', amber: '#f59e0b', cyan: '#22d3ee',
-  slate: '#64748b', grid: 'rgba(148,163,184,0.10)', tick: '#94a3b8', panel: '#111827',
+  slate: '#64748b', violet: '#a78bfa', grid: 'rgba(148,163,184,0.10)', tick: '#94a3b8', panel: '#111827',
 }
 const REGIME_STYLE = {
   1: { color: C.emerald, Icon: TrendingUp, ring: 'ring-emerald-500/40', glow: 'shadow-[0_0_40px_-12px_#10b981]' },
@@ -157,12 +160,20 @@ function ComponentBar({ label, value, diverging, weight }) {
 }
 
 // ---------------------------------------------------------------- charts
-function AllocationDonut({ stock, cash }) {
+// 현금 구성: usdShare > 0 이면 원화/달러로 나눈다 (한국 시장)
+function cashParts(cash, usdShare) {
+  return usdShare > 0
+    ? [['원화 현금', cash * (1 - usdShare), C.slate], ['달러 현금', cash * usdShare, C.violet]]
+    : [['현금(MMF)', cash, C.slate]]
+}
+
+function AllocationDonut({ stock, cash, usdShare }) {
+  const parts = [['주식', stock, C.emerald], ...cashParts(cash, usdShare)]
   const data = {
-    labels: ['주식', '현금(MMF)'],
+    labels: parts.map((p) => p[0]),
     datasets: [{
-      data: [stock * 100, cash * 100],
-      backgroundColor: [C.emerald, C.slate],
+      data: parts.map((p) => p[1] * 100),
+      backgroundColor: parts.map((p) => p[2]),
       borderColor: C.panel, borderWidth: 2, borderRadius: 4, spacing: 2,
       hoverOffset: 4,
     }],
@@ -298,7 +309,7 @@ function HistoryCharts({ history, label }) {
 }
 
 // ---------------------------------------------------------------- calculator
-function RebalanceCalculator({ targetWeight, params }) {
+function RebalanceCalculator({ targetWeight, params, usdShare = 0 }) {
   const [currency, setCurrency] = useState('KRW')
   const [total, setTotal] = useState('100000000')
   const [current, setCurrent] = useState('90000000')
@@ -346,9 +357,19 @@ function RebalanceCalculator({ targetWeight, params }) {
             <p className="text-[11px] text-slate-500">{pct(targetWeight, 1)} (현재 {pct(res.curWeight, 1)})</p>
           </div>
           <div className="rounded-xl bg-ink/70 p-3">
-            <p className="text-xs text-slate-400">목표 현금 (MMF)</p>
-            <p className="num font-mono text-lg text-slate-200">{fmt.format(res.cashValue)}</p>
-            <p className="text-[11px] text-slate-500">{pct(1 - targetWeight, 1)}</p>
+            <p className="text-xs text-slate-400">목표 현금 {pct(1 - targetWeight, 1)}</p>
+            {usdShare > 0 ? (
+              <>
+                <p className="num font-mono text-sm text-slate-200">원화 {fmt.format(res.cashValue * (1 - usdShare))}</p>
+                <p className="num font-mono text-sm text-violet-300">달러 {fmt.format(res.cashValue * usdShare)}</p>
+                <p className="text-[11px] text-slate-500">원화: MMF·CD·단기채 / 달러: 달러 MMF·미 초단기국채</p>
+              </>
+            ) : (
+              <>
+                <p className="num font-mono text-lg text-slate-200">{fmt.format(res.cashValue)}</p>
+                <p className="text-[11px] text-slate-500">MMF·단기국채 등 즉시 투입 가능한 자산</p>
+              </>
+            )}
           </div>
           <div className="rounded-xl bg-ink/70 p-3">
             <p className="text-xs text-slate-400">다음 거래일 주문</p>
@@ -378,6 +399,7 @@ export default function BetaDashboard() {
   const [activePreset, setActivePreset] = useState(null)
 
   const params = data?.params ?? DEFAULT_PARAMS
+  const usdShare = market === 'KR' ? (params.cash_usd_share ?? 0) : 0
   const regimes = data?.regimes ?? FALLBACK_REGIMES
   const m = data?.markets?.[market]
   const live = m ? { trend: m.allocation.trend_score, risk: m.allocation.risk_score } : null
@@ -390,8 +412,10 @@ export default function BetaDashboard() {
   }, [data, market])
 
   const a = allocate(trend, risk, params)
-  const reg = regimes[a.regime]
-  const rs = REGIME_STYLE[a.regime]
+  // 실측값일 때는 히스테리시스가 적용된 국면(이력 기반), 시뮬레이션은 단순 판정
+  const regime = isLive && m ? m.allocation.regime : a.regime
+  const reg = regimes[regime]
+  const rs = REGIME_STYLE[regime]
 
   const applyPreset = (p) => { setTrend(p.trend); setRisk(p.risk); setActivePreset(p.id) }
   const resetLive = () => { if (live) { setTrend(live.trend); setRisk(live.risk); setActivePreset(null) } }
@@ -447,7 +471,7 @@ export default function BetaDashboard() {
               <div>
                 <p className="text-xs font-medium text-slate-400">현재 국면</p>
                 <h2 className="mt-1 flex items-center gap-2 text-xl font-bold" style={{ color: rs.color }}>
-                  <rs.Icon size={22} aria-hidden /> 국면 {a.regime} · {reg.name}
+                  <rs.Icon size={22} aria-hidden /> 국면 {regime} · {reg.name}
                 </h2>
               </div>
               {!isLive && live && (
@@ -455,6 +479,11 @@ export default function BetaDashboard() {
               )}
             </div>
             <p className="mt-2 text-sm text-slate-300">{reg.summary}</p>
+            {isLive && m.allocation.regime_raw != null && m.allocation.regime_raw !== regime && (
+              <p className="mt-2 rounded-lg bg-white/5 px-2.5 py-1.5 text-[11px] text-slate-400">
+                경계 근처: 오늘 점수만 보면 국면 {m.allocation.regime_raw}이지만, 이중 임계값(추세 ±{params.trend_hysteresis}, 위험 ±{params.risk_hysteresis})을 넘지 않아 국면 {regime}을 유지합니다.
+              </p>
+            )}
             <ol className="mt-4 space-y-2">
               {reg.actions.map((act, i) => (
                 <li key={act} className="flex gap-3 text-sm text-slate-200">
@@ -467,7 +496,7 @@ export default function BetaDashboard() {
               <QuadrantMap trend={a.trend} risk={a.risk} live={isLive ? null : live} threshold={params.risk_threshold} />
               <ul className="space-y-1 text-[11px] text-slate-400">
                 {[1, 2, 3, 4].map((n) => (
-                  <li key={n} className={`flex items-center gap-1.5 ${n === a.regime ? 'font-semibold text-slate-100' : ''}`}>
+                  <li key={n} className={`flex items-center gap-1.5 ${n === regime ? 'font-semibold text-slate-100' : ''}`}>
                     <span className="h-2 w-2 rounded-sm" style={{ background: REGIME_STYLE[n].color }} />{n}. {regimes[n].name}
                   </li>
                 ))}
@@ -477,10 +506,11 @@ export default function BetaDashboard() {
           </section>
 
           <Panel title="주식 vs 현금 배분" icon={Gauge}>
-            <AllocationDonut stock={a.stock} cash={a.cash} />
-            <div className="mt-3 flex justify-center gap-4 text-xs text-slate-300">
-              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: C.emerald }} />주식 {pct(a.stock, 1)}</span>
-              <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: C.slate }} />현금(MMF) {pct(a.cash, 1)}</span>
+            <AllocationDonut stock={a.stock} cash={a.cash} usdShare={usdShare} />
+            <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-slate-300">
+              {[['주식', a.stock, C.emerald], ...cashParts(a.cash, usdShare)].map(([lab, v, col]) => (
+                <span key={lab} className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-sm" style={{ background: col }} />{lab} {pct(v, 1)}</span>
+              ))}
             </div>
             <RangeBar floor={params.floor} cap={params.cap} base={a.base} stock={a.stock} />
             <dl className="num mt-4 grid grid-cols-3 gap-2 text-center font-mono text-xs">
@@ -608,11 +638,14 @@ export default function BetaDashboard() {
           </Panel>
         )}
 
+        {m && <LivePanel log={data?.signal_log} market={market} label={m.label} />}
+        {m && <ScenarioPanel scenarios={data?.scenarios} market={market} label={m.label} />}
         <BacktestPanel market={market} />
+        <ValidationPanel />
 
         {/* Row 4: calculator + principles */}
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <div className="min-w-0 lg:col-span-2"><RebalanceCalculator targetWeight={a.stock} params={params} /></div>
+          <div className="min-w-0 lg:col-span-2"><RebalanceCalculator targetWeight={a.stock} params={params} usdShare={usdShare} /></div>
           <Panel title="계좌 운용 4원칙" icon={ShieldCheck}>
             <ul className="space-y-3 text-sm">
               {[

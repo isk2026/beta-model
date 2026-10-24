@@ -57,10 +57,12 @@ class BetaModelScoringEngine:
         data: MarketData,
         trend_params: TrendParams = config.TREND,
         risk_params: RiskParams = config.RISK,
+        markets: dict = config.MARKETS,
     ) -> None:
         self.data = data
         self.tp = trend_params
         self.rp = risk_params
+        self.markets = markets
 
     # ------------------------------------------------------------------ trend
     def index_trend(self, name: str) -> pd.DataFrame:
@@ -95,7 +97,7 @@ class BetaModelScoringEngine:
 
     def trend_score(self, market: str) -> pd.DataFrame:
         """시장 추세 = 구성 지수 추세의 평균."""
-        frames = [self.index_trend(n) for n in config.MARKETS[market]["indices"]]
+        frames = [self.index_trend(n) for n in self.markets[market]["indices"]]
         return (sum(frames) / len(frames)).clip(-1.0, 1.0)
 
     # ------------------------------------------------------------------- risk
@@ -103,7 +105,7 @@ class BetaModelScoringEngine:
         """위험 구성요소(각 0~1). 상승 방향 스파이크만 위험으로 본다."""
         p = self.data.prices
         rp = self.rp
-        vol_name = config.MARKETS[market]["vol_index"]
+        vol_name = self.markets[market]["vol_index"]
         idx = p.index
 
         vol = p[vol_name]
@@ -112,7 +114,7 @@ class BetaModelScoringEngine:
         )
 
         # 시장 대표 지수(첫 번째)의 실현변동성 백분위
-        main = config.MARKETS[market]["indices"][0]
+        main = self.markets[market]["indices"][0]
         rv = realized_vol(p[main].dropna(), 20).reindex(idx).ffill()
         realized = rolling_percentile(rv)
 
@@ -144,7 +146,7 @@ class BetaModelScoringEngine:
     def risk_score(self, market: str) -> pd.DataFrame:
         """가중 합성 위험 점수. 결측 구성요소는 남은 가중치로 재정규화."""
         comp = self.risk_components(market)
-        weights = pd.Series(self.rp.weights[market])
+        weights = pd.Series(self.markets[market].get("weights") or self.rp.weights[market])
         w = comp.notna().mul(weights, axis=1)
         score = (comp.fillna(0) * weights).sum(axis=1) / w.sum(axis=1).replace(0, np.nan)
         out = comp.copy()

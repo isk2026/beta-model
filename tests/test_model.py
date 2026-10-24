@@ -210,3 +210,53 @@ def test_vkospi_csv_spliced_with_scaled_proxy(tmp_path, monkeypatch):
     s, src = data_pipeline.load_vkospi(k200)
     assert src == "krx+proxy"
     assert s.loc[idx[399]] == pytest.approx(rv.loc[idx[399]] * 1.3, rel=1e-6)  # 실제값 비율로 보정된 proxy
+
+
+# ---------------------------------------------------- step 1: metrics/regime
+def test_regime_hysteresis_holds_near_threshold():
+    from beta_model.allocation import regime_series
+    idx = pd.bdate_range("2024-01-01", periods=6)
+    trend = pd.Series([0.3, -0.05, 0.05, -0.08, -0.15, 0.05], index=idx)   # 0 근처 흔들림 후 이탈
+    risk = pd.Series([0.2] * 6, index=idx)
+    reg = regime_series(trend, risk).tolist()
+    assert reg[:4] == [1, 1, 1, 1]          # −0.1 이하로 안 내려가면 상승 국면 유지
+    assert reg[4] == 3                      # −0.15 → 하락 전환
+    assert reg[5] == 3                      # +0.05 로는 복귀 안 함 (+0.1 필요)
+
+
+def test_capture_and_sortino():
+    md = build_market_data(_raw(trend=0.0003, vol_level=15))
+    df = simulate(md, "US", ModelSpec("t"))
+    m = metrics(df)
+    assert 0 < m["down_capture"] < 1.2 and 0 < m["up_capture"] < 1.2
+    assert m["cagr_gross"] >= m["cagr"]                 # 비용 차감 전 ≥ 후
+    assert np.isfinite(m["sortino"]) and m["underwater_years"] >= 0
+
+
+# ---------------------------------------------------- step 4: signal log
+def test_next_weight_and_action():
+    from beta_model.signals import action_of, next_weight
+    idx = pd.bdate_range("2024-01-01", periods=5)
+    assert next_weight(pd.Series([1.0, 1.0, 1.0, 1.0, 0.7], index=idx)) == pytest.approx(0.7)   # 줄이기: 즉시
+    up = next_weight(pd.Series([0.7, 0.7, 0.7, 0.7, 1.0], index=idx))
+    assert 0.7 < up < 1.0                                                                       # 늘리기: 천천히
+    assert action_of(0.8, 0.7) == "SELL" and action_of(0.7, 0.72) == "BUY" and action_of(0.7, 0.702) == "HOLD"
+
+
+def test_signal_log_alert_once(tmp_path, monkeypatch):
+    from beta_model import signals
+    monkeypatch.setattr(signals, "LOG_FILE", tmp_path / "log.csv")
+    monkeypatch.setattr(signals, "ALERT_FILE", tmp_path / "alert.md")
+
+    def payload(as_of, regime, ex, nxt):
+        return {"markets": {"US": {"as_of": as_of, "label": "미국", "allocation": {"regime": regime},
+                                   "executed_weight": ex, "next_weight": nxt,
+                                   "history": [{"index": 100.0, "trend": 0.1, "risk": 0.2, "target": nxt}]}}}
+
+    log, fresh = signals.update_log(payload("2024-01-02", 1, 0.9, 0.9), "t")
+    assert fresh == {"US"} and signals.build_alert(log, {}, fresh) is None      # 첫 기록: 비교 대상 없음, 매매 없음
+    log, fresh = signals.update_log(payload("2024-01-03", 3, 0.9, 0.75), "t")
+    text = signals.build_alert(log, {}, fresh)
+    assert "국면 전환" in text and "75%" in text
+    log, fresh = signals.update_log(payload("2024-01-03", 3, 0.9, 0.75), "t2")   # 같은 기준일 재실행
+    assert fresh == set() and signals.build_alert(log, {}, fresh) is None and len(log) == 2

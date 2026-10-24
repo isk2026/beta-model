@@ -22,14 +22,13 @@ import numpy as np
 import pandas as pd
 
 from . import config
-from .allocation import smooth_weights, target_stock_weight
+from .allocation import regime_series, smooth_weights, target_stock_weight
 from .config import AllocationParams, RiskParams, TrendParams
 from .data_pipeline import ROOT, MarketData, load_market_data
 from .scoring import BetaModelScoringEngine
 
 OUT_FILE = ROOT / "dashboard" / "public" / "data" / "backtest.json"
 SPLIT_DATE = "2013-01-01"           # 이전 = 표본 내(파라미터 선택), 이후 = 표본 외(검증)
-CASH_SERIES = {"US": "UST3M", "KR": "KR3M"}
 
 
 @dataclass(frozen=True)
@@ -48,51 +47,98 @@ BASELINE = ModelSpec(
 )
 
 
-def simulate(md: MarketData, market: str, spec: ModelSpec, cost_bps: float = 10.0) -> pd.DataFrame:
-    """일별 모델 수익률과 보유 그대로(Buy & Hold) 수익률."""
-    engine = BetaModelScoringEngine(md, spec.trend, spec.risk)
+def simulate(
+    md: MarketData,
+    market: str,
+    spec: ModelSpec,
+    cost_bps: float = 10.0,
+    delay: int = 0,
+    markets: dict = config.MARKETS,
+) -> pd.DataFrame:
+    """일별 모델 수익률과 보유 그대로(Buy & Hold) 수익률.
+
+    Args:
+        delay: 집행 추가 지연(거래일). 스트레스 테스트용.
+        markets: 시장 정의 (다른 나라 지수로 표본 외 검증할 때 교체).
+
+    컬럼: ret_model(비용 차감 순수익), ret_gross(비용 전), ret_bh, cash(현금 실제 수익),
+    rf(무위험 기준 = 국내 단기금리; 현금 구성을 바꿔도 샤프 기준은 고정), regime.
+    """
+    mk = markets[market]
+    engine = BetaModelScoringEngine(md, spec.trend, spec.risk, markets=markets)
     sc = engine.scores(market)
     target = pd.Series(
         [target_stock_weight(t, r, spec.alloc) for t, r in zip(sc.trend_score, sc.risk_score)], index=sc.index,
     )
     executed = smooth_weights(target, spec.alloc)          # t-1 신호 → t 집행
-    main = config.MARKETS[market]["indices"][0]
-    px = md.features[main]["close"].reindex(executed.index)
+    idx = executed.index
+    px = md.features[mk["indices"][0]]["close"].reindex(idx)
     ret = px.pct_change().fillna(0.0)
-    cash_rate = md.prices[CASH_SERIES[market]]
+
+    rf_rate = md.prices[mk.get("cash", "UST3M")]
     if market == "KR" and "CD91" in md.prices:   # ECOS 일별 CD 금리가 있으면 우선
-        cash_rate = md.prices["CD91"].combine_first(cash_rate)
-    cash = (cash_rate.reindex(executed.index).ffill() / 100 / config.TRADING_DAYS).fillna(0.0)
-    held = executed.shift(1).bfill()                        # t 집행분은 t+1 수익부터
+        rf_rate = md.prices["CD91"].combine_first(rf_rate)
+    rf = (rf_rate.reindex(idx).ffill() / 100 / config.TRADING_DAYS).fillna(0.0)
+    cash = rf
+    usd = spec.alloc.cash_usd_share if market == "KR" else 0.0
+    if usd > 0:  # 원화 투자자의 달러 현금: 미 3개월 금리 + 환율 변화
+        fx = md.prices["USDKRW"].reindex(idx).ffill().pct_change().fillna(0.0)
+        usd_ret = (1 + (md.prices["UST3M"].reindex(idx).ffill() / 100 / config.TRADING_DAYS).fillna(0.0)) * (1 + fx) - 1
+        cash = (1 - usd) * rf + usd * usd_ret
+
+    held = executed.shift(1 + delay).bfill()               # t 집행분은 t+1 수익부터
     trade = executed.diff().abs().fillna(0.0)
-    strat = held * ret + (1 - held) * cash - trade * cost_bps / 1e4
+    gross = held * ret + (1 - held) * cash
     return pd.DataFrame({
-        "price": px, "target": target.reindex(executed.index), "weight": executed,
-        "trend": sc.trend_score.reindex(executed.index), "risk": sc.risk_score.reindex(executed.index),
-        "ret_bh": ret, "ret_model": strat, "cash": cash, "trade": trade,
+        "price": px, "target": target.reindex(idx), "weight": executed,
+        "trend": sc.trend_score.reindex(idx), "risk": sc.risk_score.reindex(idx),
+        "regime": regime_series(sc.trend_score, sc.risk_score, spec.alloc).reindex(idx),
+        "ret_bh": ret, "ret_gross": gross, "ret_model": gross - trade * cost_bps / 1e4,
+        "cash": cash, "rf": rf, "trade": trade,
     })
 
 
+def _capture(r: pd.Series, bench: pd.Series, down: bool) -> float:
+    """월간 기준 하락(상승) 포착률: 벤치마크가 내린(오른) 달의 평균 수익 비율."""
+    m = (1 + r).resample("ME").prod() - 1
+    b = (1 + bench).resample("ME").prod() - 1
+    mask = b < 0 if down else b > 0
+    return float(m[mask].mean() / b[mask].mean()) if mask.any() else float("nan")
+
+
 def metrics(df: pd.DataFrame, col: str = "ret_model") -> dict:
+    """수익성(CAGR·샤프·소르티노), 리스크(MDD·하락포착·최장 미회복), 효율성(회전율·비용 전후)."""
     r = df[col]
     yrs = len(r) / config.TRADING_DAYS
     eq = (1 + r).cumprod()
-    excess = r - df["cash"]
+    excess = r - df["rf"]
+    downside = np.sqrt((np.minimum(excess, 0) ** 2).mean())
+    under = eq < eq.cummax()
+    runs = under.ne(under.shift()).cumsum()[under]
     mdd = float((eq / eq.cummax() - 1).min())
     cagr = float(eq.iloc[-1] ** (1 / yrs) - 1)
+    ann = np.sqrt(config.TRADING_DAYS)
     out = {
         "cagr": cagr,
-        "vol": float(r.std() * np.sqrt(config.TRADING_DAYS)),
-        "sharpe": float(excess.mean() / excess.std() * np.sqrt(config.TRADING_DAYS)) if excess.std() > 0 else 0.0,
+        "vol": float(r.std() * ann),
+        "sharpe": float(excess.mean() / excess.std() * ann) if excess.std() > 0 else 0.0,
+        "sortino": float(excess.mean() / downside * ann) if downside > 0 else 0.0,
         "mdd": mdd,
         "calmar": cagr / abs(mdd) if mdd < 0 else float("nan"),
+        "underwater_years": float(runs.value_counts().max() / config.TRADING_DAYS) if len(runs) else 0.0,
     }
-    if col == "ret_model":
+    if col != "ret_bh":
+        gross_eq = (1 + df["ret_gross"]).prod() if col == "ret_model" and "ret_gross" in df else eq.iloc[-1]
         out |= {
+            "down_capture": _capture(r, df["ret_bh"], down=True),
+            "up_capture": _capture(r, df["ret_bh"], down=False),
+            "cagr_gross": float(gross_eq ** (1 / yrs) - 1),
             "turnover": float(df["trade"].sum() / yrs),
             "trade_days": float((df["trade"] > 0.005).sum() / yrs),
             "avg_weight": float(df["weight"].mean()),
         }
+        if "regime" in df and df["regime"].notna().any():
+            out["regime_changes"] = float((df["regime"].diff().fillna(0) != 0).sum() / yrs)
     return out
 
 
@@ -134,7 +180,8 @@ def static_mix(df: pd.DataFrame) -> pd.DataFrame:
     w = df["weight"].mean()
     out = df.copy()
     out["weight"], out["trade"] = w, 0.0
-    out["ret_model"] = w * df["ret_bh"] + (1 - w) * df["cash"]
+    out["ret_model"] = out["ret_gross"] = w * df["ret_bh"] + (1 - w) * df["cash"]
+    out["regime"] = np.nan
     return out
 
 
@@ -231,16 +278,19 @@ def build_report(md: MarketData, specs: list[ModelSpec]) -> dict:
 
 def print_report(report: dict) -> None:
     pct = lambda x: f"{x:7.1%}" if x is not None else "    n/a"  # noqa: E731
+    num = lambda x, f="7.2f": format(x, f) if x is not None else "    n/a"  # noqa: E731
     for m, mk in report["markets"].items():
         print(f"\n=== {mk['label']} ({mk['index']}, {mk['start']}~) ===")
-        print(f"{'':16}{'구간':>6} {'CAGR':>8} {'MDD':>8} {'Sharpe':>7} {'Calmar':>7} {'회전율':>8} {'매매일':>6}")
+        print(f"{'':14}{'구간':>5} {'CAGR':>7} {'비용전':>7} {'MDD':>7} {'Sharpe':>7} {'Sortino':>7} "
+              f"{'하락포착':>7} {'상승포착':>7} {'회전율':>7} {'국면전환':>6}")
         for part, lab in [("full", "전체"), ("in_sample", "표본내"), ("out_sample", "표본외")]:
             bh = next(iter(mk["specs"].values()))[part]["bh"]
-            print(f"{'보유 그대로':14}{lab:>6} {pct(bh['cagr'])} {pct(bh['mdd'])} {bh['sharpe']:7.2f} {bh['calmar']:7.2f}")
+            print(f"{'보유 그대로':12}{lab:>5} {pct(bh['cagr'])} {'':7} {pct(bh['mdd'])} {num(bh['sharpe'])} {num(bh['sortino'])}")
             for name, ev in mk["specs"].items():
                 r = ev[part]["model"]
-                print(f"{name:14}{lab:>6} {pct(r['cagr'])} {pct(r['mdd'])} {r['sharpe']:7.2f} {r['calmar']:7.2f} "
-                      f"{r['turnover']:8.0%} {r['trade_days']:6.0f}")
+                print(f"{name:12}{lab:>5} {pct(r['cagr'])} {pct(r['cagr_gross'])} {pct(r['mdd'])} {num(r['sharpe'])} "
+                      f"{num(r['sortino'])} {pct(r['down_capture'])} {pct(r['up_capture'])} {pct(r['turnover'])} "
+                      f"{num(r.get('regime_changes'), '6.1f')}")
         print("  최악 낙폭 구간 (보유 vs 모델):")
         for e in mk["episodes"]:
             print(f"   {e['peak']} → {e['trough']}  보유 {e['bh']:7.1%}  모델 {e['model']:7.1%}  "
