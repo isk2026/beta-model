@@ -329,3 +329,26 @@ def test_sector_payload_kr_universe_skips_short_history():
     assert [x["ticker"] for x in p["tech"]] == list(KR.extra)
     assert all(np.isfinite(x["score"]) and np.isfinite(x["trend"]) for x in p["sectors"])
     assert KR.yf_map()["139260"] == "139260.KS"
+
+
+def test_sector_satellite_split():
+    """옵트인 위성 비중: f = 0.4·clip(추세,0,1), 주도 섹터에 f/3씩, 부족분은 코어에 남는다."""
+    from beta_model.sectors import satellite_split
+
+    s = satellite_split(0.5, ["XLK", "XLE", "XLV"])
+    assert s["fraction"] == pytest.approx(0.2)
+    assert all(w == pytest.approx(0.2 / 3) for w in s["legs"].values())
+    assert s["core"] + sum(s["legs"].values()) == pytest.approx(1.0)
+
+    # 주도 섹터 1개 → 나머지 2/3 몫은 코어에 남음
+    s = satellite_split(1.5, ["XLK"])
+    assert s["fraction"] == pytest.approx(0.4)          # 추세 상한 1로 clip
+    assert s["legs"] == {"XLK": pytest.approx(0.4 / 3)}
+    assert s["core"] == pytest.approx(1 - 0.4 / 3)
+
+    # 추세 ≤ 0, 주도 섹터 없음, NaN → 전부 코어
+    assert satellite_split(-0.3, ["XLK", "XLE"])["core"] == pytest.approx(1.0)
+    assert satellite_split(0.8, [])["core"] == pytest.approx(1.0)
+    assert satellite_split(float("nan"), ["XLK"])["fraction"] == 0.0
+    # 4개 이상 넘어와도 상위 3개만
+    assert len(satellite_split(1.0, ["A", "B", "C", "D"])["legs"]) == 3

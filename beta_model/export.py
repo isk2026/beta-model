@@ -18,7 +18,7 @@ from . import config
 from .allocation import REGIME_INFO, Regime, allocate, regime_series, smooth_weights, target_stock_weight
 from .data_pipeline import ROOT, MarketData, build_market_data, fetch_raw
 from .scenarios import run_scenarios
-from .sectors import fetch_sectors, sector_payload
+from .sectors import fetch_sectors, satellite_payload, sector_payload
 from .signals import build_alert, live_payload, next_weight, update_log
 from .scoring import BetaModelScoringEngine
 
@@ -118,9 +118,19 @@ def main() -> None:
     # 섹터 모니터는 참고 정보 — 실패해도 본 모델 갱신은 계속. sectors = 미국(기존 키), sectors_kr = 한국
     for key, uni in (("sectors", "US"), ("sectors_kr", "KR")):
         try:
-            payload[key] = sector_payload(fetch_sectors(use_cache=not args.refresh, universe=uni), uni)
+            spx = fetch_sectors(use_cache=not args.refresh, universe=uni)
+            payload[key] = sector_payload(spx, uni)
         except Exception as exc:  # noqa: BLE001
             logging.error("섹터 모니터(%s) 실패: %s", uni, exc)
+            continue
+        if uni != "US":
+            continue
+        try:  # 옵트인 위성 비중(검증상 근거 없음, 미국만) — 실패해도 섹터 모니터는 유지
+            us_trend = BetaModelScoringEngine(md).trend_score("US")["trend_score"]
+            payload[key]["satellite"] = satellite_payload(
+                payload[key], spx, payload["markets"]["US"]["allocation"]["trend_score"], us_trend)
+        except Exception as exc:  # noqa: BLE001
+            logging.error("섹터 위성 비중 실패: %s", exc)
     log, fresh = update_log(payload, run_at=meta.get("fetched_at", ""))
     payload["signal_log"] = live_payload(log)
     alert = build_alert(log, {m: d["label"] for m, d in payload["markets"].items()}, fresh)

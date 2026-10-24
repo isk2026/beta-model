@@ -34,6 +34,7 @@ from .scoring import BetaModelScoringEngine
 
 log = logging.getLogger(__name__)
 TOP_N = 3
+SAT_MAX = 0.4   # 옵트인 위성 비중: 주식의 최대 40%를 주도 섹터에 (추세 점수 비례)
 
 
 @dataclass(frozen=True)
@@ -188,6 +189,66 @@ def backtest_rotation(px: pd.DataFrame, trend: pd.Series, n: int = 3, max_sat: f
     held = pd.DataFrame(rows).T.reindex(px.index).ffill().shift(2).dropna()
     r = (held * ret.reindex(held.index)[held.columns].fillna(0)).sum(axis=1)
     return r - held.diff().abs().sum(axis=1).fillna(0) * cost_bps / 1e4
+
+
+# ---------------------------------------------------------------------------
+# 옵트인 '주도 섹터 위성 비중' (대시보드 토글 — 검증상 근거 없음, 기본 꺼짐)
+# ---------------------------------------------------------------------------
+def satellite_split(trend: float, leaders: list[str], max_sat: float = SAT_MAX, n: int = TOP_N) -> dict:
+    """주식 비중 내부 분할(합계 1). f = max_sat·clip(추세,0,1), 주도 섹터 n개에 f/n씩.
+
+    주도 섹터가 n개 미만이면 남는 몫은 코어(SPY/지수 ETF)에 그대로 둔다. 주식/현금 비중은 바꾸지 않는다.
+    """
+    f = max_sat * float(np.clip(trend if trend is not None and np.isfinite(trend) else 0.0, 0, 1))
+    legs = {t: f / n for t in list(leaders)[:n]}
+    return {"fraction": f, "core": 1 - sum(legs.values()), "legs": legs}
+
+
+def _perf(r: pd.Series) -> dict:
+    """연복리·샤프(무위험 0)·최대낙폭."""
+    eq = (1 + r).cumprod()
+    return {
+        "cagr": round(float(eq.iloc[-1] ** (252 / len(r)) - 1), 4),
+        "sharpe": round(float(r.mean() / r.std() * 252 ** 0.5), 2) if r.std() > 0 else 0.0,
+        "mdd": round(float((eq / eq.cummax() - 1).min()), 4),
+    }
+
+
+def rotation_summary(px: pd.DataFrame, trend: pd.Series, split: str = "2012") -> dict:
+    """SPY vs 추세 비례(0~40%) 상위 3개 섹터 규칙 — 표본 내(~2012) / 표본 외(2013~)."""
+    trend = trend.reindex(px.index).ffill()
+    rule = backtest_rotation(px, trend, n=TOP_N, max_sat=SAT_MAX, mode="trend")
+    spy = px[BENCH].ffill().pct_change(fill_method=None).loc[rule.index]
+    nxt = str(int(split) + 1)
+    return {
+        "rule": f"주식 중 {SAT_MAX:.0%}×clip(미국 추세,0,1)을 상위 {TOP_N}개 섹터 균등, 월 1회, 비용 10bp",
+        "in_sample": {"period": f"{rule.index[0].year}~{split}",
+                      "spy": _perf(spy[:split]), "rule": _perf(rule[:split])},
+        "out_of_sample": {"period": f"{nxt}~{rule.index[-1].year}",
+                          "spy": _perf(spy[nxt:]), "rule": _perf(rule[nxt:])},
+    }
+
+
+def satellite_payload(sectors: dict, px: pd.DataFrame, us_trend_now: float,
+                      us_trend_hist: pd.Series | None = None) -> dict:
+    """대시보드 옵트인 토글용. 분할은 주식 비중 대비 비율(포트 비중 = 주식 비중 × 값)."""
+    sp = satellite_split(us_trend_now, sectors["leaders"])
+    names = {x["ticker"]: x["name"] for x in sectors["sectors"]}
+    out = {
+        "enabled_by_default": False,
+        "validated": False,
+        "max_fraction": SAT_MAX, "n": TOP_N,
+        "us_trend": round(float(us_trend_now), 4),
+        "fraction": round(sp["fraction"], 4),
+        "core": round(sp["core"], 4),
+        "legs": [{"ticker": t, "name": names.get(t, t), "weight": round(w, 4)} for t, w in sp["legs"].items()],
+    }
+    if us_trend_hist is not None:
+        try:
+            out["backtest"] = rotation_summary(px, us_trend_hist)
+        except Exception as exc:  # noqa: BLE001 — 근거 수치가 없어도 분할 표시는 유지
+            log.warning("섹터 위성 백테스트 실패: %s", exc)
+    return out
 
 
 def main() -> None:

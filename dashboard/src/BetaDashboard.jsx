@@ -10,7 +10,7 @@ import {
 import { allocate, DEFAULT_PARAMS, FALLBACK_REGIMES, rebalance } from './model.js'
 import BacktestPanel from './BacktestPanel.jsx'
 import ScenarioPanel from './ScenarioPanel.jsx'
-import SectorPanel from './SectorPanel.jsx'
+import SectorPanel, { satelliteLines, useSatelliteToggle } from './SectorPanel.jsx'
 import ValidationPanel from './ValidationPanel.jsx'
 import LivePanel from './LivePanel.jsx'
 
@@ -310,7 +310,7 @@ function HistoryCharts({ history, label }) {
 }
 
 // ---------------------------------------------------------------- calculator
-function RebalanceCalculator({ targetWeight, params, usdShare = 0 }) {
+function RebalanceCalculator({ targetWeight, params, usdShare = 0, satLines = [] }) {
   const [currency, setCurrency] = useState('KRW')
   const [total, setTotal] = useState('100000000')
   const [current, setCurrent] = useState('90000000')
@@ -387,6 +387,20 @@ function RebalanceCalculator({ targetWeight, params, usdShare = 0 }) {
       ) : (
         <p className="mt-4 text-sm text-slate-500">총 자산을 입력하세요.</p>
       )}
+      {res && satLines.length > 0 && (
+        <div className="mt-3 rounded-xl border border-amber-500/30 bg-ink/70 p-3">
+          <p className="text-xs text-slate-400">목표 주식 내 섹터 위성 분할 <span className="text-rose-300">(검증상 근거 없음)</span></p>
+          <ul className="mt-1 space-y-0.5 text-[11px]">
+            {satLines.map((l) => (
+              <li key={l.key} className="flex min-w-0 items-center gap-2">
+                <span className={`min-w-0 flex-1 truncate ${l.core ? 'text-slate-300' : 'text-amber-200'}`}>{l.label}</span>
+                <span className="num shrink-0 font-mono text-slate-500">{pct(l.weight, 1)}</span>
+                <span className="num shrink-0 font-mono text-slate-100">{fmt.format(num(total) * l.weight)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </Panel>
   )
 }
@@ -459,6 +473,7 @@ export default function BetaDashboard() {
   const [trend, setTrend] = useState(0.5)
   const [risk, setRisk] = useState(0.3)
   const [activePreset, setActivePreset] = useState(null)
+  const [satOn, setSatOn] = useSatelliteToggle()
 
   const params = data?.params ?? DEFAULT_PARAMS
   const usdShare = market === 'KR' ? (params.cash_usd_share ?? 0) : 0
@@ -485,6 +500,8 @@ export default function BetaDashboard() {
   const regime = isLive && m && !customW ? m.allocation.regime : a.regime
   const reg = regimes[regime]
   const rs = REGIME_STYLE[regime]
+  // 옵트인 섹터 위성: 주식 비중(a.stock) 내부 분할만 표시 — 배분 계산에는 영향 없음
+  const satLines = satOn && market !== 'KR' ? satelliteLines(data?.sectors?.satellite, a.stock, market) : []
 
   const applyPreset = (p) => { setTrend(p.trend); setRisk(p.risk); setActivePreset(p.id) }
   const resetLive = () => { if (live) { setTrend(live.trend); setRisk(live.risk); setActivePreset(null) } }
@@ -713,13 +730,13 @@ export default function BetaDashboard() {
 
         {m && <LivePanel log={data?.signal_log} market={market} label={m.label} />}
         {m && <ScenarioPanel scenarios={data?.scenarios} market={market} label={m.label} />}
-        <SectorPanel sectors={market === 'KR' ? data?.sectors_kr : data?.sectors} />
+        <SectorPanel sectors={market === 'KR' ? data?.sectors_kr : data?.sectors} market={market} stock={a.stock} satOn={satOn} setSatOn={setSatOn} />
         <BacktestPanel market={market} />
         <ValidationPanel />
 
         {/* Row 4: calculator + principles */}
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <div className="min-w-0 lg:col-span-2"><RebalanceCalculator targetWeight={a.stock} params={params} usdShare={usdShare} /></div>
+          <div className="min-w-0 lg:col-span-2"><RebalanceCalculator targetWeight={a.stock} params={params} usdShare={usdShare} satLines={satLines} /></div>
           <Panel title="계좌 운용 4원칙" icon={ShieldCheck}>
             <ul className="space-y-3 text-sm">
               {[
