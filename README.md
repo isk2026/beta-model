@@ -47,7 +47,13 @@ npm run dev                             # http://localhost:5173
   백테스트가 아닌 **실제로 냈던 신호**의 기록 → 대시보드 '실전 신호 기록' 패널.
 - **국면이 바뀌었거나 다음 거래일 매매가 필요하면** GitHub Issue가 생성된다.
   저장소 우상단 *Watch → Custom → Issues*를 켜 두면 메일·GitHub 모바일 앱 푸시로 받는다.
-- 텔레그램(선택): 봇 토큰·채팅 ID를 `gh secret set TELEGRAM_BOT_TOKEN`, `gh secret set TELEGRAM_CHAT_ID`로 등록하면 같은 내용을 보낸다.
+- 텔레그램(선택): 봇 토큰·채팅 ID를 `gh secret set TELEGRAM_BOT_TOKEN`, `gh secret set TELEGRAM_CHAT_ID`로 등록하면 같은 내용을 HTML 서식(굵게·링크)으로 보낸다
+  (`beta_model/notify.py` — 시크릿이 없으면 건너뛰고, 실패해도 워크플로는 계속되며 오류 메시지에서 토큰을 가린다).
+  - 알림 내용: 시장별 국면(전환 시 이전 → 새 국면), 다음 거래일 매매(일괄 줄이기 / 분할 늘리기), 추세·위험·목표.
+    미국·미국(기술)은 주도 섹터와 직전 기준일 대비 변화도 붙는다 (`data/sector_leaders.json`에 기준일별 기록).
+  - **주간 요약**(텔레그램 전용, Issue 없음): 일요일 08:00 KST 실행에서 시장별 국면·비중·추세/위험,
+    그 주의 국면 전환·매매, 주도 섹터, 대시보드 링크. 수동 전송: *Run workflow* → `weekly_summary` 체크.
+    미리보기: `python -m beta_model.notify weekly --dry-run`.
 
 ## 원래 프롬프트 대비 변경점
 

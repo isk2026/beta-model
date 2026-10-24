@@ -352,3 +352,157 @@ def test_sector_satellite_split():
     assert satellite_split(float("nan"), ["XLK"])["fraction"] == 0.0
     # 4개 이상 넘어와도 상위 3개만
     assert len(satellite_split(1.0, ["A", "B", "C", "D"])["legs"]) == 3
+
+
+# ---------------------------------------------------- notifications (no network)
+def _sectors(as_of="2024-01-03", leaders=("XLK", "XLU")):
+    return {"as_of": as_of, "leaders": list(leaders),
+            "sectors": [{"ticker": "XLK", "name": "기술", "rank": 1}, {"ticker": "XLU", "name": "유틸리티", "rank": 2},
+                        {"ticker": "XLE", "name": "에너지", "rank": 3}],
+            "tech": [{"ticker": "QQQ", "name": "나스닥100", "trend": 0.3, "rel_6m": 0.05},
+                     {"ticker": "SOXX", "name": "반도체", "trend": -0.2, "rel_6m": -0.1}]}
+
+
+def _log_rows(rows):
+    cols = ["as_of", "market", "close", "trend", "risk", "regime", "target", "executed", "next_weight", "action", "run_at"]
+    return pd.DataFrame([dict(zip(cols, r)) for r in rows])
+
+
+def test_alert_markdown_and_telegram_html(tmp_path, monkeypatch):
+    from beta_model import notify, signals
+    monkeypatch.setattr(signals, "ALERT_FILE", tmp_path / "alert.md")
+    log = _log_rows([
+        ("2024-01-02", "US_TECH", 100, 0.2, 0.2, 1, 0.9, 0.9, 0.9, "HOLD", "t"),
+        ("2024-01-03", "US_TECH", 99, -0.1, 0.3, 3, 0.76, 0.80, 0.76, "SELL", "t"),
+        ("2024-01-02", "KR", 100, 0.2, 0.2, 1, 0.9, 0.8, 0.8, "HOLD", "t"),
+        ("2024-01-03", "KR", 101, 0.2, 0.2, 1, 0.9, 0.8, 0.85, "BUY", "t"),
+    ])
+    leaders = notify.leaders_diff([{"as_of": "2024-01-02", "leaders": ["XLK", "XLE"]},
+                                   {"as_of": "2024-01-03", "leaders": ["XLK", "XLU"]}], "2024-01-03")
+    md = signals.build_alert(log, {"US_TECH": "미국(기술)", "KR": "한국"}, {"US_TECH", "KR"}, _sectors(), leaders)
+    tg = (tmp_path / "alert_telegram.html").read_text(encoding="utf-8")
+    assert "**3 하락 방어**" in md and "### 미국(기술)" in md and "<b>" not in md
+    assert "국면 전환 1 상승 따라가기 → <b>3 하락 방어</b>" in tg and "**" not in tg and "###" not in tg
+    assert "<b>일괄 줄이기</b>" in tg and "<b>분할 늘리기</b>" in tg and "80% → <b>76%</b>" in tg
+    assert "주도 섹터: XLK 기술, XLU 유틸리티" in tg and "신규 XLU 유틸리티" in tg and "이탈 XLE 에너지" in tg
+    assert "SOXX 추세 -0.20" in tg and "XLK 순위 1/3" in tg
+    kr = tg.split("<b>한국")[1]
+    assert "주도 섹터" not in kr                                        # 한국에는 미국 섹터를 붙이지 않음
+    assert '<a href="https://isk2026.github.io/beta-model/">' in tg
+    assert signals.build_alert(log, {}, set()) is None
+    assert not (tmp_path / "alert.md").exists() and not (tmp_path / "alert_telegram.html").exists()
+
+
+def test_html_escaping():
+    from beta_model.notify import HTML, MD
+    assert HTML.b("a<b>&c") == "<b>a&lt;b&gt;&amp;c</b>" and HTML.t("x<y") == "x&lt;y"
+    assert MD.t("x<y") == "x<y" and MD.b("z") == "**z**"
+
+
+def test_update_leaders_tracks_previous_as_of(tmp_path):
+    from beta_model.notify import update_leaders
+    p = tmp_path / "leaders.json"
+    assert update_leaders(None, p) is None and not p.exists()
+    first = update_leaders(_sectors("2024-01-02", ["XLK", "XLE"]), p)
+    assert first["prev_leaders"] is None and first["added"] == []
+    d = update_leaders(_sectors("2024-01-03", ["XLK", "XLU"]), p)
+    assert d["added"] == ["XLU"] and d["removed"] == ["XLE"] and d["prev_as_of"] == "2024-01-02"
+    again = update_leaders(_sectors("2024-01-03", ["XLK", "XLU"]), p)   # 같은 기준일 재실행: 비교 대상 유지
+    assert again["added"] == ["XLU"] and len(again["history"]) == 2
+
+
+def test_weekly_summary():
+    from datetime import date
+    from beta_model.notify import build_weekly
+    log = _log_rows([
+        ("2024-01-01", "US", 100, 0.3, 0.2, 1, 0.9, 0.9, 0.9, "HOLD", "t"),     # 주 시작일
+        ("2023-12-29", "US", 101, 0.3, 0.2, 1, 0.9, 0.9, 0.9, "HOLD", "t"),     # 주 이전 (비교 기준)
+        ("2024-01-03", "US", 99, 0.1, 0.5, 2, 0.7, 0.9, 0.7, "SELL", "t"),
+        ("2024-01-04", "US", 98, 0.1, 0.5, 2, 0.7, 0.7, 0.7, "HOLD", "t"),
+        ("2024-01-04", "KR", 98, 0.1, 0.2, 1, 0.9, 0.9, 0.9, "HOLD", "t"),
+    ])
+
+    def mk(label, r, ex, nx):
+        return {"label": label, "as_of": "2024-01-04", "executed_weight": ex, "next_weight": nx,
+                "allocation": {"regime": r, "trend_score": 0.1, "risk_score": 0.5, "stock_weight": nx}}
+    payload = {"markets": {"US": mk("미국", 2, 0.7, 0.7), "KR": mk("한국", 1, 0.9, 0.9)},
+               "sectors": _sectors("2024-01-05", ["XLK", "XLU"])}
+    hist = [{"as_of": "2023-12-29", "leaders": ["XLK", "XLE"]}, {"as_of": "2024-01-05", "leaders": ["XLK", "XLU"]}]
+    text = build_weekly(payload, log, date(2024, 1, 7), hist)
+    assert "Beta Model 주간 요약 (01/01 ~ 01/07)" in text
+    us, kr = text.split("<b>한국")
+    assert "01/03 1 상승 따라가기 → 2 미리 줄이기" in us and "01/03 90% → 70% 일괄 줄이기" in us
+    assert us.count("→") == 2                                             # 주 이전 행은 이벤트로 세지 않음
+    assert "주도 섹터: XLK 기술" in us and "이번 주 국면 전환·매매 없음" in kr
+    assert "주도 섹터 주간 변화 (2023-12-29 대비): 신규 XLU 유틸리티 / 이탈 XLE 에너지" in text
+    assert "https://isk2026.github.io/beta-model/" in text and "**" not in text
+
+
+def test_split_message():
+    from beta_model.notify import split_message
+    text = "\n\n".join(["a" * 30] * 10)
+    parts = split_message(text, limit=100)
+    assert all(len(p) <= 100 for p in parts) and "\n\n".join(parts) == text
+    assert all(len(p) <= 50 for p in split_message("x" * 40 + "\n" + "y" * 40 + "\n" + "z" * 40, limit=50))
+
+
+class _Resp:
+    def __init__(self, body: bytes):
+        self.body = body
+
+    def read(self):
+        return self.body
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+
+def test_send_telegram_noop_without_secrets(monkeypatch):
+    from beta_model.notify import send_telegram
+    monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
+    monkeypatch.delenv("TELEGRAM_CHAT_ID", raising=False)
+
+    def boom(*a, **k):
+        raise AssertionError("network must not be touched")
+    assert send_telegram("hi", opener=boom) is False
+    assert send_telegram("hi", token="123:abc", chat_id="", opener=boom) is False
+
+
+def test_send_telegram_success_and_redacted_errors(capsys):
+    import urllib.error
+    import urllib.parse
+    from beta_model.notify import redact, send_telegram
+    token = "123456:SECRET-tok_en"
+    sent = []
+
+    def ok(req, timeout):
+        sent.append(urllib.parse.parse_qs(req.data.decode()))
+        return _Resp(b'{"ok": true}')
+    assert send_telegram("<b>hi</b>", token=token, chat_id="42", opener=ok) is True
+    assert sent[0]["parse_mode"] == ["HTML"] and sent[0]["text"] == ["<b>hi</b>"] and sent[0]["chat_id"] == ["42"]
+
+    def fail(req, timeout):
+        raise urllib.error.URLError(f"cannot reach {req.full_url}")
+    assert send_telegram("hi", token=token, chat_id="42", opener=fail) is False
+
+    def bad(req, timeout):
+        return _Resp(f'{{"ok": false, "description": "Unauthorized bot{token}"}}'.encode())
+    assert send_telegram("hi", token=token, chat_id="42", opener=bad) is False
+    out = capsys.readouterr()
+    assert "SECRET" not in out.out + out.err and out.err.count("실패") == 2
+    assert redact("https://api.telegram.org/bot999:xyz/sendMessage", None) == "https://api.telegram.org/bot***/sendMessage"
+
+
+def test_notify_cli_never_fails(tmp_path, monkeypatch):
+    from beta_model import notify
+    monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
+    monkeypatch.delenv("TELEGRAM_CHAT_ID", raising=False)
+    assert notify.main(["send", str(tmp_path / "missing.html")]) == 0
+
+    def broken():
+        raise RuntimeError("boom")
+    monkeypatch.setattr(notify, "load_weekly_inputs", broken)
+    assert notify.main(["weekly"]) == 0

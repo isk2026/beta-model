@@ -19,6 +19,7 @@ from .allocation import REGIME_INFO, Regime, allocate, regime_series, smooth_wei
 from .data_pipeline import ROOT, MarketData, build_market_data, fetch_raw
 from .scenarios import run_scenarios
 from .sectors import fetch_sectors, satellite_payload, sector_payload
+from .notify import update_leaders
 from .signals import build_alert, live_payload, next_weight, update_log
 from .scoring import BetaModelScoringEngine
 
@@ -133,7 +134,13 @@ def main() -> None:
             logging.error("섹터 위성 비중 실패: %s", exc)
     log, fresh = update_log(payload, run_at=meta.get("fetched_at", ""))
     payload["signal_log"] = live_payload(log)
-    alert = build_alert(log, {m: d["label"] for m, d in payload["markets"].items()}, fresh)
+    leaders = None
+    try:  # 주도 섹터 변화 추적 (data/sector_leaders.json) — 참고 정보
+        leaders = update_leaders(payload.get("sectors"))
+    except Exception as exc:  # noqa: BLE001
+        logging.error("주도 섹터 기록 실패: %s", exc)
+    alert = build_alert(log, {m: d["label"] for m, d in payload["markets"].items()}, fresh,
+                        payload.get("sectors"), leaders)
     if alert:
         print("알림:\n" + alert)
     args.out.parent.mkdir(parents=True, exist_ok=True)

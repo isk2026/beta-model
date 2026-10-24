@@ -4,14 +4,15 @@
 나중에 '그때 모델이 실제로 뭐라고 했나'를 백테스트가 아닌 기록으로 검증하기 위함.
 
 알림 조건 — 국면이 바뀌었거나 다음 거래일에 매매가 필요할 때 data/alert.md 를 쓴다.
-워크플로가 이 파일을 GitHub Issue(·텔레그램)로 보낸다.
+워크플로가 이 파일을 GitHub Issue로, data/alert_telegram.html 을 텔레그램으로 보낸다 (notify.py).
 """
 
 from __future__ import annotations
 
 import pandas as pd
 
-from .allocation import REGIME_INFO, Regime, smooth_weights
+from . import notify
+from .allocation import smooth_weights
 from .data_pipeline import ROOT
 
 LOG_FILE = ROOT / "data" / "signal_log.csv"
@@ -54,31 +55,23 @@ def update_log(payload: dict, run_at: str) -> tuple[pd.DataFrame, set[str]]:
     return out, fresh
 
 
-def build_alert(log: pd.DataFrame, labels: dict[str, str], markets: set[str]) -> str | None:
-    """`markets`의 최신 행을 직전 행과 비교. 알릴 것이 없으면 None (alert.md 삭제)."""
-    lines = []
-    for m, g in log.groupby("market"):
-        if m not in markets:
-            continue
-        g = g.sort_values("as_of")
-        cur = g.iloc[-1]
-        prev = g.iloc[-2] if len(g) > 1 else None
-        msgs = []
-        if prev is not None and int(prev.regime) != int(cur.regime):
-            msgs.append(f"국면 전환 {int(prev.regime)} {REGIME_INFO[Regime(int(prev.regime))]['name']} → "
-                        f"**{int(cur.regime)} {REGIME_INFO[Regime(int(cur.regime))]['name']}**")
-        if cur.action != "HOLD":
-            verb = "줄이기(일괄)" if cur.action == "SELL" else "늘리기(분할)"
-            msgs.append(f"다음 거래일 주식 {cur.executed:.0%} → **{cur.next_weight:.0%}** {verb}")
-        if msgs:
-            lines.append(f"### {labels.get(m, m)} ({cur.as_of} 종가 기준)\n" + "\n".join(f"- {s}" for s in msgs)
-                         + f"\n- 추세 {cur.trend:+.2f} · 위험 {cur.risk:.2f} · 목표 {cur.target:.0%}")
-    if not lines:
-        if ALERT_FILE.exists():
-            ALERT_FILE.unlink()
+def build_alert(log: pd.DataFrame, labels: dict[str, str], markets: set[str],
+                sectors: dict | None = None, leaders: dict | None = None) -> str | None:
+    """`markets`의 최신 행을 직전 행과 비교. 알릴 것이 없으면 None (알림 파일 삭제).
+
+    GitHub Issue용 마크다운(alert.md)과 텔레그램용 HTML(alert_telegram.html)을 함께 쓰고 마크다운을 돌려준다.
+    sectors/leaders(선택)가 있으면 미국·미국(기술)에 주도 섹터와 그 변화를 덧붙인다.
+    """
+    sections = notify.alert_sections(log, labels, markets)
+    tg_file = ALERT_FILE.with_name(notify.TELEGRAM_FILE.name)
+    if not sections:
+        for f in (ALERT_FILE, tg_file):
+            if f.exists():
+                f.unlink()
         return None
-    text = "\n\n".join(lines) + "\n\n대시보드: https://isk2026.github.io/beta-model/\n\n_투자 참고용 신호이며 투자 권유가 아닙니다._\n"
+    text = notify.render_alert(notify.MD, sections, sectors, leaders)
     ALERT_FILE.write_text(text, encoding="utf-8")
+    tg_file.write_text(notify.render_alert(notify.HTML, sections, sectors, leaders), encoding="utf-8")
     return text
 
 
