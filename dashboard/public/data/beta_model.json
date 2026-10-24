@@ -1,6 +1,6 @@
 {
  "meta": {
-  "fetched_at": "2026-10-24T20:52+09:00",
+  "fetched_at": "2026-10-24T20:57+09:00",
   "vkospi_source": "proxy",
   "tickers": {
    "SPX": "^GSPC",
@@ -12,7 +12,11 @@
    "USDKRW": "KRW=X",
    "DXY": "DX-Y.NYB",
    "KOSPI200": "KS200",
-   "HY_SPREAD": "FRED:BAMLH0A0HYM2"
+   "BAA_SPREAD": "FRED:BAA10Y",
+   "HY_SPREAD": "FRED:BAMLH0A0HYM2",
+   "USDKRW_FRED": "FRED:DEXKOUS",
+   "UST3M": "FRED:DTB3",
+   "KR3M": "FRED:IR3TIB01KRM156N"
   }
  },
  "params": {
@@ -24,7 +28,8 @@
   "trend_threshold": 0.0,
   "risk_threshold": 0.5,
   "max_daily_increase": 0.02,
-  "rebalance_band": 0.03
+  "rebalance_band": 0.03,
+  "band_in_execution": true
  },
  "regimes": {
   "1": {
@@ -85,6 +90,10 @@
    "value": 101.81,
    "chg_10d": -0.4
   },
+  "BAA_SPREAD": {
+   "value": 1.46,
+   "chg_10d": 0.01
+  },
   "HY_SPREAD": {
    "value": 3.4,
    "chg_10d": 0.29
@@ -95,18 +104,18 @@
    "label": "미국",
    "as_of": "2026-10-23",
    "allocation": {
-    "trend_score": 0.3524818424192908,
-    "risk_score": 0.35701731561851663,
-    "base_weight": 0.9028722763628936,
-    "risk_deduction": 0.07140346312370333,
-    "stock_weight": 0.8314688132391903,
-    "cash_weight": 0.1685311867608097,
+    "trend_score": 0.3547413200844276,
+    "risk_score": 0.21535064895184997,
+    "base_weight": 0.9032111980126641,
+    "risk_deduction": 0.04307012979037,
+    "stock_weight": 0.8601410682222942,
+    "cash_weight": 0.1398589317777058,
     "regime": 1,
     "regime_name": "상승 따라가기"
    },
-   "executed_weight": 0.8349,
+   "executed_weight": 0.8695,
    "trend_components": {
-    "alignment": 0.25,
+    "alignment": -0.0175,
     "drawdown": 0.5772,
     "momentum": 0.3327
    },
@@ -115,7 +124,7 @@
     "realized_vol": 0.1873,
     "rates": 0.0,
     "fx": 0.0,
-    "credit": 0.5667
+    "credit": 0.0
    },
    "risk_weights": {
     "vol_index": 0.35,
@@ -133,7 +142,7 @@
      "drawdown": -0.025,
      "vol_20d": 0.0992,
      "roc_3m": 0.0284,
-     "trend_score": 0.5067
+     "trend_score": 0.4026
     },
     "NDX": {
      "close": 25955.34,
@@ -143,2025 +152,2025 @@
      "drawdown": -0.0596,
      "vol_20d": 0.1731,
      "roc_3m": 0.041,
-     "trend_score": 0.1983
+     "trend_score": 0.3069
     }
    },
    "history": [
     {
      "date": "2025-10-31",
      "index": 6840.2,
-     "trend": 0.9187,
-     "risk": 0.2939,
-     "target": 0.929,
-     "executed": 0.9329
+     "trend": 0.7638,
+     "risk": 0.3068,
+     "target": 0.9032,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-03",
      "index": 6851.97,
-     "trend": 0.9352,
-     "risk": 0.2948,
-     "target": 0.9313,
-     "executed": 0.929
+     "trend": 0.7693,
+     "risk": 0.3098,
+     "target": 0.9034,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-04",
      "index": 6771.55,
-     "trend": 0.8665,
-     "risk": 0.3679,
-     "target": 0.9064,
-     "executed": 0.9313
+     "trend": 0.7525,
+     "risk": 0.3687,
+     "target": 0.8891,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-05",
      "index": 6796.29,
-     "trend": 0.8843,
-     "risk": 0.3581,
-     "target": 0.911,
-     "executed": 0.9064
+     "trend": 0.7442,
+     "risk": 0.367,
+     "target": 0.8882,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-06",
      "index": 6720.32,
-     "trend": 0.5606,
-     "risk": 0.3717,
-     "target": 0.8598,
-     "executed": 0.911
+     "trend": 0.7141,
+     "risk": 0.3722,
+     "target": 0.8827,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-07",
      "index": 6728.8,
-     "trend": 0.564,
-     "risk": 0.3257,
-     "target": 0.8695,
-     "executed": 0.8598
+     "trend": 0.6892,
+     "risk": 0.3337,
+     "target": 0.8867,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-10",
      "index": 6832.43,
-     "trend": 0.8705,
-     "risk": 0.2818,
-     "target": 0.9242,
-     "executed": 0.8695
+     "trend": 0.69,
+     "risk": 0.3068,
+     "target": 0.8921,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-11",
      "index": 6846.61,
-     "trend": 0.866,
-     "risk": 0.3003,
-     "target": 0.9198,
-     "executed": 0.8895
+     "trend": 0.6889,
+     "risk": 0.325,
+     "target": 0.8883,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-12",
      "index": 6850.92,
-     "trend": 0.862,
-     "risk": 0.279,
-     "target": 0.9235,
-     "executed": 0.9095
+     "trend": 0.6858,
+     "risk": 0.311,
+     "target": 0.8907,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-13",
      "index": 6737.49,
-     "trend": 0.5328,
-     "risk": 0.3885,
-     "target": 0.8522,
-     "executed": 0.9235
+     "trend": 0.6557,
+     "risk": 0.4157,
+     "target": 0.8652,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-14",
      "index": 6734.11,
-     "trend": 0.5343,
-     "risk": 0.3892,
-     "target": 0.8523,
-     "executed": 0.8522
+     "trend": 0.6308,
+     "risk": 0.4203,
+     "target": 0.8606,
+     "executed": 0.8947
     },
     {
      "date": "2025-11-17",
      "index": 6672.41,
-     "trend": 0.5151,
-     "risk": 0.3757,
-     "target": 0.8521,
-     "executed": 0.8523
+     "trend": 0.6007,
+     "risk": 0.3946,
+     "target": 0.8612,
+     "executed": 0.8606
     },
     {
      "date": "2025-11-18",
      "index": 6617.32,
-     "trend": 0.4791,
-     "risk": 0.4565,
-     "target": 0.8306,
-     "executed": 0.8521
+     "trend": 0.5625,
+     "risk": 0.4692,
+     "target": 0.8405,
+     "executed": 0.8606
     },
     {
      "date": "2025-11-19",
      "index": 6642.16,
-     "trend": 0.5075,
-     "risk": 0.3863,
-     "target": 0.8489,
-     "executed": 0.8306
+     "trend": 0.5387,
+     "risk": 0.4049,
+     "target": 0.8498,
+     "executed": 0.8606
     },
     {
      "date": "2025-11-20",
      "index": 6538.76,
-     "trend": 0.3849,
-     "risk": 0.4549,
-     "target": 0.8167,
-     "executed": 0.8489
+     "trend": 0.4835,
+     "risk": 0.4773,
+     "target": 0.8271,
+     "executed": 0.8606
     },
     {
      "date": "2025-11-21",
      "index": 6602.99,
-     "trend": 0.4367,
-     "risk": 0.4202,
-     "target": 0.8315,
-     "executed": 0.8167
+     "trend": 0.4534,
+     "risk": 0.4464,
+     "target": 0.8287,
+     "executed": 0.8271
     },
     {
      "date": "2025-11-24",
      "index": 6705.12,
-     "trend": 0.5224,
-     "risk": 0.3468,
-     "target": 0.859,
-     "executed": 0.8315
+     "trend": 0.4583,
+     "risk": 0.373,
+     "target": 0.8441,
+     "executed": 0.8271
     },
     {
      "date": "2025-11-25",
      "index": 6765.88,
-     "trend": 0.6779,
-     "risk": 0.313,
-     "target": 0.8891,
-     "executed": 0.8515
+     "trend": 0.4729,
+     "risk": 0.3451,
+     "target": 0.8519,
+     "executed": 0.8271
     },
     {
      "date": "2025-11-26",
      "index": 6812.61,
-     "trend": 0.8278,
-     "risk": 0.2324,
-     "target": 0.9277,
-     "executed": 0.8715
+     "trend": 0.4939,
+     "risk": 0.2729,
+     "target": 0.8695,
+     "executed": 0.8271
     },
     {
      "date": "2025-11-27",
      "index": 6812.61,
-     "trend": 0.8278,
-     "risk": 0.2227,
-     "target": 0.9296,
-     "executed": 0.8915
+     "trend": 0.5111,
+     "risk": 0.2629,
+     "target": 0.8741,
+     "executed": 0.8471
     },
     {
      "date": "2025-11-28",
      "index": 6849.09,
-     "trend": 0.8677,
-     "risk": 0.1802,
-     "target": 0.9441,
-     "executed": 0.9115
+     "trend": 0.5355,
+     "risk": 0.22,
+     "target": 0.8863,
+     "executed": 0.8671
     },
     {
      "date": "2025-12-01",
      "index": 6812.63,
-     "trend": 0.8608,
-     "risk": 0.2649,
-     "target": 0.9261,
-     "executed": 0.9315
+     "trend": 0.5505,
+     "risk": 0.3043,
+     "target": 0.8717,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-02",
      "index": 6829.37,
-     "trend": 0.8657,
-     "risk": 0.2054,
-     "target": 0.9388,
-     "executed": 0.9261
+     "trend": 0.5655,
+     "risk": 0.2362,
+     "target": 0.8876,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-03",
      "index": 6849.72,
-     "trend": 0.8607,
-     "risk": 0.1856,
-     "target": 0.942,
-     "executed": 0.9388
+     "trend": 0.5776,
+     "risk": 0.2201,
+     "target": 0.8926,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-04",
      "index": 6857.12,
-     "trend": 0.8707,
-     "risk": 0.1408,
-     "target": 0.9524,
-     "executed": 0.942
+     "trend": 0.5894,
+     "risk": 0.1708,
+     "target": 0.9043,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-05",
      "index": 6870.4,
-     "trend": 0.8757,
-     "risk": 0.1576,
-     "target": 0.9498,
-     "executed": 0.9524
+     "trend": 0.6008,
+     "risk": 0.1788,
+     "target": 0.9044,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-08",
      "index": 6846.51,
-     "trend": 0.8597,
-     "risk": 0.2227,
-     "target": 0.9344,
-     "executed": 0.9498
+     "trend": 0.605,
+     "risk": 0.2392,
+     "target": 0.8929,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-09",
      "index": 6840.51,
-     "trend": 0.857,
-     "risk": 0.2421,
-     "target": 0.9301,
-     "executed": 0.9344
+     "trend": 0.6073,
+     "risk": 0.2581,
+     "target": 0.8895,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-10",
      "index": 6886.68,
-     "trend": 0.8645,
-     "risk": 0.1923,
-     "target": 0.9412,
-     "executed": 0.9301
+     "trend": 0.6129,
+     "risk": 0.2208,
+     "target": 0.8978,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-11",
      "index": 6901.0,
-     "trend": 0.8588,
-     "risk": 0.1289,
-     "target": 0.953,
-     "executed": 0.9412
+     "trend": 0.6157,
+     "risk": 0.144,
+     "target": 0.9136,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-12",
      "index": 6827.41,
-     "trend": 0.7808,
-     "risk": 0.2046,
-     "target": 0.9262,
-     "executed": 0.953
+     "trend": 0.5941,
+     "risk": 0.2325,
+     "target": 0.8926,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-15",
      "index": 6816.51,
-     "trend": 0.6402,
-     "risk": 0.1902,
-     "target": 0.908,
-     "executed": 0.9262
+     "trend": 0.57,
+     "risk": 0.222,
+     "target": 0.8911,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-16",
      "index": 6800.26,
-     "trend": 0.6448,
-     "risk": 0.1596,
-     "target": 0.9148,
-     "executed": 0.908
+     "trend": 0.5504,
+     "risk": 0.1955,
+     "target": 0.8935,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-17",
      "index": 6721.43,
-     "trend": 0.4306,
-     "risk": 0.2415,
-     "target": 0.8663,
-     "executed": 0.9148
+     "trend": 0.5045,
+     "risk": 0.2771,
+     "target": 0.8703,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-18",
      "index": 6774.76,
-     "trend": 0.4685,
-     "risk": 0.1756,
-     "target": 0.8852,
-     "executed": 0.8663
+     "trend": 0.4829,
+     "risk": 0.2108,
+     "target": 0.8803,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-19",
      "index": 6834.5,
-     "trend": 0.7579,
-     "risk": 0.0794,
-     "target": 0.9478,
-     "executed": 0.8852
+     "trend": 0.4806,
+     "risk": 0.105,
+     "target": 0.9011,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-22",
      "index": 6878.49,
-     "trend": 0.8036,
-     "risk": 0.0398,
-     "target": 0.9626,
-     "executed": 0.9052
+     "trend": 0.4909,
+     "risk": 0.0651,
+     "target": 0.9106,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-23",
      "index": 6909.79,
-     "trend": 0.8329,
-     "risk": 0.0502,
-     "target": 0.9649,
-     "executed": 0.9252
+     "trend": 0.5076,
+     "risk": 0.0658,
+     "target": 0.913,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-24",
      "index": 6932.05,
-     "trend": 0.8518,
-     "risk": 0.049,
-     "target": 0.968,
-     "executed": 0.9452
+     "trend": 0.526,
+     "risk": 0.0595,
+     "target": 0.917,
+     "executed": 0.8863
     },
     {
      "date": "2025-12-26",
      "index": 6929.94,
-     "trend": 0.8384,
-     "risk": 0.027,
-     "target": 0.9704,
-     "executed": 0.9652
+     "trend": 0.5376,
+     "risk": 0.0465,
+     "target": 0.9213,
+     "executed": 0.9063
     },
     {
      "date": "2025-12-29",
      "index": 6905.74,
-     "trend": 0.8105,
-     "risk": 0.0333,
-     "target": 0.9649,
-     "executed": 0.9704
+     "trend": 0.5383,
+     "risk": 0.0571,
+     "target": 0.9193,
+     "executed": 0.9213
     },
     {
      "date": "2025-12-30",
      "index": 6896.24,
-     "trend": 0.7934,
-     "risk": 0.0351,
-     "target": 0.962,
-     "executed": 0.9649
+     "trend": 0.5338,
+     "risk": 0.0537,
+     "target": 0.9193,
+     "executed": 0.9213
     },
     {
      "date": "2025-12-31",
      "index": 6845.5,
-     "trend": 0.498,
-     "risk": 0.0618,
-     "target": 0.9123,
-     "executed": 0.962
+     "trend": 0.5152,
+     "risk": 0.0656,
+     "target": 0.9142,
+     "executed": 0.9213
     },
     {
      "date": "2026-01-02",
      "index": 6858.47,
-     "trend": 0.6215,
-     "risk": 0.0563,
-     "target": 0.932,
-     "executed": 0.9123
+     "trend": 0.4998,
+     "risk": 0.0693,
+     "target": 0.9111,
+     "executed": 0.9213
     },
     {
      "date": "2026-01-05",
      "index": 6902.05,
-     "trend": 0.782,
-     "risk": 0.0762,
-     "target": 0.9521,
-     "executed": 0.932
+     "trend": 0.4985,
+     "risk": 0.0936,
+     "target": 0.9061,
+     "executed": 0.9213
     },
     {
      "date": "2026-01-06",
      "index": 6944.82,
-     "trend": 0.7976,
-     "risk": 0.0664,
-     "target": 0.9564,
-     "executed": 0.952
+     "trend": 0.5045,
+     "risk": 0.0784,
+     "target": 0.91,
+     "executed": 0.9213
     },
     {
      "date": "2026-01-07",
      "index": 6920.93,
-     "trend": 0.8054,
-     "risk": 0.0832,
-     "target": 0.9542,
-     "executed": 0.9564
+     "trend": 0.5094,
+     "risk": 0.0897,
+     "target": 0.9085,
+     "executed": 0.9213
     },
     {
      "date": "2026-01-08",
      "index": 6921.46,
-     "trend": 0.7747,
-     "risk": 0.0908,
-     "target": 0.948,
-     "executed": 0.9542
+     "trend": 0.5056,
+     "risk": 0.0969,
+     "target": 0.9065,
+     "executed": 0.9213
     },
     {
      "date": "2026-01-09",
      "index": 6966.28,
-     "trend": 0.8105,
+     "trend": 0.5138,
      "risk": 0.062,
-     "target": 0.9592,
-     "executed": 0.948
+     "target": 0.9147,
+     "executed": 0.9213
     },
     {
      "date": "2026-01-12",
      "index": 6977.27,
-     "trend": 0.8842,
+     "trend": 0.5347,
      "risk": 0.1116,
-     "target": 0.9603,
-     "executed": 0.9592
+     "target": 0.9079,
+     "executed": 0.9213
     },
     {
      "date": "2026-01-13",
      "index": 6963.74,
-     "trend": 0.8413,
+     "trend": 0.5423,
      "risk": 0.1652,
-     "target": 0.9432,
-     "executed": 0.9603
+     "target": 0.8983,
+     "executed": 0.9213
     },
     {
      "date": "2026-01-14",
      "index": 6926.6,
-     "trend": 0.8155,
+     "trend": 0.5373,
      "risk": 0.2221,
-     "target": 0.9279,
-     "executed": 0.9432
+     "target": 0.8862,
+     "executed": 0.9213
     },
     {
      "date": "2026-01-15",
      "index": 6944.47,
-     "trend": 0.8156,
+     "trend": 0.5348,
      "risk": 0.1469,
-     "target": 0.943,
-     "executed": 0.9279
+     "target": 0.9008,
+     "executed": 0.8862
     },
     {
      "date": "2026-01-16",
      "index": 6940.01,
-     "trend": 0.8247,
+     "trend": 0.5332,
      "risk": 0.1565,
-     "target": 0.9424,
-     "executed": 0.943
+     "target": 0.8987,
+     "executed": 0.8862
     },
     {
      "date": "2026-01-19",
      "index": 6940.01,
-     "trend": 0.8247,
+     "trend": 0.5319,
      "risk": 0.1759,
-     "target": 0.9385,
-     "executed": 0.9424
+     "target": 0.8946,
+     "executed": 0.8862
     },
     {
      "date": "2026-01-20",
      "index": 6796.86,
-     "trend": 0.4549,
+     "trend": 0.488,
      "risk": 0.3367,
-     "target": 0.8509,
-     "executed": 0.9385
+     "target": 0.8559,
+     "executed": 0.8862
     },
     {
      "date": "2026-01-21",
      "index": 6875.62,
-     "trend": 0.4819,
+     "trend": 0.4674,
      "risk": 0.2894,
-     "target": 0.8644,
-     "executed": 0.8509
+     "target": 0.8622,
+     "executed": 0.8559
     },
     {
      "date": "2026-01-22",
      "index": 6913.35,
-     "trend": 0.5195,
+     "trend": 0.4634,
      "risk": 0.183,
-     "target": 0.8913,
-     "executed": 0.8644
+     "target": 0.8829,
+     "executed": 0.8559
     },
     {
      "date": "2026-01-23",
      "index": 6915.61,
-     "trend": 0.7944,
+     "trend": 0.4653,
      "risk": 0.1892,
-     "target": 0.9313,
-     "executed": 0.8844
+     "target": 0.8819,
+     "executed": 0.8559
     },
     {
      "date": "2026-01-26",
      "index": 6950.23,
-     "trend": 0.7995,
+     "trend": 0.4712,
      "risk": 0.1488,
-     "target": 0.9402,
-     "executed": 0.9044
+     "target": 0.8909,
+     "executed": 0.8559
     },
     {
      "date": "2026-01-27",
      "index": 6978.6,
-     "trend": 0.8084,
+     "trend": 0.4822,
      "risk": 0.165,
-     "target": 0.9383,
-     "executed": 0.9244
+     "target": 0.8893,
+     "executed": 0.8759
     },
     {
      "date": "2026-01-28",
      "index": 6978.03,
-     "trend": 0.7748,
+     "trend": 0.485,
      "risk": 0.1867,
-     "target": 0.9289,
-     "executed": 0.9383
+     "target": 0.8854,
+     "executed": 0.8893
     },
     {
      "date": "2026-01-29",
      "index": 6969.01,
-     "trend": 0.7407,
+     "trend": 0.4772,
      "risk": 0.1885,
-     "target": 0.9234,
-     "executed": 0.9289
+     "target": 0.8839,
+     "executed": 0.8893
     },
     {
      "date": "2026-01-30",
      "index": 6939.03,
-     "trend": 0.5752,
+     "trend": 0.4569,
      "risk": 0.19,
-     "target": 0.8983,
-     "executed": 0.9234
+     "target": 0.8805,
+     "executed": 0.8893
     },
     {
      "date": "2026-02-02",
      "index": 6976.44,
-     "trend": 0.7588,
+     "trend": 0.4551,
      "risk": 0.1507,
-     "target": 0.9337,
-     "executed": 0.8983
+     "target": 0.8881,
+     "executed": 0.8893
     },
     {
      "date": "2026-02-03",
      "index": 6917.81,
-     "trend": 0.4421,
+     "trend": 0.4304,
      "risk": 0.2066,
-     "target": 0.875,
-     "executed": 0.9183
+     "target": 0.8732,
+     "executed": 0.8893
     },
     {
      "date": "2026-02-04",
      "index": 6882.72,
-     "trend": 0.387,
+     "trend": 0.3897,
      "risk": 0.2334,
-     "target": 0.8614,
-     "executed": 0.875
+     "target": 0.8618,
+     "executed": 0.8893
     },
     {
      "date": "2026-02-05",
      "index": 6798.4,
-     "trend": 0.2321,
+     "trend": 0.3372,
      "risk": 0.2838,
-     "target": 0.8281,
-     "executed": 0.8614
+     "target": 0.8438,
+     "executed": 0.8893
     },
     {
      "date": "2026-02-06",
      "index": 6932.3,
-     "trend": 0.5684,
+     "trend": 0.3289,
      "risk": 0.2992,
-     "target": 0.8754,
-     "executed": 0.8281
+     "target": 0.8395,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-09",
      "index": 6964.82,
-     "trend": 0.6385,
+     "trend": 0.341,
      "risk": 0.2611,
-     "target": 0.8936,
-     "executed": 0.8481
+     "target": 0.8489,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-10",
      "index": 6941.81,
-     "trend": 0.6174,
+     "trend": 0.3418,
      "risk": 0.2732,
-     "target": 0.888,
-     "executed": 0.8681
+     "target": 0.8466,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-11",
      "index": 6941.47,
-     "trend": 0.5674,
+     "trend": 0.3319,
      "risk": 0.2792,
-     "target": 0.8793,
-     "executed": 0.888
+     "target": 0.8439,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-12",
      "index": 6832.76,
-     "trend": 0.2309,
+     "trend": 0.2893,
      "risk": 0.3343,
-     "target": 0.8178,
-     "executed": 0.8793
+     "target": 0.8265,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-13",
      "index": 6836.17,
-     "trend": 0.1042,
+     "trend": 0.2528,
      "risk": 0.3228,
-     "target": 0.8011,
-     "executed": 0.8178
+     "target": 0.8233,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-17",
      "index": 6843.22,
-     "trend": 0.1573,
+     "trend": 0.233,
      "risk": 0.2886,
-     "target": 0.8159,
-     "executed": 0.8011
+     "target": 0.8272,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-18",
      "index": 6881.31,
-     "trend": 0.1886,
+     "trend": 0.2284,
      "risk": 0.2529,
-     "target": 0.8277,
-     "executed": 0.8159
+     "target": 0.8337,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-19",
      "index": 6861.89,
-     "trend": 0.1957,
+     "trend": 0.2224,
      "risk": 0.2605,
-     "target": 0.8273,
-     "executed": 0.8277
+     "target": 0.8313,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-20",
      "index": 6909.51,
-     "trend": 0.2585,
+     "trend": 0.2366,
      "risk": 0.2434,
-     "target": 0.8401,
-     "executed": 0.8273
+     "target": 0.8368,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-23",
      "index": 6837.75,
-     "trend": 0.1946,
+     "trend": 0.2247,
      "risk": 0.2825,
-     "target": 0.8227,
-     "executed": 0.8401
+     "target": 0.8272,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-24",
      "index": 6890.07,
-     "trend": 0.2811,
+     "trend": 0.2394,
      "risk": 0.2554,
-     "target": 0.8411,
-     "executed": 0.8227
+     "target": 0.8348,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-25",
      "index": 6946.13,
-     "trend": 0.6837,
+     "trend": 0.2671,
      "risk": 0.2279,
-     "target": 0.907,
-     "executed": 0.8411
+     "target": 0.8445,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-26",
      "index": 6908.86,
-     "trend": 0.3434,
-     "risk": 0.2482,
-     "target": 0.8519,
-     "executed": 0.8611
+     "trend": 0.2635,
+     "risk": 0.2535,
+     "target": 0.8388,
+     "executed": 0.8438
     },
     {
      "date": "2026-02-27",
      "index": 6878.88,
-     "trend": 0.1663,
-     "risk": 0.2806,
-     "target": 0.8188,
-     "executed": 0.8519
+     "trend": 0.2434,
+     "risk": 0.3135,
+     "target": 0.8238,
+     "executed": 0.8438
     },
     {
      "date": "2026-03-02",
      "index": 6881.62,
-     "trend": 0.1574,
-     "risk": 0.3003,
-     "target": 0.8136,
-     "executed": 0.8188
+     "trend": 0.2271,
+     "risk": 0.3257,
+     "target": 0.8189,
+     "executed": 0.8438
     },
     {
      "date": "2026-03-03",
      "index": 6816.63,
-     "trend": -0.0287,
-     "risk": 0.3657,
-     "target": 0.7726,
-     "executed": 0.8136
+     "trend": 0.192,
+     "risk": 0.3873,
+     "target": 0.8013,
+     "executed": 0.8438
     },
     {
      "date": "2026-03-04",
      "index": 6869.5,
-     "trend": 0.031,
+     "trend": 0.1845,
      "risk": 0.4004,
-     "target": 0.7746,
-     "executed": 0.7726
+     "target": 0.7976,
+     "executed": 0.8013
     },
     {
      "date": "2026-03-05",
      "index": 6830.71,
-     "trend": 0.0011,
-     "risk": 0.413,
-     "target": 0.7676,
-     "executed": 0.7746
+     "trend": 0.1681,
+     "risk": 0.4241,
+     "target": 0.7904,
+     "executed": 0.8013
     },
     {
      "date": "2026-03-06",
      "index": 6740.02,
-     "trend": -0.1978,
-     "risk": 0.5017,
-     "target": 0.72,
-     "executed": 0.7676
+     "trend": 0.1265,
+     "risk": 0.4892,
+     "target": 0.7711,
+     "executed": 0.8013
     },
     {
      "date": "2026-03-09",
      "index": 6795.99,
-     "trend": -0.1511,
-     "risk": 0.4963,
-     "target": 0.7281,
-     "executed": 0.72
+     "trend": 0.1113,
+     "risk": 0.4932,
+     "target": 0.7681,
+     "executed": 0.7711
     },
     {
      "date": "2026-03-10",
      "index": 6781.48,
-     "trend": -0.1619,
-     "risk": 0.416,
-     "target": 0.7425,
-     "executed": 0.7281
+     "trend": 0.0956,
+     "risk": 0.4311,
+     "target": 0.7781,
+     "executed": 0.7711
     },
     {
      "date": "2026-03-11",
      "index": 6775.8,
-     "trend": -0.1563,
-     "risk": 0.4566,
-     "target": 0.7352,
-     "executed": 0.7425
+     "trend": 0.0836,
+     "risk": 0.5186,
+     "target": 0.7588,
+     "executed": 0.7711
     },
     {
      "date": "2026-03-12",
      "index": 6672.62,
-     "trend": -0.2321,
-     "risk": 0.5805,
-     "target": 0.6991,
-     "executed": 0.7352
+     "trend": 0.0443,
+     "risk": 0.6251,
+     "target": 0.7316,
+     "executed": 0.7711
     },
     {
      "date": "2026-03-13",
      "index": 6632.19,
-     "trend": -0.2748,
-     "risk": 0.6032,
-     "target": 0.6882,
-     "executed": 0.6991
+     "trend": -0.0012,
+     "risk": 0.6166,
+     "target": 0.7265,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-16",
      "index": 6699.38,
-     "trend": -0.2276,
-     "risk": 0.5252,
-     "target": 0.7108,
-     "executed": 0.6882
+     "trend": -0.0214,
+     "risk": 0.5555,
+     "target": 0.7357,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-17",
      "index": 6716.09,
-     "trend": -0.1818,
-     "risk": 0.477,
-     "target": 0.7273,
-     "executed": 0.7082
+     "trend": -0.0264,
+     "risk": 0.5172,
+     "target": 0.7426,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-18",
      "index": 6624.7,
-     "trend": -0.2386,
-     "risk": 0.4459,
-     "target": 0.725,
-     "executed": 0.7273
+     "trend": -0.0525,
+     "risk": 0.4598,
+     "target": 0.7502,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-19",
      "index": 6606.49,
-     "trend": -0.2507,
-     "risk": 0.5256,
-     "target": 0.7073,
-     "executed": 0.725
+     "trend": -0.0781,
+     "risk": 0.5245,
+     "target": 0.7334,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-20",
      "index": 6506.48,
-     "trend": -0.4226,
-     "risk": 0.5292,
-     "target": 0.6808,
-     "executed": 0.7073
+     "trend": -0.1169,
+     "risk": 0.519,
+     "target": 0.7287,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-23",
      "index": 6581.0,
-     "trend": -0.3898,
-     "risk": 0.5213,
-     "target": 0.6873,
-     "executed": 0.6808
+     "trend": -0.1369,
+     "risk": 0.5212,
+     "target": 0.7252,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-24",
      "index": 6556.37,
-     "trend": -0.436,
-     "risk": 0.5489,
-     "target": 0.6748,
-     "executed": 0.6873
+     "trend": -0.165,
+     "risk": 0.5198,
+     "target": 0.7213,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-25",
      "index": 6591.9,
-     "trend": -0.42,
-     "risk": 0.48,
-     "target": 0.691,
-     "executed": 0.6748
+     "trend": -0.1814,
+     "risk": 0.4609,
+     "target": 0.7306,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-26",
      "index": 6477.16,
-     "trend": -0.5077,
-     "risk": 0.5378,
-     "target": 0.6663,
-     "executed": 0.691
+     "trend": -0.2213,
+     "risk": 0.5033,
+     "target": 0.7161,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-27",
      "index": 6368.85,
-     "trend": -0.5765,
-     "risk": 0.6596,
-     "target": 0.6316,
-     "executed": 0.6663
+     "trend": -0.2722,
+     "risk": 0.6,
+     "target": 0.6892,
+     "executed": 0.7316
     },
     {
      "date": "2026-03-30",
      "index": 6343.72,
-     "trend": -0.5936,
-     "risk": 0.5809,
-     "target": 0.6448,
-     "executed": 0.6316
+     "trend": -0.3187,
+     "risk": 0.5179,
+     "target": 0.6986,
+     "executed": 0.6892
     },
     {
      "date": "2026-03-31",
      "index": 6528.52,
-     "trend": -0.4745,
-     "risk": 0.5465,
-     "target": 0.6695,
-     "executed": 0.6448
+     "trend": -0.3236,
+     "risk": 0.5228,
+     "target": 0.6969,
+     "executed": 0.6892
     },
     {
      "date": "2026-04-01",
      "index": 6575.32,
-     "trend": -0.4355,
-     "risk": 0.4711,
-     "target": 0.6905,
-     "executed": 0.6648
+     "trend": -0.3138,
+     "risk": 0.4427,
+     "target": 0.7144,
+     "executed": 0.6892
     },
     {
      "date": "2026-04-02",
      "index": 6582.69,
-     "trend": -0.4161,
-     "risk": 0.4313,
-     "target": 0.7013,
-     "executed": 0.6848
+     "trend": -0.3007,
+     "risk": 0.3968,
+     "target": 0.7255,
+     "executed": 0.6892
     },
     {
      "date": "2026-04-03",
      "index": 6582.69,
-     "trend": -0.4161,
-     "risk": 0.4395,
-     "target": 0.6997,
-     "executed": 0.7013
+     "trend": -0.2901,
+     "risk": 0.4133,
+     "target": 0.7238,
+     "executed": 0.7092
     },
     {
      "date": "2026-04-06",
      "index": 6611.83,
-     "trend": -0.1472,
-     "risk": 0.3928,
-     "target": 0.7494,
-     "executed": 0.6997
+     "trend": -0.2739,
+     "risk": 0.386,
+     "target": 0.7317,
+     "executed": 0.7238
     },
     {
      "date": "2026-04-07",
      "index": 6616.85,
-     "trend": -0.2811,
-     "risk": 0.4758,
-     "target": 0.7127,
-     "executed": 0.7197
+     "trend": -0.2613,
+     "risk": 0.4534,
+     "target": 0.7201,
+     "executed": 0.7238
     },
     {
      "date": "2026-04-08",
      "index": 6782.81,
-     "trend": -0.1789,
+     "trend": -0.2094,
      "risk": 0.3445,
-     "target": 0.7543,
-     "executed": 0.7127
+     "target": 0.7497,
+     "executed": 0.7238
     },
     {
      "date": "2026-04-09",
      "index": 6824.66,
-     "trend": -0.0182,
+     "trend": -0.1545,
      "risk": 0.3101,
-     "target": 0.7853,
-     "executed": 0.7327
+     "target": 0.7648,
+     "executed": 0.7238
     },
     {
      "date": "2026-04-10",
      "index": 6816.89,
-     "trend": -0.0079,
+     "trend": -0.1071,
      "risk": 0.3073,
-     "target": 0.7873,
-     "executed": 0.7527
+     "target": 0.7725,
+     "executed": 0.7438
     },
     {
      "date": "2026-04-13",
      "index": 6886.24,
-     "trend": 0.1533,
+     "trend": -0.053,
      "risk": 0.3064,
-     "target": 0.8117,
-     "executed": 0.7727
+     "target": 0.7808,
+     "executed": 0.7638
     },
     {
      "date": "2026-04-14",
      "index": 6967.38,
-     "trend": 0.2246,
+     "trend": 0.014,
      "risk": 0.2914,
-     "target": 0.8254,
-     "executed": 0.7927
+     "target": 0.7938,
+     "executed": 0.7808
     },
     {
      "date": "2026-04-15",
      "index": 7022.95,
-     "trend": 0.2767,
+     "trend": 0.0836,
      "risk": 0.284,
-     "target": 0.8347,
-     "executed": 0.8127
+     "target": 0.8058,
+     "executed": 0.7808
     },
     {
      "date": "2026-04-16",
      "index": 7041.28,
-     "trend": 0.3033,
+     "trend": 0.1475,
      "risk": 0.2786,
-     "target": 0.8398,
-     "executed": 0.8327
+     "target": 0.8164,
+     "executed": 0.7808
     },
     {
      "date": "2026-04-17",
      "index": 7126.06,
-     "trend": 0.3293,
+     "trend": 0.2093,
      "risk": 0.262,
-     "target": 0.847,
-     "executed": 0.8398
+     "target": 0.829,
+     "executed": 0.8008
     },
     {
      "date": "2026-04-20",
      "index": 7109.14,
-     "trend": 0.3188,
+     "trend": 0.2596,
      "risk": 0.2964,
-     "target": 0.8385,
-     "executed": 0.847
+     "target": 0.8297,
+     "executed": 0.8208
     },
     {
      "date": "2026-04-21",
      "index": 7064.01,
-     "trend": 0.3395,
+     "trend": 0.3045,
      "risk": 0.3113,
-     "target": 0.8387,
-     "executed": 0.8385
+     "target": 0.8334,
+     "executed": 0.8297
     },
     {
      "date": "2026-04-22",
      "index": 7137.9,
-     "trend": 0.4891,
+     "trend": 0.3512,
      "risk": 0.3004,
-     "target": 0.8633,
-     "executed": 0.8387
+     "target": 0.8426,
+     "executed": 0.8297
     },
     {
      "date": "2026-04-23",
      "index": 7108.4,
-     "trend": 0.4435,
+     "trend": 0.3818,
      "risk": 0.3182,
-     "target": 0.8529,
-     "executed": 0.8587
+     "target": 0.8436,
+     "executed": 0.8297
     },
     {
      "date": "2026-04-24",
      "index": 7165.08,
-     "trend": 0.6075,
+     "trend": 0.4189,
      "risk": 0.2899,
-     "target": 0.8831,
-     "executed": 0.8529
+     "target": 0.8549,
+     "executed": 0.8297
     },
     {
      "date": "2026-04-27",
      "index": 7173.91,
-     "trend": 0.601,
+     "trend": 0.4511,
      "risk": 0.2695,
-     "target": 0.8862,
-     "executed": 0.8729
+     "target": 0.8638,
+     "executed": 0.8297
     },
     {
      "date": "2026-04-28",
      "index": 7138.8,
-     "trend": 0.5535,
+     "trend": 0.4688,
      "risk": 0.2464,
-     "target": 0.8837,
-     "executed": 0.8862
+     "target": 0.871,
+     "executed": 0.8497
     },
     {
      "date": "2026-04-29",
      "index": 7135.95,
-     "trend": 0.5516,
+     "trend": 0.4834,
      "risk": 0.2957,
-     "target": 0.8736,
-     "executed": 0.8837
+     "target": 0.8634,
+     "executed": 0.8697
     },
     {
      "date": "2026-04-30",
      "index": 7209.01,
-     "trend": 0.6001,
+     "trend": 0.5084,
      "risk": 0.2477,
-     "target": 0.8905,
-     "executed": 0.8736
+     "target": 0.8767,
+     "executed": 0.8697
     },
     {
      "date": "2026-05-01",
      "index": 7230.12,
-     "trend": 0.6255,
+     "trend": 0.5353,
      "risk": 0.2381,
-     "target": 0.8962,
-     "executed": 0.8905
+     "target": 0.8827,
+     "executed": 0.8697
     },
     {
      "date": "2026-05-04",
      "index": 7200.75,
-     "trend": 0.6008,
+     "trend": 0.5515,
      "risk": 0.3265,
-     "target": 0.8748,
-     "executed": 0.8962
+     "target": 0.8674,
+     "executed": 0.8697
     },
     {
      "date": "2026-05-05",
      "index": 7259.22,
-     "trend": 0.6461,
+     "trend": 0.5762,
      "risk": 0.2728,
-     "target": 0.8924,
-     "executed": 0.8748
+     "target": 0.8819,
+     "executed": 0.8697
     },
     {
      "date": "2026-05-06",
      "index": 7365.12,
-     "trend": 0.6827,
+     "trend": 0.6076,
      "risk": 0.203,
-     "target": 0.9118,
-     "executed": 0.8924
+     "target": 0.9005,
+     "executed": 0.8697
     },
     {
      "date": "2026-05-07",
      "index": 7337.11,
-     "trend": 0.8131,
+     "trend": 0.6334,
      "risk": 0.2039,
-     "target": 0.9312,
-     "executed": 0.9118
+     "target": 0.9042,
+     "executed": 0.8897
     },
     {
      "date": "2026-05-08",
      "index": 7398.93,
-     "trend": 0.8089,
+     "trend": 0.6563,
      "risk": 0.2016,
-     "target": 0.931,
-     "executed": 0.9312
+     "target": 0.9081,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-11",
      "index": 7412.84,
-     "trend": 0.8038,
+     "trend": 0.6746,
      "risk": 0.2387,
-     "target": 0.9228,
-     "executed": 0.931
+     "target": 0.9035,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-12",
      "index": 7400.96,
-     "trend": 0.794,
+     "trend": 0.6865,
      "risk": 0.2414,
-     "target": 0.9208,
-     "executed": 0.9228
+     "target": 0.9047,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-13",
      "index": 7444.25,
-     "trend": 0.9393,
+     "trend": 0.702,
      "risk": 0.2657,
-     "target": 0.9377,
-     "executed": 0.9208
+     "target": 0.9022,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-14",
      "index": 7501.24,
-     "trend": 0.9622,
+     "trend": 0.7207,
      "risk": 0.2077,
-     "target": 0.9528,
-     "executed": 0.9377
+     "target": 0.9166,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-15",
      "index": 7408.5,
-     "trend": 0.9166,
+     "trend": 0.7232,
      "risk": 0.3522,
-     "target": 0.917,
-     "executed": 0.9528
+     "target": 0.888,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-18",
      "index": 7403.05,
-     "trend": 0.9067,
+     "trend": 0.7216,
      "risk": 0.3344,
-     "target": 0.9191,
-     "executed": 0.917
+     "target": 0.8914,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-19",
      "index": 7353.61,
-     "trend": 0.8738,
+     "trend": 0.7097,
      "risk": 0.3522,
-     "target": 0.9106,
-     "executed": 0.9191
+     "target": 0.886,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-20",
      "index": 7432.97,
-     "trend": 0.9216,
+     "trend": 0.7146,
      "risk": 0.3579,
-     "target": 0.9167,
-     "executed": 0.9106
+     "target": 0.8856,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-21",
      "index": 7445.72,
-     "trend": 0.9189,
+     "trend": 0.718,
      "risk": 0.343,
-     "target": 0.9192,
-     "executed": 0.9167
+     "target": 0.8891,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-22",
      "index": 7473.47,
-     "trend": 0.939,
+     "trend": 0.7253,
      "risk": 0.3341,
-     "target": 0.924,
-     "executed": 0.9192
+     "target": 0.892,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-26",
      "index": 7519.12,
-     "trend": 0.9566,
+     "trend": 0.7377,
      "risk": 0.3136,
-     "target": 0.9308,
-     "executed": 0.924
+     "target": 0.8979,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-27",
      "index": 7520.36,
-     "trend": 0.9485,
+     "trend": 0.746,
      "risk": 0.2058,
-     "target": 0.9511,
-     "executed": 0.9308
+     "target": 0.9207,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-28",
      "index": 7563.63,
-     "trend": 0.9602,
+     "trend": 0.7573,
      "risk": 0.134,
-     "target": 0.9672,
-     "executed": 0.9508
+     "target": 0.9368,
+     "executed": 0.9042
     },
     {
      "date": "2026-05-29",
      "index": 7580.06,
-     "trend": 0.9657,
+     "trend": 0.7678,
      "risk": 0.1046,
-     "target": 0.9739,
-     "executed": 0.9672
+     "target": 0.9443,
+     "executed": 0.9242
     },
     {
      "date": "2026-06-01",
      "index": 7599.96,
-     "trend": 0.967,
+     "trend": 0.7775,
      "risk": 0.1485,
-     "target": 0.9654,
-     "executed": 0.9739
+     "target": 0.9369,
+     "executed": 0.9442
     },
     {
      "date": "2026-06-02",
      "index": 7609.78,
-     "trend": 0.9736,
+     "trend": 0.7866,
      "risk": 0.1332,
-     "target": 0.9694,
-     "executed": 0.9654
+     "target": 0.9413,
+     "executed": 0.9442
     },
     {
      "date": "2026-06-03",
      "index": 7553.68,
-     "trend": 0.9427,
+     "trend": 0.784,
      "risk": 0.1765,
-     "target": 0.9561,
-     "executed": 0.9694
+     "target": 0.9323,
+     "executed": 0.9442
     },
     {
      "date": "2026-06-04",
      "index": 7584.31,
-     "trend": 0.9522,
+     "trend": 0.7843,
      "risk": 0.1274,
-     "target": 0.9674,
-     "executed": 0.9561
+     "target": 0.9422,
+     "executed": 0.9442
     },
     {
      "date": "2026-06-05",
      "index": 7383.74,
-     "trend": 0.6045,
+     "trend": 0.7479,
      "risk": 0.4095,
-     "target": 0.8588,
-     "executed": 0.9674
+     "target": 0.8803,
+     "executed": 0.9442
     },
     {
      "date": "2026-06-08",
      "index": 7405.73,
-     "trend": 0.6135,
+     "trend": 0.7229,
      "risk": 0.3817,
-     "target": 0.8657,
-     "executed": 0.8588
+     "target": 0.8821,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-09",
      "index": 7386.65,
-     "trend": 0.5953,
+     "trend": 0.6969,
      "risk": 0.3455,
-     "target": 0.8702,
-     "executed": 0.8657
+     "target": 0.8854,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-10",
      "index": 7266.99,
-     "trend": 0.5316,
+     "trend": 0.6561,
      "risk": 0.4226,
-     "target": 0.8452,
-     "executed": 0.8702
+     "target": 0.8639,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-11",
      "index": 7394.3,
-     "trend": 0.6192,
+     "trend": 0.6491,
      "risk": 0.3733,
-     "target": 0.8682,
-     "executed": 0.8452
+     "target": 0.8727,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-12",
      "index": 7431.46,
-     "trend": 0.6366,
+     "trend": 0.6495,
      "risk": 0.3439,
-     "target": 0.8767,
-     "executed": 0.8652
+     "target": 0.8786,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-15",
      "index": 7554.29,
-     "trend": 0.9487,
+     "trend": 0.6746,
      "risk": 0.2215,
-     "target": 0.948,
-     "executed": 0.8767
+     "target": 0.9069,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-16",
      "index": 7511.35,
-     "trend": 0.9218,
+     "trend": 0.6853,
      "risk": 0.2347,
-     "target": 0.9413,
-     "executed": 0.8967
+     "target": 0.9059,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-17",
      "index": 7420.1,
-     "trend": 0.6412,
+     "trend": 0.6807,
      "risk": 0.3051,
-     "target": 0.8852,
-     "executed": 0.9167
+     "target": 0.8911,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-18",
      "index": 7500.58,
-     "trend": 0.9354,
+     "trend": 0.6939,
      "risk": 0.23,
-     "target": 0.9443,
-     "executed": 0.8852
+     "target": 0.9081,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-19",
      "index": 7500.58,
-     "trend": 0.9354,
+     "trend": 0.7046,
      "risk": 0.2389,
-     "target": 0.9425,
-     "executed": 0.9052
+     "target": 0.9079,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-22",
      "index": 7472.79,
-     "trend": 0.6687,
+     "trend": 0.7054,
      "risk": 0.2704,
-     "target": 0.8962,
-     "executed": 0.9252
+     "target": 0.9017,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-23",
      "index": 7365.46,
-     "trend": 0.6105,
+     "trend": 0.6854,
      "risk": 0.3479,
-     "target": 0.872,
-     "executed": 0.8962
+     "target": 0.8832,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-24",
      "index": 7358.22,
-     "trend": 0.6062,
+     "trend": 0.667,
      "risk": 0.3277,
-     "target": 0.8754,
-     "executed": 0.872
+     "target": 0.8845,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-25",
      "index": 7357.49,
-     "trend": 0.5957,
+     "trend": 0.649,
      "risk": 0.3504,
-     "target": 0.8693,
-     "executed": 0.8754
+     "target": 0.8773,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-26",
      "index": 7354.02,
-     "trend": 0.603,
+     "trend": 0.6345,
      "risk": 0.3635,
-     "target": 0.8678,
-     "executed": 0.8693
+     "target": 0.8725,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-29",
      "index": 7440.43,
-     "trend": 0.6527,
+     "trend": 0.6409,
      "risk": 0.3372,
-     "target": 0.8805,
-     "executed": 0.8678
+     "target": 0.8787,
+     "executed": 0.8803
     },
     {
      "date": "2026-06-30",
      "index": 7499.36,
-     "trend": 0.9335,
+     "trend": 0.6584,
      "risk": 0.2966,
-     "target": 0.9307,
-     "executed": 0.8805
+     "target": 0.8894,
+     "executed": 0.8803
     },
     {
      "date": "2026-07-01",
      "index": 7483.23,
-     "trend": 0.9139,
+     "trend": 0.6658,
      "risk": 0.3254,
-     "target": 0.922,
-     "executed": 0.9005
+     "target": 0.8848,
+     "executed": 0.8803
     },
     {
      "date": "2026-07-02",
      "index": 7483.24,
-     "trend": 0.7749,
+     "trend": 0.6661,
      "risk": 0.2833,
-     "target": 0.9096,
-     "executed": 0.9205
+     "target": 0.8933,
+     "executed": 0.8803
     },
     {
      "date": "2026-07-03",
      "index": 7483.24,
-     "trend": 0.7749,
+     "trend": 0.6663,
      "risk": 0.2178,
-     "target": 0.9227,
-     "executed": 0.9096
+     "target": 0.9064,
+     "executed": 0.8803
     },
     {
      "date": "2026-07-06",
      "index": 7537.43,
-     "trend": 0.9251,
+     "trend": 0.676,
      "risk": 0.1766,
-     "target": 0.9535,
-     "executed": 0.9227
+     "target": 0.9161,
+     "executed": 0.8803
     },
     {
      "date": "2026-07-07",
      "index": 7503.85,
-     "trend": 0.7755,
+     "trend": 0.6736,
      "risk": 0.2109,
-     "target": 0.9241,
-     "executed": 0.9427
+     "target": 0.9089,
+     "executed": 0.9003
     },
     {
      "date": "2026-07-08",
      "index": 7482.71,
-     "trend": 0.7734,
+     "trend": 0.6702,
      "risk": 0.2791,
-     "target": 0.9102,
-     "executed": 0.9241
+     "target": 0.8947,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-09",
      "index": 7543.64,
-     "trend": 0.914,
+     "trend": 0.6759,
      "risk": 0.2017,
-     "target": 0.9468,
-     "executed": 0.9102
+     "target": 0.9111,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-10",
      "index": 7575.39,
-     "trend": 0.9204,
+     "trend": 0.6831,
      "risk": 0.1897,
-     "target": 0.9501,
-     "executed": 0.9302
+     "target": 0.9145,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-13",
      "index": 7515.34,
-     "trend": 0.7572,
+     "trend": 0.6741,
      "risk": 0.2742,
-     "target": 0.9087,
-     "executed": 0.9501
+     "target": 0.8963,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-14",
      "index": 7543.59,
-     "trend": 0.8927,
+     "trend": 0.6721,
      "risk": 0.2234,
-     "target": 0.9392,
-     "executed": 0.9087
+     "target": 0.9061,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-15",
      "index": 7572.4,
-     "trend": 0.894,
+     "trend": 0.673,
      "risk": 0.123,
-     "target": 0.9595,
-     "executed": 0.9287
+     "target": 0.9263,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-16",
      "index": 7533.77,
-     "trend": 0.7157,
+     "trend": 0.6572,
      "risk": 0.1725,
-     "target": 0.9228,
-     "executed": 0.9487
+     "target": 0.9141,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-17",
      "index": 7457.69,
-     "trend": 0.4098,
+     "trend": 0.6255,
      "risk": 0.234,
-     "target": 0.8647,
-     "executed": 0.9228
+     "target": 0.897,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-20",
      "index": 7443.28,
-     "trend": 0.3769,
+     "trend": 0.592,
      "risk": 0.2541,
-     "target": 0.8557,
-     "executed": 0.8647
+     "target": 0.888,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-21",
      "index": 7509.2,
-     "trend": 0.5552,
+     "trend": 0.5815,
      "risk": 0.1801,
-     "target": 0.8973,
-     "executed": 0.8557
+     "target": 0.9012,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-22",
      "index": 7498.96,
-     "trend": 0.5518,
+     "trend": 0.5693,
      "risk": 0.1584,
-     "target": 0.9011,
-     "executed": 0.8757
+     "target": 0.9037,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-23",
      "index": 7408.3,
-     "trend": 0.3209,
+     "trend": 0.5275,
      "risk": 0.2732,
-     "target": 0.8435,
-     "executed": 0.8957
+     "target": 0.8745,
+     "executed": 0.9089
     },
     {
      "date": "2026-07-24",
      "index": 7411.98,
-     "trend": 0.3222,
+     "trend": 0.491,
      "risk": 0.2472,
-     "target": 0.8489,
-     "executed": 0.8435
+     "target": 0.8742,
+     "executed": 0.8745
     },
     {
      "date": "2026-07-27",
      "index": 7413.18,
-     "trend": 0.2894,
+     "trend": 0.4542,
      "risk": 0.2103,
-     "target": 0.8514,
-     "executed": 0.8489
+     "target": 0.8761,
+     "executed": 0.8745
     },
     {
      "date": "2026-07-28",
      "index": 7428.78,
-     "trend": 0.2851,
+     "trend": 0.4226,
      "risk": 0.1811,
-     "target": 0.8565,
-     "executed": 0.8514
+     "target": 0.8772,
+     "executed": 0.8745
     },
     {
      "date": "2026-07-29",
      "index": 7316.15,
-     "trend": 0.0987,
+     "trend": 0.3719,
      "risk": 0.2827,
-     "target": 0.8083,
-     "executed": 0.8565
+     "target": 0.8492,
+     "executed": 0.8745
     },
     {
      "date": "2026-07-30",
      "index": 7437.63,
-     "trend": 0.3282,
+     "trend": 0.3664,
      "risk": 0.2322,
-     "target": 0.8528,
-     "executed": 0.8083
+     "target": 0.8585,
+     "executed": 0.8745
     },
     {
      "date": "2026-07-31",
      "index": 7489.72,
-     "trend": 0.4712,
+     "trend": 0.3716,
      "risk": 0.2265,
-     "target": 0.8754,
-     "executed": 0.8283
+     "target": 0.8604,
+     "executed": 0.8745
     },
     {
      "date": "2026-08-03",
      "index": 7600.5,
-     "trend": 0.6665,
+     "trend": 0.4012,
      "risk": 0.1954,
-     "target": 0.9109,
-     "executed": 0.8483
+     "target": 0.8711,
+     "executed": 0.8745
     },
     {
      "date": "2026-08-04",
      "index": 7736.52,
-     "trend": 0.7481,
+     "trend": 0.4502,
      "risk": 0.2099,
-     "target": 0.9202,
-     "executed": 0.8683
+     "target": 0.8756,
+     "executed": 0.8745
     },
     {
      "date": "2026-08-05",
      "index": 7723.55,
-     "trend": 0.7083,
+     "trend": 0.4812,
      "risk": 0.1759,
-     "target": 0.9211,
-     "executed": 0.8883
+     "target": 0.887,
+     "executed": 0.8745
     },
     {
      "date": "2026-08-06",
      "index": 7709.96,
-     "trend": 0.6652,
+     "trend": 0.4979,
      "risk": 0.1501,
-     "target": 0.9198,
-     "executed": 0.9083
+     "target": 0.8947,
+     "executed": 0.8745
     },
     {
      "date": "2026-08-07",
      "index": 7757.64,
-     "trend": 0.7123,
+     "trend": 0.5235,
      "risk": 0.1415,
-     "target": 0.9286,
-     "executed": 0.9198
+     "target": 0.9002,
+     "executed": 0.8745
     },
     {
      "date": "2026-08-10",
      "index": 7753.11,
-     "trend": 0.6743,
+     "trend": 0.5368,
      "risk": 0.1773,
-     "target": 0.9157,
-     "executed": 0.9286
+     "target": 0.8951,
+     "executed": 0.8745
     },
     {
      "date": "2026-08-11",
      "index": 7728.2,
-     "trend": 0.6487,
+     "trend": 0.541,
      "risk": 0.1763,
-     "target": 0.912,
-     "executed": 0.9157
+     "target": 0.8959,
+     "executed": 0.8745
     },
     {
      "date": "2026-08-12",
      "index": 7748.5,
-     "trend": 0.6786,
+     "trend": 0.5513,
      "risk": 0.1506,
-     "target": 0.9217,
-     "executed": 0.912
+     "target": 0.9026,
+     "executed": 0.8745
     },
     {
      "date": "2026-08-13",
      "index": 7798.99,
-     "trend": 0.6858,
+     "trend": 0.5636,
      "risk": 0.1277,
-     "target": 0.9273,
-     "executed": 0.9217
+     "target": 0.909,
+     "executed": 0.8745
     },
     {
      "date": "2026-08-14",
      "index": 7785.76,
-     "trend": 0.6557,
-     "risk": 0.108,
-     "target": 0.9268,
-     "executed": 0.9273
+     "trend": 0.5673,
+     "risk": 0.115,
+     "target": 0.9121,
+     "executed": 0.8945
     },
     {
      "date": "2026-08-17",
      "index": 7745.06,
-     "trend": 0.6687,
-     "risk": 0.1511,
-     "target": 0.9201,
-     "executed": 0.9268
+     "trend": 0.5707,
+     "risk": 0.1582,
+     "target": 0.904,
+     "executed": 0.9121
     },
     {
      "date": "2026-08-18",
      "index": 7691.76,
-     "trend": 0.6266,
+     "trend": 0.5601,
      "risk": 0.1946,
-     "target": 0.9051,
-     "executed": 0.9201
+     "target": 0.8951,
+     "executed": 0.9121
     },
     {
      "date": "2026-08-19",
      "index": 7707.98,
-     "trend": 0.6532,
+     "trend": 0.557,
      "risk": 0.142,
-     "target": 0.9196,
-     "executed": 0.9051
+     "target": 0.9051,
+     "executed": 0.9121
     },
     {
      "date": "2026-08-20",
      "index": 7641.16,
-     "trend": 0.5768,
+     "trend": 0.5338,
      "risk": 0.1624,
-     "target": 0.904,
-     "executed": 0.9196
+     "target": 0.8976,
+     "executed": 0.9121
     },
     {
      "date": "2026-08-21",
      "index": 7674.37,
-     "trend": 0.7198,
+     "trend": 0.5208,
      "risk": 0.1502,
-     "target": 0.9279,
-     "executed": 0.904
+     "target": 0.8981,
+     "executed": 0.9121
     },
     {
      "date": "2026-08-24",
      "index": 7652.86,
-     "trend": 0.4375,
+     "trend": 0.4999,
      "risk": 0.1544,
-     "target": 0.8847,
-     "executed": 0.924
+     "target": 0.8941,
+     "executed": 0.9121
     },
     {
      "date": "2026-08-25",
      "index": 7677.28,
-     "trend": 0.5645,
+     "trend": 0.4864,
      "risk": 0.1367,
-     "target": 0.9073,
-     "executed": 0.8847
+     "target": 0.8956,
+     "executed": 0.9121
     },
     {
      "date": "2026-08-26",
      "index": 7675.7,
-     "trend": 0.4361,
+     "trend": 0.4739,
      "risk": 0.0975,
-     "target": 0.8959,
-     "executed": 0.9047
+     "target": 0.9016,
+     "executed": 0.9121
     },
     {
      "date": "2026-08-27",
      "index": 7730.99,
-     "trend": 0.7235,
+     "trend": 0.4778,
      "risk": 0.0756,
-     "target": 0.9434,
-     "executed": 0.8959
+     "target": 0.9066,
+     "executed": 0.9121
     },
     {
      "date": "2026-08-28",
      "index": 7711.76,
-     "trend": 0.5746,
+     "trend": 0.4734,
      "risk": 0.0689,
-     "target": 0.9224,
-     "executed": 0.9159
+     "target": 0.9072,
+     "executed": 0.9121
     },
     {
      "date": "2026-08-31",
      "index": 7686.14,
-     "trend": 0.4304,
+     "trend": 0.4641,
      "risk": 0.0696,
-     "target": 0.9006,
-     "executed": 0.9224
+     "target": 0.9057,
+     "executed": 0.9121
     },
     {
      "date": "2026-09-01",
      "index": 7631.47,
-     "trend": 0.3869,
+     "trend": 0.4416,
      "risk": 0.126,
-     "target": 0.8828,
-     "executed": 0.9006
+     "target": 0.891,
+     "executed": 0.9121
     },
     {
      "date": "2026-09-02",
      "index": 7666.6,
-     "trend": 0.4278,
+     "trend": 0.4334,
      "risk": 0.1014,
-     "target": 0.8939,
-     "executed": 0.8828
+     "target": 0.8947,
+     "executed": 0.9121
     },
     {
      "date": "2026-09-03",
      "index": 7747.71,
-     "trend": 0.7333,
+     "trend": 0.4449,
      "risk": 0.0514,
-     "target": 0.9497,
-     "executed": 0.8939
+     "target": 0.9065,
+     "executed": 0.9121
     },
     {
      "date": "2026-09-04",
      "index": 7718.6,
-     "trend": 0.8007,
+     "trend": 0.4635,
      "risk": 0.0491,
-     "target": 0.9603,
-     "executed": 0.9139
+     "target": 0.9097,
+     "executed": 0.9121
     },
     {
      "date": "2026-09-07",
      "index": 7718.6,
-     "trend": 0.8007,
+     "trend": 0.4787,
      "risk": 0.082,
-     "target": 0.9537,
-     "executed": 0.9339
+     "target": 0.9054,
+     "executed": 0.9121
     },
     {
      "date": "2026-09-08",
      "index": 7673.52,
-     "trend": 0.6406,
+     "trend": 0.4807,
      "risk": 0.1291,
-     "target": 0.9203,
-     "executed": 0.9537
+     "target": 0.8963,
+     "executed": 0.9121
     },
     {
      "date": "2026-09-09",
      "index": 7636.36,
-     "trend": 0.5034,
+     "trend": 0.4749,
      "risk": 0.1722,
-     "target": 0.8911,
-     "executed": 0.9203
+     "target": 0.8868,
+     "executed": 0.9121
     },
     {
      "date": "2026-09-10",
      "index": 7591.7,
-     "trend": 0.5159,
+     "trend": 0.4664,
      "risk": 0.2557,
-     "target": 0.8762,
-     "executed": 0.8911
+     "target": 0.8688,
+     "executed": 0.9121
     },
     {
      "date": "2026-09-11",
      "index": 7656.98,
-     "trend": 0.6348,
+     "trend": 0.4651,
      "risk": 0.1746,
-     "target": 0.9103,
-     "executed": 0.8762
+     "target": 0.8848,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-14",
      "index": 7619.98,
-     "trend": 0.4748,
+     "trend": 0.4523,
      "risk": 0.2116,
-     "target": 0.8789,
-     "executed": 0.8962
+     "target": 0.8755,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-15",
      "index": 7585.73,
-     "trend": 0.3875,
+     "trend": 0.4193,
      "risk": 0.2124,
-     "target": 0.8657,
-     "executed": 0.8789
+     "target": 0.8704,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-16",
      "index": 7551.81,
-     "trend": 0.3969,
+     "trend": 0.3909,
      "risk": 0.2334,
-     "target": 0.8629,
-     "executed": 0.8657
+     "target": 0.8619,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-17",
      "index": 7637.76,
-     "trend": 0.6225,
+     "trend": 0.3977,
      "risk": 0.1832,
-     "target": 0.9067,
-     "executed": 0.8629
+     "target": 0.873,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-18",
      "index": 7650.5,
-     "trend": 0.5997,
+     "trend": 0.4003,
      "risk": 0.1866,
-     "target": 0.9026,
-     "executed": 0.8829
+     "target": 0.8727,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-21",
      "index": 7764.7,
-     "trend": 0.8347,
+     "trend": 0.4343,
      "risk": 0.2374,
-     "target": 0.9277,
-     "executed": 0.9026
+     "target": 0.8677,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-22",
      "index": 7764.64,
-     "trend": 0.8776,
+     "trend": 0.4701,
      "risk": 0.1898,
-     "target": 0.9437,
-     "executed": 0.9226
+     "target": 0.8826,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-23",
      "index": 7706.03,
-     "trend": 0.8407,
+     "trend": 0.4858,
      "risk": 0.2219,
-     "target": 0.9317,
-     "executed": 0.9426
+     "target": 0.8785,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-24",
      "index": 7704.13,
-     "trend": 0.8449,
+     "trend": 0.4982,
      "risk": 0.2371,
-     "target": 0.9293,
-     "executed": 0.9317
+     "target": 0.8773,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-25",
      "index": 7743.41,
-     "trend": 0.8692,
-     "risk": 0.2296,
-     "target": 0.9345,
-     "executed": 0.9293
+     "trend": 0.5155,
+     "risk": 0.2045,
+     "target": 0.8864,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-28",
      "index": 7683.69,
-     "trend": 0.7977,
-     "risk": 0.3133,
-     "target": 0.907,
-     "executed": 0.9345
+     "trend": 0.5089,
+     "risk": 0.2549,
+     "target": 0.8754,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-29",
      "index": 7670.84,
-     "trend": 0.7644,
-     "risk": 0.335,
-     "target": 0.8977,
-     "executed": 0.907
+     "trend": 0.4954,
+     "risk": 0.2529,
+     "target": 0.8737,
+     "executed": 0.8688
     },
     {
      "date": "2026-09-30",
      "index": 7651.54,
-     "trend": 0.6496,
-     "risk": 0.3331,
-     "target": 0.8808,
-     "executed": 0.8977
+     "trend": 0.485,
+     "risk": 0.2356,
+     "target": 0.8756,
+     "executed": 0.8688
     },
     {
      "date": "2026-10-01",
      "index": 7666.45,
-     "trend": 0.6644,
-     "risk": 0.3565,
-     "target": 0.8784,
-     "executed": 0.8808
+     "trend": 0.4793,
+     "risk": 0.2215,
+     "target": 0.8776,
+     "executed": 0.8688
     },
     {
      "date": "2026-10-02",
      "index": 7722.72,
-     "trend": 0.814,
-     "risk": 0.2657,
-     "target": 0.919,
-     "executed": 0.8784
+     "trend": 0.486,
+     "risk": 0.1781,
+     "target": 0.8873,
+     "executed": 0.8688
     },
     {
      "date": "2026-10-05",
      "index": 7773.95,
-     "trend": 0.86,
-     "risk": 0.3156,
-     "target": 0.9159,
-     "executed": 0.8984
+     "trend": 0.5049,
+     "risk": 0.2197,
+     "target": 0.8818,
+     "executed": 0.8688
     },
     {
      "date": "2026-10-06",
      "index": 7818.93,
-     "trend": 0.8757,
-     "risk": 0.2403,
-     "target": 0.9333,
-     "executed": 0.9159
+     "trend": 0.5259,
+     "risk": 0.18,
+     "target": 0.8929,
+     "executed": 0.8688
     },
     {
      "date": "2026-10-07",
      "index": 7801.77,
-     "trend": 0.8442,
-     "risk": 0.2123,
-     "target": 0.9342,
-     "executed": 0.9333
+     "trend": 0.5356,
+     "risk": 0.1278,
+     "target": 0.9048,
+     "executed": 0.8688
     },
     {
      "date": "2026-10-08",
      "index": 7765.36,
-     "trend": 0.7954,
-     "risk": 0.2108,
-     "target": 0.9272,
-     "executed": 0.9342
+     "trend": 0.5282,
+     "risk": 0.1029,
+     "target": 0.9087,
+     "executed": 0.8888
     },
     {
      "date": "2026-10-09",
      "index": 7811.54,
-     "trend": 0.8502,
-     "risk": 0.1658,
-     "target": 0.9444,
-     "executed": 0.9272
+     "trend": 0.5361,
+     "risk": 0.0742,
+     "target": 0.9156,
+     "executed": 0.9087
     },
     {
      "date": "2026-10-12",
      "index": 7807.24,
-     "trend": 0.8254,
-     "risk": 0.159,
-     "target": 0.942,
-     "executed": 0.9444
+     "trend": 0.5356,
+     "risk": 0.0676,
+     "target": 0.9168,
+     "executed": 0.9087
     },
     {
      "date": "2026-10-13",
      "index": 7805.45,
-     "trend": 0.8099,
-     "risk": 0.1786,
-     "target": 0.9358,
-     "executed": 0.942
+     "trend": 0.531,
+     "risk": 0.068,
+     "target": 0.9161,
+     "executed": 0.9087
     },
     {
      "date": "2026-10-14",
      "index": 7718.94,
-     "trend": 0.511,
-     "risk": 0.2795,
-     "target": 0.8707,
-     "executed": 0.9358
+     "trend": 0.5039,
+     "risk": 0.1441,
+     "target": 0.8968,
+     "executed": 0.9087
     },
     {
      "date": "2026-10-15",
      "index": 7744.06,
-     "trend": 0.6732,
-     "risk": 0.2568,
-     "target": 0.8996,
-     "executed": 0.8707
+     "trend": 0.4898,
+     "risk": 0.1222,
+     "target": 0.899,
+     "executed": 0.9087
     },
     {
      "date": "2026-10-16",
      "index": 7659.44,
-     "trend": 0.3491,
-     "risk": 0.3771,
-     "target": 0.8269,
-     "executed": 0.8907
+     "trend": 0.4487,
+     "risk": 0.2392,
+     "target": 0.8695,
+     "executed": 0.9087
     },
     {
      "date": "2026-10-19",
      "index": 7690.73,
-     "trend": 0.4844,
-     "risk": 0.3144,
-     "target": 0.8598,
-     "executed": 0.8269
+     "trend": 0.4234,
+     "risk": 0.1773,
+     "target": 0.8781,
+     "executed": 0.8695
     },
     {
      "date": "2026-10-20",
      "index": 7712.57,
-     "trend": 0.4992,
-     "risk": 0.2854,
-     "target": 0.8678,
-     "executed": 0.8469
+     "trend": 0.4062,
+     "risk": 0.1466,
+     "target": 0.8816,
+     "executed": 0.8695
     },
     {
      "date": "2026-10-21",
      "index": 7757.17,
-     "trend": 0.6985,
-     "risk": 0.2522,
-     "target": 0.9043,
-     "executed": 0.8669
+     "trend": 0.4133,
+     "risk": 0.1159,
+     "target": 0.8888,
+     "executed": 0.8695
     },
     {
      "date": "2026-10-22",
      "index": 7663.43,
-     "trend": 0.3679,
-     "risk": 0.3513,
-     "target": 0.8349,
-     "executed": 0.8869
+     "trend": 0.385,
+     "risk": 0.2096,
+     "target": 0.8658,
+     "executed": 0.8695
     },
     {
      "date": "2026-10-23",
      "index": 7623.68,
-     "trend": 0.3525,
-     "risk": 0.357,
-     "target": 0.8315,
-     "executed": 0.8349
+     "trend": 0.3547,
+     "risk": 0.2154,
+     "target": 0.8601,
+     "executed": 0.8695
     }
    ]
   },
@@ -2169,18 +2178,18 @@
    "label": "한국",
    "as_of": "2026-10-23",
    "allocation": {
-    "trend_score": -0.7457545387409334,
-    "risk_score": 0.4458499335989376,
-    "base_weight": 0.73813681918886,
-    "risk_deduction": 0.08916998671978753,
-    "stock_weight": 0.6489668324690725,
-    "cash_weight": 0.3510331675309275,
+    "trend_score": -0.6733081090608957,
+    "risk_score": 0.30418326693227093,
+    "base_weight": 0.7490037836408656,
+    "risk_deduction": 0.06083665338645419,
+    "stock_weight": 0.6881671302544115,
+    "cash_weight": 0.31183286974558855,
     "regime": 3,
     "regime_name": "하락 방어"
    },
-   "executed_weight": 0.6532,
+   "executed_weight": 0.7078,
    "trend_components": {
-    "alignment": -0.75,
+    "alignment": -0.7578,
     "drawdown": -1.0,
     "momentum": -0.483
    },
@@ -2189,7 +2198,7 @@
     "realized_vol": 0.5259,
     "rates": 0.0,
     "fx": 0.0,
-    "credit": 0.5667
+    "credit": 0.0
    },
    "risk_weights": {
     "vol_index": 0.3,
@@ -2207,7 +2216,7 @@
      "drawdown": -0.3911,
      "vol_20d": 0.4457,
      "roc_3m": -0.1775,
-     "trend_score": -0.986
+     "trend_score": -0.8543
     },
     "KOSDAQ": {
      "close": 751.69,
@@ -2217,2025 +2226,2025 @@
      "drawdown": -0.387,
      "vol_20d": 0.4814,
      "roc_3m": -0.0022,
-     "trend_score": -0.5055
+     "trend_score": -0.4924
     }
    },
    "history": [
     {
      "date": "2025-10-31",
      "index": 4107.5,
-     "trend": 0.9741,
-     "risk": 0.3765,
-     "target": 0.9208,
-     "executed": 0.914
+     "trend": 0.8927,
+     "risk": 0.3895,
+     "target": 0.906,
+     "executed": 0.8921
     },
     {
      "date": "2025-11-03",
      "index": 4221.87,
-     "trend": 0.9843,
-     "risk": 0.4038,
-     "target": 0.9169,
-     "executed": 0.9208
+     "trend": 0.9017,
+     "risk": 0.4187,
+     "target": 0.9015,
+     "executed": 0.8921
     },
     {
      "date": "2025-11-04",
      "index": 4121.74,
-     "trend": 0.9579,
-     "risk": 0.4737,
-     "target": 0.8989,
-     "executed": 0.9169
+     "trend": 0.9049,
+     "risk": 0.4745,
+     "target": 0.8908,
+     "executed": 0.8921
     },
     {
      "date": "2025-11-05",
      "index": 4004.42,
-     "trend": 0.8792,
-     "risk": 0.5025,
-     "target": 0.8814,
-     "executed": 0.8989
+     "trend": 0.8863,
+     "risk": 0.5114,
+     "target": 0.8807,
+     "executed": 0.8921
     },
     {
      "date": "2025-11-06",
      "index": 4026.45,
-     "trend": 0.8937,
-     "risk": 0.4861,
-     "target": 0.8868,
-     "executed": 0.8814
+     "trend": 0.8721,
+     "risk": 0.4867,
+     "target": 0.8835,
+     "executed": 0.8921
     },
     {
      "date": "2025-11-07",
      "index": 3953.76,
-     "trend": 0.7056,
-     "risk": 0.5048,
-     "target": 0.8549,
-     "executed": 0.8868
+     "trend": 0.8369,
+     "risk": 0.5128,
+     "target": 0.873,
+     "executed": 0.8921
     },
     {
      "date": "2025-11-10",
      "index": 4073.24,
-     "trend": 0.8795,
-     "risk": 0.5129,
-     "target": 0.8793,
-     "executed": 0.8549
+     "trend": 0.8255,
+     "risk": 0.5379,
+     "target": 0.8662,
+     "executed": 0.8921
     },
     {
      "date": "2025-11-11",
      "index": 4106.39,
-     "trend": 0.7534,
-     "risk": 0.5509,
-     "target": 0.8528,
-     "executed": 0.8749
+     "trend": 0.8142,
+     "risk": 0.5755,
+     "target": 0.857,
+     "executed": 0.8921
     },
     {
      "date": "2025-11-12",
      "index": 4150.39,
-     "trend": 0.932,
-     "risk": 0.5509,
-     "target": 0.8796,
-     "executed": 0.8528
+     "trend": 0.8216,
+     "risk": 0.5829,
+     "target": 0.8567,
+     "executed": 0.857
     },
     {
      "date": "2025-11-13",
      "index": 4170.63,
-     "trend": 0.9573,
-     "risk": 0.596,
-     "target": 0.8744,
-     "executed": 0.8728
+     "trend": 0.8345,
+     "risk": 0.6233,
+     "target": 0.8505,
+     "executed": 0.857
     },
     {
      "date": "2025-11-14",
      "index": 4011.57,
-     "trend": 0.7456,
-     "risk": 0.6429,
-     "target": 0.8333,
-     "executed": 0.8744
+     "trend": 0.8137,
+     "risk": 0.674,
+     "target": 0.8373,
+     "executed": 0.857
     },
     {
      "date": "2025-11-17",
      "index": 4089.25,
-     "trend": 0.9061,
-     "risk": 0.5423,
-     "target": 0.8775,
-     "executed": 0.8333
+     "trend": 0.8086,
+     "risk": 0.5612,
+     "target": 0.859,
+     "executed": 0.857
     },
     {
      "date": "2025-11-18",
      "index": 3953.62,
-     "trend": 0.5609,
-     "risk": 0.6294,
-     "target": 0.8082,
-     "executed": 0.8533
+     "trend": 0.77,
+     "risk": 0.6421,
+     "target": 0.8371,
+     "executed": 0.857
     },
     {
      "date": "2025-11-19",
      "index": 3929.51,
-     "trend": 0.5353,
-     "risk": 0.5371,
-     "target": 0.8229,
-     "executed": 0.8082
+     "trend": 0.7302,
+     "risk": 0.5557,
+     "target": 0.8484,
+     "executed": 0.857
     },
     {
      "date": "2025-11-20",
      "index": 4004.85,
-     "trend": 0.616,
-     "risk": 0.5871,
-     "target": 0.825,
-     "executed": 0.8229
+     "trend": 0.7219,
+     "risk": 0.6096,
+     "target": 0.8364,
+     "executed": 0.857
     },
     {
      "date": "2025-11-21",
      "index": 3853.26,
-     "trend": 0.5218,
-     "risk": 0.5911,
-     "target": 0.81,
-     "executed": 0.825
+     "trend": 0.6835,
+     "risk": 0.6174,
+     "target": 0.8291,
+     "executed": 0.857
     },
     {
      "date": "2025-11-24",
      "index": 3846.06,
-     "trend": 0.5125,
-     "risk": 0.5254,
-     "target": 0.8218,
-     "executed": 0.81
+     "trend": 0.6481,
+     "risk": 0.5516,
+     "target": 0.8369,
+     "executed": 0.857
     },
     {
      "date": "2025-11-25",
      "index": 3857.78,
-     "trend": 0.5154,
-     "risk": 0.5368,
-     "target": 0.8199,
-     "executed": 0.8218
+     "trend": 0.6195,
+     "risk": 0.569,
+     "target": 0.8291,
+     "executed": 0.857
     },
     {
      "date": "2025-11-26",
      "index": 3960.87,
-     "trend": 0.5843,
-     "risk": 0.4648,
-     "target": 0.8447,
-     "executed": 0.8199
+     "trend": 0.6196,
+     "risk": 0.5054,
+     "target": 0.8419,
+     "executed": 0.857
     },
     {
      "date": "2025-11-27",
      "index": 3986.91,
-     "trend": 0.5874,
-     "risk": 0.4533,
-     "target": 0.8474,
-     "executed": 0.8399
+     "trend": 0.6229,
+     "risk": 0.4935,
+     "target": 0.8447,
+     "executed": 0.857
     },
     {
      "date": "2025-11-28",
      "index": 3926.59,
-     "trend": 0.7518,
-     "risk": 0.4416,
-     "target": 0.8744,
-     "executed": 0.8474
+     "trend": 0.6395,
+     "risk": 0.4814,
+     "target": 0.8496,
+     "executed": 0.857
     },
     {
      "date": "2025-12-01",
      "index": 3920.37,
-     "trend": 0.7659,
-     "risk": 0.5111,
-     "target": 0.8627,
-     "executed": 0.8674
+     "trend": 0.6574,
+     "risk": 0.5505,
+     "target": 0.8385,
+     "executed": 0.857
     },
     {
      "date": "2025-12-02",
      "index": 3994.93,
-     "trend": 0.9219,
-     "risk": 0.4612,
-     "target": 0.896,
-     "executed": 0.8627
+     "trend": 0.6833,
+     "risk": 0.4919,
+     "target": 0.8541,
+     "executed": 0.857
     },
     {
      "date": "2025-12-03",
      "index": 4036.3,
-     "trend": 0.9357,
-     "risk": 0.4648,
-     "target": 0.8974,
-     "executed": 0.8827
+     "trend": 0.7099,
+     "risk": 0.4994,
+     "target": 0.8566,
+     "executed": 0.857
     },
     {
      "date": "2025-12-04",
      "index": 4028.51,
-     "trend": 0.9328,
-     "risk": 0.4146,
-     "target": 0.907,
-     "executed": 0.8974
+     "trend": 0.7298,
+     "risk": 0.4446,
+     "target": 0.8706,
+     "executed": 0.857
     },
     {
      "date": "2025-12-05",
      "index": 4100.05,
-     "trend": 0.9445,
-     "risk": 0.4318,
-     "target": 0.9053,
-     "executed": 0.907
+     "trend": 0.751,
+     "risk": 0.453,
+     "target": 0.872,
+     "executed": 0.857
     },
     {
      "date": "2025-12-08",
      "index": 4154.85,
-     "trend": 0.9649,
-     "risk": 0.4516,
-     "target": 0.9044,
-     "executed": 0.9053
+     "trend": 0.7741,
+     "risk": 0.4681,
+     "target": 0.8725,
+     "executed": 0.857
     },
     {
      "date": "2025-12-09",
      "index": 4143.55,
-     "trend": 0.9647,
-     "risk": 0.4436,
-     "target": 0.906,
-     "executed": 0.9044
+     "trend": 0.7927,
+     "risk": 0.4597,
+     "target": 0.877,
+     "executed": 0.857
     },
     {
      "date": "2025-12-10",
      "index": 4135.0,
-     "trend": 0.9622,
-     "risk": 0.4505,
-     "target": 0.9042,
-     "executed": 0.906
+     "trend": 0.8072,
+     "risk": 0.4791,
+     "target": 0.8753,
+     "executed": 0.857
     },
     {
      "date": "2025-12-11",
      "index": 4110.62,
-     "trend": 0.9517,
-     "risk": 0.432,
-     "target": 0.9064,
-     "executed": 0.9042
+     "trend": 0.8154,
+     "risk": 0.4471,
+     "target": 0.8829,
+     "executed": 0.857
     },
     {
      "date": "2025-12-12",
      "index": 4167.16,
-     "trend": 0.9675,
-     "risk": 0.4463,
-     "target": 0.9059,
-     "executed": 0.9064
+     "trend": 0.8269,
+     "risk": 0.4741,
+     "target": 0.8792,
+     "executed": 0.857
     },
     {
      "date": "2025-12-15",
      "index": 4090.59,
-     "trend": 0.9406,
-     "risk": 0.4161,
-     "target": 0.9079,
-     "executed": 0.9059
+     "trend": 0.8278,
+     "risk": 0.448,
+     "target": 0.8846,
+     "executed": 0.857
     },
     {
      "date": "2025-12-16",
      "index": 3999.13,
-     "trend": 0.7428,
-     "risk": 0.3575,
-     "target": 0.8899,
-     "executed": 0.9079
+     "trend": 0.8031,
+     "risk": 0.3934,
+     "target": 0.8918,
+     "executed": 0.857
     },
     {
      "date": "2025-12-17",
      "index": 4056.41,
-     "trend": 0.8639,
-     "risk": 0.3902,
-     "target": 0.9015,
-     "executed": 0.8899
+     "trend": 0.7835,
+     "risk": 0.4258,
+     "target": 0.8824,
+     "executed": 0.877
     },
     {
      "date": "2025-12-18",
      "index": 3994.51,
-     "trend": 0.5645,
-     "risk": 0.385,
-     "target": 0.8577,
-     "executed": 0.9015
+     "trend": 0.7501,
+     "risk": 0.4202,
+     "target": 0.8785,
+     "executed": 0.8824
     },
     {
      "date": "2025-12-19",
      "index": 4020.55,
-     "trend": 0.7292,
-     "risk": 0.3015,
-     "target": 0.8991,
-     "executed": 0.8577
+     "trend": 0.7356,
+     "risk": 0.3272,
+     "target": 0.8949,
+     "executed": 0.8824
     },
     {
      "date": "2025-12-22",
      "index": 4105.93,
-     "trend": 0.9181,
-     "risk": 0.3114,
-     "target": 0.9254,
-     "executed": 0.8777
+     "trend": 0.744,
+     "risk": 0.3367,
+     "target": 0.8943,
+     "executed": 0.8824
     },
     {
      "date": "2025-12-23",
      "index": 4117.32,
-     "trend": 0.7656,
-     "risk": 0.3398,
-     "target": 0.8969,
-     "executed": 0.8977
+     "trend": 0.7423,
+     "risk": 0.3554,
+     "target": 0.8903,
+     "executed": 0.8824
     },
     {
      "date": "2025-12-24",
      "index": 4108.62,
-     "trend": 0.7472,
-     "risk": 0.3297,
-     "target": 0.8961,
-     "executed": 0.8969
+     "trend": 0.7345,
+     "risk": 0.3402,
+     "target": 0.8921,
+     "executed": 0.8824
     },
     {
      "date": "2025-12-26",
      "index": 4129.68,
-     "trend": 0.7513,
-     "risk": 0.2817,
-     "target": 0.9064,
-     "executed": 0.8961
+     "trend": 0.7305,
+     "risk": 0.3012,
+     "target": 0.8993,
+     "executed": 0.8824
     },
     {
      "date": "2025-12-29",
      "index": 4220.56,
-     "trend": 0.9376,
-     "risk": 0.2875,
-     "target": 0.9331,
-     "executed": 0.9064
+     "trend": 0.7459,
+     "risk": 0.3113,
+     "target": 0.8996,
+     "executed": 0.8824
     },
     {
      "date": "2025-12-30",
      "index": 4214.17,
-     "trend": 0.9309,
-     "risk": 0.2862,
-     "target": 0.9324,
-     "executed": 0.9264
+     "trend": 0.7539,
+     "risk": 0.3048,
+     "target": 0.9021,
+     "executed": 0.8824
     },
     {
      "date": "2025-12-31",
      "index": 4214.17,
-     "trend": 0.9309,
-     "risk": 0.2828,
-     "target": 0.9331,
-     "executed": 0.9324
+     "trend": 0.7604,
+     "risk": 0.2866,
+     "target": 0.9067,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-02",
      "index": 4309.63,
-     "trend": 0.9727,
-     "risk": 0.3062,
-     "target": 0.9347,
-     "executed": 0.9331
+     "trend": 0.7814,
+     "risk": 0.3192,
+     "target": 0.9034,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-05",
      "index": 4457.52,
-     "trend": 0.9869,
-     "risk": 0.3407,
-     "target": 0.9299,
-     "executed": 0.9347
+     "trend": 0.8049,
+     "risk": 0.3581,
+     "target": 0.8991,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-06",
      "index": 4525.48,
-     "trend": 0.98,
-     "risk": 0.3352,
-     "target": 0.93,
-     "executed": 0.9299
+     "trend": 0.8227,
+     "risk": 0.3472,
+     "target": 0.904,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-07",
      "index": 4551.06,
-     "trend": 0.9676,
-     "risk": 0.322,
-     "target": 0.9307,
-     "executed": 0.93
+     "trend": 0.833,
+     "risk": 0.3286,
+     "target": 0.9092,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-08",
      "index": 4552.37,
-     "trend": 0.96,
-     "risk": 0.324,
-     "target": 0.9292,
-     "executed": 0.9307
+     "trend": 0.8389,
+     "risk": 0.3301,
+     "target": 0.9098,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-09",
      "index": 4586.32,
-     "trend": 0.9617,
+     "trend": 0.8448,
      "risk": 0.3256,
-     "target": 0.9291,
-     "executed": 0.9292
+     "target": 0.9116,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-12",
      "index": 4624.79,
-     "trend": 0.9618,
+     "trend": 0.8502,
      "risk": 0.3664,
-     "target": 0.921,
-     "executed": 0.9291
+     "target": 0.9042,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-13",
      "index": 4692.64,
-     "trend": 0.96,
+     "trend": 0.8541,
      "risk": 0.4306,
-     "target": 0.9079,
-     "executed": 0.921
+     "target": 0.892,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-14",
      "index": 4723.1,
-     "trend": 0.9552,
+     "trend": 0.8544,
      "risk": 0.4792,
-     "target": 0.8974,
-     "executed": 0.9079
+     "target": 0.8823,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-15",
      "index": 4797.55,
-     "trend": 0.9614,
+     "trend": 0.8585,
      "risk": 0.346,
-     "target": 0.925,
-     "executed": 0.8974
+     "target": 0.9096,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-16",
      "index": 4840.74,
-     "trend": 0.9672,
+     "trend": 0.8638,
      "risk": 0.2978,
-     "target": 0.9355,
-     "executed": 0.9174
+     "target": 0.92,
+     "executed": 0.8824
     },
     {
      "date": "2026-01-19",
      "index": 4904.66,
-     "trend": 0.9811,
+     "trend": 0.8735,
      "risk": 0.2916,
-     "target": 0.9388,
-     "executed": 0.9355
+     "target": 0.9227,
+     "executed": 0.9024
     },
     {
      "date": "2026-01-20",
      "index": 4885.75,
-     "trend": 0.9714,
+     "trend": 0.881,
      "risk": 0.2674,
-     "target": 0.9422,
-     "executed": 0.9388
+     "target": 0.9287,
+     "executed": 0.9224
     },
     {
      "date": "2026-01-21",
      "index": 4909.93,
-     "trend": 0.9318,
+     "trend": 0.8739,
      "risk": 0.2913,
-     "target": 0.9315,
-     "executed": 0.9422
+     "target": 0.9228,
+     "executed": 0.9287
     },
     {
      "date": "2026-01-22",
      "index": 4952.53,
-     "trend": 0.9634,
+     "trend": 0.8786,
      "risk": 0.1975,
-     "target": 0.955,
-     "executed": 0.9315
+     "target": 0.9423,
+     "executed": 0.9287
     },
     {
      "date": "2026-01-23",
      "index": 4990.07,
-     "trend": 0.985,
+     "trend": 0.8897,
      "risk": 0.1606,
-     "target": 0.9656,
-     "executed": 0.9515
+     "target": 0.9513,
+     "executed": 0.9287
     },
     {
      "date": "2026-01-26",
      "index": 4949.59,
-     "trend": 0.9843,
+     "trend": 0.9011,
      "risk": 0.1301,
-     "target": 0.9716,
-     "executed": 0.9656
+     "target": 0.9591,
+     "executed": 0.9287
     },
     {
      "date": "2026-01-27",
      "index": 5084.85,
-     "trend": 0.994,
+     "trend": 0.9134,
      "risk": 0.1877,
-     "target": 0.9616,
-     "executed": 0.9716
+     "target": 0.9495,
+     "executed": 0.9487
     },
     {
      "date": "2026-01-28",
      "index": 5170.81,
-     "trend": 0.9977,
+     "trend": 0.9251,
      "risk": 0.1919,
-     "target": 0.9613,
-     "executed": 0.9616
+     "target": 0.9504,
+     "executed": 0.9495
     },
     {
      "date": "2026-01-29",
      "index": 5221.25,
-     "trend": 0.9983,
+     "trend": 0.9353,
      "risk": 0.1632,
-     "target": 0.9671,
-     "executed": 0.9613
+     "target": 0.9577,
+     "executed": 0.9495
     },
     {
      "date": "2026-01-30",
      "index": 5224.36,
-     "trend": 0.9822,
+     "trend": 0.9411,
      "risk": 0.1132,
-     "target": 0.9747,
-     "executed": 0.9671
+     "target": 0.9685,
+     "executed": 0.9495
     },
     {
      "date": "2026-02-02",
      "index": 4949.67,
-     "trend": 0.8563,
+     "trend": 0.9169,
      "risk": 0.3482,
-     "target": 0.9088,
-     "executed": 0.9747
+     "target": 0.9179,
+     "executed": 0.9495
     },
     {
      "date": "2026-02-03",
      "index": 5288.08,
-     "trend": 0.9752,
+     "trend": 0.9251,
      "risk": 0.4201,
-     "target": 0.9123,
-     "executed": 0.9088
+     "target": 0.9047,
+     "executed": 0.9179
     },
     {
      "date": "2026-02-04",
      "index": 5371.1,
-     "trend": 0.9813,
+     "trend": 0.9333,
      "risk": 0.4256,
-     "target": 0.9121,
-     "executed": 0.9123
+     "target": 0.9049,
+     "executed": 0.9179
     },
     {
      "date": "2026-02-05",
      "index": 5163.57,
-     "trend": 0.8883,
+     "trend": 0.9203,
      "risk": 0.45,
-     "target": 0.8932,
-     "executed": 0.9121
+     "target": 0.898,
+     "executed": 0.9179
     },
     {
      "date": "2026-02-06",
      "index": 5089.14,
-     "trend": 0.8391,
+     "trend": 0.8951,
      "risk": 0.4838,
-     "target": 0.8791,
-     "executed": 0.8932
+     "target": 0.8875,
+     "executed": 0.9179
     },
     {
      "date": "2026-02-09",
      "index": 5298.04,
-     "trend": 0.9423,
+     "trend": 0.9005,
      "risk": 0.5312,
-     "target": 0.8851,
-     "executed": 0.8791
+     "target": 0.8788,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-10",
      "index": 5301.69,
-     "trend": 0.9289,
+     "trend": 0.9013,
      "risk": 0.5306,
-     "target": 0.8832,
-     "executed": 0.8851
+     "target": 0.8791,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-11",
      "index": 5354.49,
-     "trend": 0.941,
+     "trend": 0.9038,
      "risk": 0.5556,
-     "target": 0.88,
-     "executed": 0.8832
+     "target": 0.8745,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-12",
      "index": 5522.27,
-     "trend": 0.9565,
+     "trend": 0.91,
      "risk": 0.5196,
-     "target": 0.8896,
-     "executed": 0.88
+     "target": 0.8826,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-13",
      "index": 5507.01,
-     "trend": 0.9294,
+     "trend": 0.9063,
      "risk": 0.5066,
-     "target": 0.8881,
-     "executed": 0.8896
+     "target": 0.8846,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-17",
      "index": 5507.01,
-     "trend": 0.9294,
+     "trend": 0.9033,
      "risk": 0.4491,
-     "target": 0.8996,
-     "executed": 0.8881
+     "target": 0.8957,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-18",
      "index": 5507.01,
-     "trend": 0.9294,
+     "trend": 0.9008,
      "risk": 0.4482,
-     "target": 0.8998,
-     "executed": 0.8996
+     "target": 0.8955,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-19",
      "index": 5677.25,
-     "trend": 0.9953,
+     "trend": 0.9159,
      "risk": 0.45,
-     "target": 0.9093,
-     "executed": 0.8998
+     "target": 0.8974,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-20",
      "index": 5808.53,
-     "trend": 0.9878,
+     "trend": 0.9262,
      "risk": 0.4494,
-     "target": 0.9083,
-     "executed": 0.9093
+     "target": 0.8991,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-23",
      "index": 5846.09,
-     "trend": 0.9862,
+     "trend": 0.9333,
      "risk": 0.4494,
-     "target": 0.908,
-     "executed": 0.9083
+     "target": 0.9001,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-24",
      "index": 5969.64,
-     "trend": 0.9997,
+     "trend": 0.9419,
      "risk": 0.4488,
-     "target": 0.9102,
-     "executed": 0.908
+     "target": 0.9015,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-25",
      "index": 6083.86,
-     "trend": 0.9994,
+     "trend": 0.948,
      "risk": 0.4476,
-     "target": 0.9104,
-     "executed": 0.9102
+     "target": 0.9027,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-26",
      "index": 6307.27,
-     "trend": 0.9999,
-     "risk": 0.45,
-     "target": 0.91,
-     "executed": 0.9104
+     "trend": 0.9549,
+     "risk": 0.4554,
+     "target": 0.9022,
+     "executed": 0.8875
     },
     {
      "date": "2026-02-27",
      "index": 6244.13,
-     "trend": 0.9874,
-     "risk": 0.4589,
-     "target": 0.9063,
-     "executed": 0.91
+     "trend": 0.9582,
+     "risk": 0.4918,
+     "target": 0.8954,
+     "executed": 0.8875
     },
     {
      "date": "2026-03-02",
      "index": 6244.13,
-     "trend": 0.9874,
-     "risk": 0.451,
-     "target": 0.9079,
-     "executed": 0.9063
+     "trend": 0.9609,
+     "risk": 0.4764,
+     "target": 0.8989,
+     "executed": 0.8875
     },
     {
      "date": "2026-03-03",
      "index": 5791.91,
-     "trend": 0.7148,
-     "risk": 0.5116,
-     "target": 0.8549,
-     "executed": 0.9079
+     "trend": 0.9241,
+     "risk": 0.5331,
+     "target": 0.882,
+     "executed": 0.8875
     },
     {
      "date": "2026-03-04",
      "index": 5093.54,
-     "trend": 0.2613,
+     "trend": 0.8007,
      "risk": 0.6498,
-     "target": 0.7592,
-     "executed": 0.8549
+     "target": 0.8401,
+     "executed": 0.8875
     },
     {
      "date": "2026-03-05",
      "index": 5583.9,
-     "trend": 0.6504,
-     "risk": 0.5631,
-     "target": 0.8349,
-     "executed": 0.7592
+     "trend": 0.7707,
+     "risk": 0.5742,
+     "target": 0.8508,
+     "executed": 0.8401
     },
     {
      "date": "2026-03-06",
      "index": 5584.87,
-     "trend": 0.6906,
-     "risk": 0.6227,
-     "target": 0.8291,
-     "executed": 0.7792
+     "trend": 0.7604,
+     "risk": 0.6102,
+     "target": 0.842,
+     "executed": 0.8401
     },
     {
      "date": "2026-03-09",
      "index": 5251.87,
-     "trend": 0.4408,
-     "risk": 0.6915,
-     "target": 0.7778,
-     "executed": 0.7992
+     "trend": 0.7079,
+     "risk": 0.6884,
+     "target": 0.8185,
+     "executed": 0.8401
     },
     {
      "date": "2026-03-10",
      "index": 5532.59,
-     "trend": 0.6609,
-     "risk": 0.5806,
-     "target": 0.833,
-     "executed": 0.7778
+     "trend": 0.6974,
+     "risk": 0.5957,
+     "target": 0.8355,
+     "executed": 0.8401
     },
     {
      "date": "2026-03-11",
      "index": 5609.95,
-     "trend": 0.675,
-     "risk": 0.6482,
-     "target": 0.8216,
-     "executed": 0.7978
+     "trend": 0.6936,
+     "risk": 0.7103,
+     "target": 0.812,
+     "executed": 0.8401
     },
     {
      "date": "2026-03-12",
      "index": 5583.25,
-     "trend": 0.6826,
-     "risk": 0.7361,
-     "target": 0.8052,
-     "executed": 0.8178
+     "trend": 0.6913,
+     "risk": 0.7807,
+     "target": 0.7976,
+     "executed": 0.8401
     },
     {
      "date": "2026-03-13",
      "index": 5487.24,
-     "trend": 0.6687,
-     "risk": 0.7517,
-     "target": 0.8,
-     "executed": 0.8052
+     "trend": 0.6836,
+     "risk": 0.7652,
+     "target": 0.7995,
+     "executed": 0.7976
     },
     {
      "date": "2026-03-16",
      "index": 5549.85,
-     "trend": 0.6648,
-     "risk": 0.7342,
-     "target": 0.8029,
-     "executed": 0.8
+     "trend": 0.6745,
+     "risk": 0.7644,
+     "target": 0.7983,
+     "executed": 0.7976
     },
     {
      "date": "2026-03-17",
      "index": 5640.48,
-     "trend": 0.5562,
-     "risk": 0.6852,
-     "target": 0.7964,
-     "executed": 0.8029
+     "trend": 0.6727,
+     "risk": 0.7255,
+     "target": 0.8058,
+     "executed": 0.7976
     },
     {
      "date": "2026-03-18",
      "index": 5925.03,
-     "trend": 0.8926,
-     "risk": 0.5322,
-     "target": 0.8775,
-     "executed": 0.7964
+     "trend": 0.7034,
+     "risk": 0.5461,
+     "target": 0.8463,
+     "executed": 0.7976
     },
     {
      "date": "2026-03-19",
      "index": 5763.22,
-     "trend": 0.8376,
-     "risk": 0.7278,
-     "target": 0.8301,
-     "executed": 0.8164
+     "trend": 0.7072,
+     "risk": 0.7267,
+     "target": 0.8107,
+     "executed": 0.8176
     },
     {
      "date": "2026-03-20",
      "index": 5781.2,
-     "trend": 0.8608,
-     "risk": 0.5972,
-     "target": 0.8597,
-     "executed": 0.8301
+     "trend": 0.7192,
+     "risk": 0.5869,
+     "target": 0.8405,
+     "executed": 0.8176
     },
     {
      "date": "2026-03-23",
      "index": 5405.75,
-     "trend": 0.4621,
-     "risk": 0.6197,
-     "target": 0.7954,
-     "executed": 0.8501
+     "trend": 0.6762,
+     "risk": 0.6196,
+     "target": 0.8275,
+     "executed": 0.8176
     },
     {
      "date": "2026-03-24",
      "index": 5553.92,
-     "trend": 0.523,
-     "risk": 0.6383,
-     "target": 0.8008,
-     "executed": 0.7954
+     "trend": 0.6602,
+     "risk": 0.6091,
+     "target": 0.8272,
+     "executed": 0.8176
     },
     {
      "date": "2026-03-25",
      "index": 5642.21,
-     "trend": 0.7072,
-     "risk": 0.615,
-     "target": 0.8331,
-     "executed": 0.8008
+     "trend": 0.6712,
+     "risk": 0.5959,
+     "target": 0.8315,
+     "executed": 0.8176
     },
     {
      "date": "2026-03-26",
      "index": 5460.46,
-     "trend": 0.6468,
-     "risk": 0.6343,
-     "target": 0.8202,
-     "executed": 0.8208
+     "trend": 0.6579,
+     "risk": 0.5998,
+     "target": 0.8287,
+     "executed": 0.8176
     },
     {
      "date": "2026-03-27",
      "index": 5438.87,
-     "trend": 0.6472,
-     "risk": 0.7379,
-     "target": 0.7995,
-     "executed": 0.8202
+     "trend": 0.6488,
+     "risk": 0.6782,
+     "target": 0.8117,
+     "executed": 0.8176
     },
     {
      "date": "2026-03-30",
      "index": 5277.3,
-     "trend": 0.4499,
-     "risk": 0.5942,
-     "target": 0.7987,
-     "executed": 0.7995
+     "trend": 0.6172,
+     "risk": 0.5311,
+     "target": 0.8364,
+     "executed": 0.8176
     },
     {
      "date": "2026-03-31",
      "index": 5052.46,
-     "trend": 0.3384,
-     "risk": 0.6448,
-     "target": 0.7718,
-     "executed": 0.7987
+     "trend": 0.5619,
+     "risk": 0.6211,
+     "target": 0.8101,
+     "executed": 0.8176
     },
     {
      "date": "2026-04-01",
      "index": 5478.7,
-     "trend": 0.5021,
-     "risk": 0.5546,
-     "target": 0.8144,
-     "executed": 0.7718
+     "trend": 0.563,
+     "risk": 0.5263,
+     "target": 0.8292,
+     "executed": 0.8176
     },
     {
      "date": "2026-04-02",
      "index": 5234.05,
-     "trend": 0.381,
-     "risk": 0.4977,
-     "target": 0.8076,
-     "executed": 0.7918
+     "trend": 0.5259,
+     "risk": 0.4632,
+     "target": 0.8362,
+     "executed": 0.8176
     },
     {
      "date": "2026-04-03",
      "index": 5377.3,
-     "trend": 0.4153,
-     "risk": 0.5378,
-     "target": 0.8047,
-     "executed": 0.8076
+     "trend": 0.505,
+     "risk": 0.5116,
+     "target": 0.8234,
+     "executed": 0.8176
     },
     {
      "date": "2026-04-06",
      "index": 5450.33,
-     "trend": 0.4103,
-     "risk": 0.4519,
-     "target": 0.8212,
-     "executed": 0.8047
+     "trend": 0.4873,
+     "risk": 0.4451,
+     "target": 0.8341,
+     "executed": 0.8176
     },
     {
      "date": "2026-04-07",
      "index": 5494.78,
-     "trend": 0.3927,
-     "risk": 0.5489,
-     "target": 0.7991,
-     "executed": 0.8212
+     "trend": 0.469,
+     "risk": 0.5265,
+     "target": 0.815,
+     "executed": 0.8176
     },
     {
      "date": "2026-04-08",
      "index": 5872.34,
-     "trend": 0.6657,
+     "trend": 0.4986,
      "risk": 0.4306,
-     "target": 0.8637,
-     "executed": 0.7991
+     "target": 0.8387,
+     "executed": 0.8176
     },
     {
      "date": "2026-04-09",
      "index": 5778.01,
-     "trend": 0.628,
+     "trend": 0.5109,
      "risk": 0.4225,
-     "target": 0.8597,
-     "executed": 0.8191
+     "target": 0.8421,
+     "executed": 0.8176
     },
     {
      "date": "2026-04-10",
      "index": 5858.87,
-     "trend": 0.6705,
+     "trend": 0.5325,
      "risk": 0.4213,
-     "target": 0.8663,
-     "executed": 0.8391
+     "target": 0.8456,
+     "executed": 0.8176
     },
     {
      "date": "2026-04-13",
      "index": 5808.62,
-     "trend": 0.6689,
+     "trend": 0.5497,
      "risk": 0.4207,
-     "target": 0.8662,
-     "executed": 0.8591
+     "target": 0.8483,
+     "executed": 0.8176
     },
     {
      "date": "2026-04-14",
      "index": 5967.75,
-     "trend": 0.8516,
+     "trend": 0.5804,
      "risk": 0.4225,
-     "target": 0.8932,
-     "executed": 0.8662
+     "target": 0.8526,
+     "executed": 0.8376
     },
     {
      "date": "2026-04-15",
      "index": 6091.39,
-     "trend": 0.786,
+     "trend": 0.6201,
      "risk": 0.4159,
-     "target": 0.8847,
-     "executed": 0.8862
+     "target": 0.8598,
+     "executed": 0.8526
     },
     {
      "date": "2026-04-16",
      "index": 6226.05,
-     "trend": 0.8246,
+     "trend": 0.6599,
      "risk": 0.4141,
-     "target": 0.8909,
-     "executed": 0.8847
+     "target": 0.8662,
+     "executed": 0.8526
     },
     {
      "date": "2026-04-17",
      "index": 6191.92,
-     "trend": 0.8258,
+     "trend": 0.6922,
      "risk": 0.4141,
-     "target": 0.891,
-     "executed": 0.8909
+     "target": 0.871,
+     "executed": 0.8526
     },
     {
      "date": "2026-04-20",
      "index": 6219.09,
-     "trend": 0.8358,
+     "trend": 0.7213,
      "risk": 0.41,
-     "target": 0.8934,
-     "executed": 0.891
+     "target": 0.8762,
+     "executed": 0.8526
     },
     {
      "date": "2026-04-21",
      "index": 6388.47,
-     "trend": 0.8579,
+     "trend": 0.7496,
      "risk": 0.4094,
-     "target": 0.8968,
-     "executed": 0.8934
+     "target": 0.8806,
+     "executed": 0.8526
     },
     {
      "date": "2026-04-22",
      "index": 6417.93,
-     "trend": 0.8592,
+     "trend": 0.7729,
      "risk": 0.4083,
-     "target": 0.8972,
-     "executed": 0.8968
+     "target": 0.8843,
+     "executed": 0.8526
     },
     {
      "date": "2026-04-23",
      "index": 6475.81,
-     "trend": 0.851,
+     "trend": 0.7905,
      "risk": 0.4155,
-     "target": 0.8946,
-     "executed": 0.8972
+     "target": 0.8855,
+     "executed": 0.8726
     },
     {
      "date": "2026-04-24",
      "index": 6475.63,
-     "trend": 0.8733,
+     "trend": 0.8107,
      "risk": 0.4354,
-     "target": 0.8939,
-     "executed": 0.8946
+     "target": 0.8845,
+     "executed": 0.8855
     },
     {
      "date": "2026-04-27",
      "index": 6615.03,
-     "trend": 0.8734,
+     "trend": 0.8292,
      "risk": 0.4131,
-     "target": 0.8984,
-     "executed": 0.8939
+     "target": 0.8918,
+     "executed": 0.8855
     },
     {
      "date": "2026-04-28",
      "index": 6641.02,
-     "trend": 0.861,
+     "trend": 0.8441,
      "risk": 0.4255,
-     "target": 0.8941,
-     "executed": 0.8984
+     "target": 0.8915,
+     "executed": 0.8855
     },
     {
      "date": "2026-04-29",
      "index": 6690.9,
-     "trend": 0.9811,
+     "trend": 0.8568,
      "risk": 0.4216,
-     "target": 0.9128,
-     "executed": 0.8941
+     "target": 0.8942,
+     "executed": 0.8855
     },
     {
      "date": "2026-04-30",
      "index": 6598.87,
-     "trend": 0.9186,
+     "trend": 0.8553,
      "risk": 0.4173,
-     "target": 0.9043,
-     "executed": 0.9128
+     "target": 0.8948,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-01",
      "index": 6598.87,
-     "trend": 0.9186,
+     "trend": 0.8541,
      "risk": 0.3689,
-     "target": 0.914,
-     "executed": 0.9043
+     "target": 0.9043,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-04",
      "index": 6936.99,
-     "trend": 0.9382,
+     "trend": 0.8596,
      "risk": 0.4429,
-     "target": 0.9022,
-     "executed": 0.914
+     "target": 0.8904,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-05",
      "index": 6936.99,
-     "trend": 0.9382,
+     "trend": 0.8642,
      "risk": 0.4255,
-     "target": 0.9056,
-     "executed": 0.9022
+     "target": 0.8945,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-06",
      "index": 7384.56,
-     "trend": 0.9054,
+     "trend": 0.8627,
      "risk": 0.386,
-     "target": 0.9086,
-     "executed": 0.9056
+     "target": 0.9022,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-07",
      "index": 7490.05,
-     "trend": 0.8984,
+     "trend": 0.8592,
      "risk": 0.383,
-     "target": 0.9082,
-     "executed": 0.9086
+     "target": 0.9023,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-08",
      "index": 7498.0,
-     "trend": 0.9511,
+     "trend": 0.8671,
      "risk": 0.3691,
-     "target": 0.9189,
-     "executed": 0.9082
+     "target": 0.9062,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-11",
      "index": 7822.24,
-     "trend": 0.9184,
+     "trend": 0.867,
      "risk": 0.3765,
-     "target": 0.9125,
-     "executed": 0.9189
+     "target": 0.9048,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-12",
      "index": 7643.15,
-     "trend": 0.7053,
+     "trend": 0.8442,
      "risk": 0.4049,
-     "target": 0.8748,
-     "executed": 0.9125
+     "target": 0.8956,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-13",
      "index": 7844.01,
-     "trend": 0.7685,
+     "trend": 0.8359,
      "risk": 0.4814,
-     "target": 0.869,
-     "executed": 0.8748
+     "target": 0.8791,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-14",
      "index": 7981.41,
-     "trend": 0.8105,
+     "trend": 0.8395,
      "risk": 0.3957,
-     "target": 0.8924,
-     "executed": 0.869
+     "target": 0.8968,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-15",
      "index": 7493.18,
-     "trend": 0.5778,
+     "trend": 0.7892,
      "risk": 0.5415,
-     "target": 0.8284,
-     "executed": 0.889
+     "target": 0.8601,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-18",
      "index": 7516.04,
-     "trend": 0.5551,
+     "trend": 0.7416,
      "risk": 0.5586,
-     "target": 0.8215,
-     "executed": 0.8284
+     "target": 0.8495,
+     "executed": 0.8855
     },
     {
      "date": "2026-05-19",
      "index": 7271.66,
-     "trend": 0.4607,
+     "trend": 0.6769,
      "risk": 0.5384,
-     "target": 0.8114,
-     "executed": 0.8215
+     "target": 0.8438,
+     "executed": 0.8495
     },
     {
      "date": "2026-05-20",
      "index": 7208.95,
-     "trend": 0.2611,
+     "trend": 0.5985,
      "risk": 0.6095,
-     "target": 0.7673,
-     "executed": 0.8114
+     "target": 0.8179,
+     "executed": 0.8495
     },
     {
      "date": "2026-05-21",
      "index": 7815.59,
-     "trend": 0.6013,
+     "trend": 0.5921,
      "risk": 0.6585,
-     "target": 0.8085,
-     "executed": 0.7673
+     "target": 0.8071,
+     "executed": 0.8179
     },
     {
      "date": "2026-05-22",
      "index": 7847.71,
-     "trend": 0.6631,
+     "trend": 0.6076,
      "risk": 0.6579,
-     "target": 0.8179,
-     "executed": 0.7873
+     "target": 0.8096,
+     "executed": 0.8179
     },
     {
      "date": "2026-05-26",
      "index": 8047.51,
-     "trend": 0.7151,
+     "trend": 0.6327,
      "risk": 0.6313,
-     "target": 0.831,
-     "executed": 0.8073
+     "target": 0.8186,
+     "executed": 0.8179
     },
     {
      "date": "2026-05-27",
      "index": 8228.7,
-     "trend": 0.6348,
+     "trend": 0.6298,
      "risk": 0.5546,
-     "target": 0.8343,
-     "executed": 0.8273
+     "target": 0.8336,
+     "executed": 0.8179
     },
     {
      "date": "2026-05-28",
      "index": 8185.29,
-     "trend": 0.5593,
+     "trend": 0.6071,
      "risk": 0.4557,
-     "target": 0.8427,
-     "executed": 0.8343
+     "target": 0.8499,
+     "executed": 0.8179
     },
     {
      "date": "2026-05-29",
      "index": 8476.15,
-     "trend": 0.3893,
+     "trend": 0.5711,
      "risk": 0.4343,
-     "target": 0.8215,
-     "executed": 0.8427
+     "target": 0.8488,
+     "executed": 0.8379
     },
     {
      "date": "2026-06-01",
      "index": 8788.38,
-     "trend": 0.3426,
+     "trend": 0.5246,
      "risk": 0.4708,
-     "target": 0.8072,
-     "executed": 0.8215
+     "target": 0.8345,
+     "executed": 0.8488
     },
     {
      "date": "2026-06-02",
      "index": 8801.49,
-     "trend": 0.3103,
+     "trend": 0.4755,
      "risk": 0.4663,
-     "target": 0.8033,
-     "executed": 0.8072
+     "target": 0.8281,
+     "executed": 0.8488
     },
     {
      "date": "2026-06-03",
      "index": 8801.49,
-     "trend": 0.3103,
+     "trend": 0.4354,
      "risk": 0.5113,
-     "target": 0.7943,
-     "executed": 0.8033
+     "target": 0.8131,
+     "executed": 0.8488
     },
     {
      "date": "2026-06-04",
      "index": 8639.41,
-     "trend": 0.216,
+     "trend": 0.4095,
      "risk": 0.4976,
-     "target": 0.7829,
-     "executed": 0.7943
+     "target": 0.8119,
+     "executed": 0.8131
     },
     {
      "date": "2026-06-05",
      "index": 8160.59,
-     "trend": 0.211,
+     "trend": 0.3762,
      "risk": 0.558,
-     "target": 0.77,
-     "executed": 0.7829
+     "target": 0.7948,
+     "executed": 0.8131
     },
     {
      "date": "2026-06-08",
      "index": 7484.41,
-     "trend": -0.1811,
+     "trend": 0.2801,
      "risk": 0.6243,
-     "target": 0.698,
-     "executed": 0.77
+     "target": 0.7672,
+     "executed": 0.8131
     },
     {
      "date": "2026-06-09",
      "index": 8096.93,
-     "trend": 0.0344,
+     "trend": 0.2307,
      "risk": 0.4969,
-     "target": 0.7558,
-     "executed": 0.698
+     "target": 0.7852,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-10",
      "index": 7730.82,
-     "trend": -0.1368,
+     "trend": 0.1688,
      "risk": 0.5327,
-     "target": 0.7229,
-     "executed": 0.718
+     "target": 0.7688,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-11",
      "index": 7763.95,
-     "trend": -0.1117,
+     "trend": 0.1232,
      "risk": 0.5254,
-     "target": 0.7282,
-     "executed": 0.7229
+     "target": 0.7634,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-12",
      "index": 8123.62,
-     "trend": 0.1104,
+     "trend": 0.1182,
      "risk": 0.5343,
-     "target": 0.7597,
-     "executed": 0.7282
+     "target": 0.7609,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-15",
      "index": 8545.98,
-     "trend": 0.1728,
+     "trend": 0.1331,
      "risk": 0.4367,
-     "target": 0.7886,
-     "executed": 0.7482
+     "target": 0.7826,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-16",
      "index": 8726.6,
-     "trend": 0.175,
+     "trend": 0.1426,
      "risk": 0.4303,
-     "target": 0.7902,
-     "executed": 0.7682
+     "target": 0.7853,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-17",
      "index": 8864.24,
-     "trend": 0.2104,
+     "trend": 0.1604,
      "risk": 0.4189,
-     "target": 0.7978,
-     "executed": 0.7882
+     "target": 0.7903,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-18",
      "index": 9063.84,
-     "trend": 0.1663,
+     "trend": 0.1604,
      "risk": 0.4171,
-     "target": 0.7915,
-     "executed": 0.7978
+     "target": 0.7906,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-19",
      "index": 9052.42,
-     "trend": 0.1315,
+     "trend": 0.151,
      "risk": 0.4331,
-     "target": 0.7831,
-     "executed": 0.7915
+     "target": 0.786,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-22",
      "index": 9114.55,
-     "trend": 0.1362,
+     "trend": 0.1436,
      "risk": 0.41,
-     "target": 0.7884,
-     "executed": 0.7831
+     "target": 0.7896,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-23",
      "index": 8203.84,
-     "trend": -0.1226,
+     "trend": 0.094,
      "risk": 0.4746,
-     "target": 0.7367,
-     "executed": 0.7884
+     "target": 0.7692,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-24",
      "index": 8471.02,
-     "trend": 0.0447,
+     "trend": 0.0677,
      "risk": 0.4727,
-     "target": 0.7622,
-     "executed": 0.7367
+     "target": 0.7656,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-25",
      "index": 8930.3,
-     "trend": 0.1035,
+     "trend": 0.0643,
      "risk": 0.5161,
-     "target": 0.7623,
-     "executed": 0.7567
+     "target": 0.7564,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-26",
      "index": 8411.21,
-     "trend": -0.0952,
+     "trend": 0.0349,
      "risk": 0.5731,
-     "target": 0.7211,
-     "executed": 0.7623
+     "target": 0.7406,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-29",
      "index": 8394.65,
-     "trend": -0.0933,
+     "trend": 0.0117,
      "risk": 0.5547,
-     "target": 0.7251,
-     "executed": 0.7211
+     "target": 0.7408,
+     "executed": 0.7672
     },
     {
      "date": "2026-06-30",
      "index": 8476.48,
-     "trend": 0.0422,
+     "trend": -0.0029,
      "risk": 0.5644,
-     "target": 0.7434,
-     "executed": 0.7251
+     "target": 0.7367,
+     "executed": 0.7672
     },
     {
      "date": "2026-07-01",
      "index": 8303.41,
-     "trend": -0.2266,
+     "trend": -0.0217,
      "risk": 0.6108,
-     "target": 0.6939,
-     "executed": 0.7434
+     "target": 0.7246,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-02",
      "index": 7648.09,
-     "trend": -0.319,
+     "trend": -0.0649,
      "risk": 0.5738,
-     "target": 0.6874,
-     "executed": 0.6939
+     "target": 0.7255,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-03",
      "index": 8088.34,
-     "trend": -0.2628,
+     "trend": -0.0874,
      "risk": 0.4783,
-     "target": 0.7149,
-     "executed": 0.6874
+     "target": 0.7412,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-06",
      "index": 8051.33,
-     "trend": -0.2662,
+     "trend": -0.1082,
      "risk": 0.4345,
-     "target": 0.7232,
-     "executed": 0.7074
+     "target": 0.7469,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-07",
      "index": 7656.31,
-     "trend": -0.3219,
+     "trend": -0.1385,
      "risk": 0.4297,
-     "target": 0.7158,
-     "executed": 0.7232
+     "target": 0.7433,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-08",
      "index": 7246.79,
-     "trend": -0.3737,
+     "trend": -0.174,
      "risk": 0.4637,
-     "target": 0.7012,
-     "executed": 0.7158
+     "target": 0.7312,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-09",
      "index": 7291.91,
-     "trend": -0.373,
+     "trend": -0.2039,
      "risk": 0.4587,
-     "target": 0.7023,
-     "executed": 0.7012
+     "target": 0.7277,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-10",
      "index": 7475.94,
-     "trend": -0.3484,
+     "trend": -0.2241,
      "risk": 0.4616,
-     "target": 0.7054,
-     "executed": 0.7023
+     "target": 0.7241,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-13",
      "index": 6806.93,
-     "trend": -0.3805,
+     "trend": -0.2515,
      "risk": 0.492,
-     "target": 0.6945,
-     "executed": 0.7054
+     "target": 0.7139,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-14",
      "index": 6856.83,
-     "trend": -0.3822,
+     "trend": -0.2751,
      "risk": 0.4708,
-     "target": 0.6985,
-     "executed": 0.6945
+     "target": 0.7146,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-15",
      "index": 7284.41,
-     "trend": -0.3747,
+     "trend": -0.2907,
      "risk": 0.4615,
-     "target": 0.7015,
-     "executed": 0.6985
+     "target": 0.7141,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-16",
      "index": 6820.6,
-     "trend": -0.3879,
+     "trend": -0.3147,
      "risk": 0.4686,
-     "target": 0.6981,
-     "executed": 0.7015
+     "target": 0.7091,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-17",
      "index": 6820.6,
-     "trend": -0.3879,
+     "trend": -0.3343,
      "risk": 0.4613,
-     "target": 0.6996,
-     "executed": 0.6981
+     "target": 0.7076,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-20",
      "index": 6516.27,
-     "trend": -0.5494,
+     "trend": -0.3741,
      "risk": 0.4774,
-     "target": 0.6721,
-     "executed": 0.6996
+     "target": 0.6984,
+     "executed": 0.7367
     },
     {
      "date": "2026-07-21",
      "index": 6747.95,
-     "trend": -0.5392,
+     "trend": -0.4009,
      "risk": 0.461,
-     "target": 0.6769,
-     "executed": 0.6721
+     "target": 0.6977,
+     "executed": 0.6984
     },
     {
      "date": "2026-07-22",
      "index": 6797.7,
-     "trend": -0.5308,
+     "trend": -0.4229,
      "risk": 0.4427,
-     "target": 0.6818,
-     "executed": 0.6769
+     "target": 0.698,
+     "executed": 0.6984
     },
     {
      "date": "2026-07-23",
      "index": 7096.89,
-     "trend": -0.5137,
+     "trend": -0.4319,
      "risk": 0.4611,
-     "target": 0.6807,
-     "executed": 0.6818
+     "target": 0.693,
+     "executed": 0.6984
     },
     {
      "date": "2026-07-24",
      "index": 6690.62,
-     "trend": -0.6948,
+     "trend": -0.4654,
      "risk": 0.4399,
-     "target": 0.6578,
-     "executed": 0.6807
+     "target": 0.6922,
+     "executed": 0.6984
     },
     {
      "date": "2026-07-27",
      "index": 6755.75,
-     "trend": -0.5645,
+     "trend": -0.4899,
      "risk": 0.4174,
-     "target": 0.6819,
-     "executed": 0.6578
+     "target": 0.693,
+     "executed": 0.6984
     },
     {
      "date": "2026-07-28",
      "index": 6023.66,
-     "trend": -0.8253,
+     "trend": -0.5494,
      "risk": 0.4524,
-     "target": 0.6357,
-     "executed": 0.6778
+     "target": 0.6771,
+     "executed": 0.6984
     },
     {
      "date": "2026-07-29",
      "index": 5663.24,
-     "trend": -0.8562,
+     "trend": -0.6044,
      "risk": 0.4687,
-     "target": 0.6278,
-     "executed": 0.6357
+     "target": 0.6656,
+     "executed": 0.6984
     },
     {
      "date": "2026-07-30",
      "index": 5593.56,
-     "trend": -0.8641,
+     "trend": -0.6511,
      "risk": 0.4663,
-     "target": 0.6271,
-     "executed": 0.6278
+     "target": 0.6591,
+     "executed": 0.6656
     },
     {
      "date": "2026-07-31",
      "index": 6595.45,
-     "trend": -0.7585,
+     "trend": -0.6618,
      "risk": 0.501,
-     "target": 0.636,
-     "executed": 0.6271
+     "target": 0.6505,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-03",
      "index": 6257.45,
-     "trend": -0.8212,
+     "trend": -0.6866,
      "risk": 0.4714,
-     "target": 0.6325,
-     "executed": 0.636
+     "target": 0.6527,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-04",
      "index": 6358.95,
-     "trend": -0.6683,
+     "trend": -0.686,
      "risk": 0.4488,
-     "target": 0.66,
-     "executed": 0.6325
+     "target": 0.6573,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-05",
      "index": 6598.26,
-     "trend": -0.6813,
+     "trend": -0.6737,
      "risk": 0.4482,
-     "target": 0.6582,
-     "executed": 0.6525
+     "target": 0.6593,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-06",
      "index": 6296.38,
-     "trend": -0.7372,
+     "trend": -0.6844,
      "risk": 0.4488,
-     "target": 0.6497,
-     "executed": 0.6582
+     "target": 0.6576,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-07",
      "index": 6258.77,
-     "trend": -0.7407,
+     "trend": -0.6942,
      "risk": 0.447,
-     "target": 0.6495,
-     "executed": 0.6497
+     "target": 0.6565,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-10",
      "index": 6299.66,
-     "trend": -0.7395,
+     "trend": -0.6982,
      "risk": 0.4573,
-     "target": 0.6476,
-     "executed": 0.6495
+     "target": 0.6538,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-11",
      "index": 6345.53,
-     "trend": -0.7436,
+     "trend": -0.7003,
      "risk": 0.4616,
-     "target": 0.6461,
-     "executed": 0.6476
+     "target": 0.6526,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-12",
      "index": 6579.04,
-     "trend": -0.6094,
+     "trend": -0.6877,
      "risk": 0.456,
-     "target": 0.6674,
-     "executed": 0.6461
+     "target": 0.6556,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-13",
      "index": 6813.34,
-     "trend": -0.607,
+     "trend": -0.6638,
      "risk": 0.4392,
-     "target": 0.6711,
-     "executed": 0.6661
+     "target": 0.6626,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-14",
      "index": 6977.94,
-     "trend": -0.4803,
-     "risk": 0.4386,
-     "target": 0.6902,
-     "executed": 0.6711
+     "trend": -0.637,
+     "risk": 0.4456,
+     "target": 0.6653,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-17",
      "index": 6977.94,
-     "trend": -0.4803,
-     "risk": 0.4467,
-     "target": 0.6886,
-     "executed": 0.6902
+     "trend": -0.6152,
+     "risk": 0.4538,
+     "target": 0.667,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-18",
      "index": 6869.83,
-     "trend": -0.4589,
+     "trend": -0.5991,
      "risk": 0.4554,
-     "target": 0.6901,
-     "executed": 0.6886
+     "target": 0.6691,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-19",
      "index": 6471.17,
-     "trend": -0.609,
+     "trend": -0.6123,
      "risk": 0.4476,
-     "target": 0.6691,
-     "executed": 0.6901
+     "target": 0.6686,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-20",
      "index": 6852.58,
-     "trend": -0.5622,
+     "trend": -0.5942,
      "risk": 0.4457,
-     "target": 0.6765,
-     "executed": 0.6691
+     "target": 0.6717,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-21",
      "index": 6912.95,
-     "trend": -0.4216,
+     "trend": -0.5798,
      "risk": 0.4552,
-     "target": 0.6957,
-     "executed": 0.6765
+     "target": 0.672,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-24",
      "index": 6696.96,
-     "trend": -0.6102,
+     "trend": -0.5881,
      "risk": 0.4363,
-     "target": 0.6712,
-     "executed": 0.6957
+     "target": 0.6745,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-25",
      "index": 6742.74,
-     "trend": -0.6101,
+     "trend": -0.5907,
      "risk": 0.4297,
-     "target": 0.6725,
-     "executed": 0.6712
+     "target": 0.6755,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-26",
      "index": 6808.21,
-     "trend": -0.6133,
+     "trend": -0.592,
      "risk": 0.4153,
-     "target": 0.6749,
-     "executed": 0.6725
+     "target": 0.6781,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-27",
      "index": 6912.37,
-     "trend": -0.4889,
+     "trend": -0.5882,
      "risk": 0.4153,
-     "target": 0.6936,
-     "executed": 0.6749
+     "target": 0.6787,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-28",
      "index": 6788.88,
-     "trend": -0.615,
+     "trend": -0.5949,
      "risk": 0.3759,
-     "target": 0.6826,
-     "executed": 0.6936
+     "target": 0.6856,
+     "executed": 0.6656
     },
     {
      "date": "2026-08-31",
      "index": 6820.02,
-     "trend": -0.6173,
+     "trend": -0.6011,
      "risk": 0.3276,
-     "target": 0.6919,
-     "executed": 0.6826
+     "target": 0.6943,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-01",
      "index": 6835.8,
-     "trend": -0.7439,
+     "trend": -0.6112,
      "risk": 0.3386,
-     "target": 0.6707,
-     "executed": 0.6919
+     "target": 0.6906,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-02",
      "index": 6562.72,
-     "trend": -0.8702,
+     "trend": -0.6411,
      "risk": 0.3531,
-     "target": 0.6489,
-     "executed": 0.6707
+     "target": 0.6832,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-03",
      "index": 6579.48,
-     "trend": -0.8711,
+     "trend": -0.6667,
      "risk": 0.3285,
-     "target": 0.6536,
-     "executed": 0.6489
+     "target": 0.6843,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-04",
      "index": 6687.21,
-     "trend": -0.8628,
+     "trend": -0.6765,
      "risk": 0.3211,
-     "target": 0.6564,
-     "executed": 0.6536
+     "target": 0.6843,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-07",
      "index": 6995.39,
-     "trend": -0.5408,
+     "trend": -0.6499,
      "risk": 0.3337,
-     "target": 0.7021,
-     "executed": 0.6564
+     "target": 0.6858,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-08",
      "index": 6954.52,
-     "trend": -0.7264,
+     "trend": -0.6453,
      "risk": 0.3561,
-     "target": 0.6698,
-     "executed": 0.6764
+     "target": 0.682,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-09",
      "index": 7051.64,
-     "trend": -0.4451,
+     "trend": -0.6245,
      "risk": 0.354,
-     "target": 0.7124,
-     "executed": 0.6698
+     "target": 0.6855,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-10",
      "index": 7033.92,
-     "trend": -0.4572,
+     "trend": -0.609,
      "risk": 0.3704,
-     "target": 0.7073,
-     "executed": 0.6898
+     "target": 0.6846,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-11",
      "index": 6909.91,
-     "trend": -0.6087,
+     "trend": -0.6155,
      "risk": 0.3632,
-     "target": 0.6861,
-     "executed": 0.7073
+     "target": 0.685,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-14",
      "index": 6684.37,
-     "trend": -0.7438,
+     "trend": -0.6412,
      "risk": 0.3573,
-     "target": 0.667,
-     "executed": 0.6861
+     "target": 0.6824,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-15",
      "index": 6627.26,
-     "trend": -0.8687,
+     "trend": -0.6632,
      "risk": 0.3554,
-     "target": 0.6486,
-     "executed": 0.667
+     "target": 0.6794,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-16",
      "index": 6717.97,
-     "trend": -0.8693,
+     "trend": -0.6765,
      "risk": 0.331,
-     "target": 0.6534,
-     "executed": 0.6486
+     "target": 0.6823,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-17",
      "index": 6715.41,
-     "trend": -0.7418,
+     "trend": -0.6851,
      "risk": 0.3842,
-     "target": 0.6619,
-     "executed": 0.6534
+     "target": 0.6704,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-18",
      "index": 6894.23,
-     "trend": -0.6097,
+     "trend": -0.6787,
      "risk": 0.4285,
-     "target": 0.6728,
-     "executed": 0.6619
+     "target": 0.6625,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-21",
      "index": 7007.72,
-     "trend": -0.6072,
+     "trend": -0.663,
      "risk": 0.4817,
-     "target": 0.6626,
-     "executed": 0.6728
+     "target": 0.6542,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-22",
      "index": 7017.91,
-     "trend": -0.5575,
+     "trend": -0.6414,
      "risk": 0.4282,
-     "target": 0.6807,
-     "executed": 0.6626
+     "target": 0.6681,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-23",
      "index": 7080.92,
-     "trend": -0.5675,
+     "trend": -0.6188,
      "risk": 0.364,
-     "target": 0.6921,
-     "executed": 0.6807
+     "target": 0.6844,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-24",
      "index": 7080.92,
-     "trend": -0.5675,
+     "trend": -0.6004,
      "risk": 0.4084,
-     "target": 0.6832,
-     "executed": 0.6921
+     "target": 0.6783,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-25",
      "index": 7080.92,
-     "trend": -0.5675,
-     "risk": 0.405,
-     "target": 0.6839,
-     "executed": 0.6832
+     "trend": -0.5852,
+     "risk": 0.3799,
+     "target": 0.6862,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-28",
      "index": 6889.74,
-     "trend": -0.4266,
-     "risk": 0.4263,
-     "target": 0.7007,
-     "executed": 0.6839
+     "trend": -0.5813,
+     "risk": 0.3679,
+     "target": 0.6892,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-29",
      "index": 6870.81,
-     "trend": -0.371,
-     "risk": 0.4622,
-     "target": 0.7019,
-     "executed": 0.7007
+     "trend": -0.5678,
+     "risk": 0.3801,
+     "target": 0.6888,
+     "executed": 0.6656
     },
     {
      "date": "2026-09-30",
      "index": 6838.04,
-     "trend": -0.5698,
-     "risk": 0.4024,
-     "target": 0.6841,
-     "executed": 0.7019
+     "trend": -0.5707,
+     "risk": 0.3048,
+     "target": 0.7034,
+     "executed": 0.6656
     },
     {
      "date": "2026-10-01",
      "index": 6971.35,
-     "trend": -0.3973,
-     "risk": 0.4436,
-     "target": 0.7017,
-     "executed": 0.6841
+     "trend": -0.5515,
+     "risk": 0.3086,
+     "target": 0.7056,
+     "executed": 0.6856
     },
     {
      "date": "2026-10-02",
      "index": 7003.74,
-     "trend": -0.4107,
-     "risk": 0.361,
-     "target": 0.7162,
-     "executed": 0.7017
+     "trend": -0.5354,
+     "risk": 0.2733,
+     "target": 0.715,
+     "executed": 0.7056
     },
     {
      "date": "2026-10-05",
      "index": 7003.74,
-     "trend": -0.4107,
-     "risk": 0.3772,
-     "target": 0.7129,
-     "executed": 0.7162
+     "trend": -0.5222,
+     "risk": 0.2813,
+     "target": 0.7154,
+     "executed": 0.7056
     },
     {
      "date": "2026-10-06",
      "index": 6941.39,
-     "trend": -0.2726,
-     "risk": 0.3352,
-     "target": 0.7421,
-     "executed": 0.7129
+     "trend": -0.4846,
+     "risk": 0.2749,
+     "target": 0.7223,
+     "executed": 0.7056
     },
     {
      "date": "2026-10-07",
      "index": 6803.9,
-     "trend": -0.4484,
-     "risk": 0.3296,
-     "target": 0.7168,
-     "executed": 0.7329
+     "trend": -0.4745,
+     "risk": 0.2451,
+     "target": 0.7298,
+     "executed": 0.7056
     },
     {
      "date": "2026-10-08",
      "index": 6625.93,
-     "trend": -0.4319,
-     "risk": 0.2939,
-     "target": 0.7264,
-     "executed": 0.7168
+     "trend": -0.47,
+     "risk": 0.1859,
+     "target": 0.7423,
+     "executed": 0.7056
     },
     {
      "date": "2026-10-09",
      "index": 6625.93,
-     "trend": -0.4319,
-     "risk": 0.2738,
-     "target": 0.7304,
-     "executed": 0.7264
+     "trend": -0.4662,
+     "risk": 0.1822,
+     "target": 0.7436,
+     "executed": 0.7256
     },
     {
      "date": "2026-10-12",
      "index": 6384.24,
-     "trend": -0.5897,
-     "risk": 0.2837,
-     "target": 0.7048,
-     "executed": 0.7304
+     "trend": -0.4837,
+     "risk": 0.1924,
+     "target": 0.739,
+     "executed": 0.7436
     },
     {
      "date": "2026-10-13",
      "index": 6035.35,
-     "trend": -0.5439,
-     "risk": 0.3652,
-     "target": 0.6954,
-     "executed": 0.7048
+     "trend": -0.4958,
+     "risk": 0.2546,
+     "target": 0.7247,
+     "executed": 0.7436
     },
     {
      "date": "2026-10-14",
      "index": 6008.81,
-     "trend": -0.5729,
-     "risk": 0.3846,
-     "target": 0.6871,
-     "executed": 0.6954
+     "trend": -0.5159,
+     "risk": 0.2492,
+     "target": 0.7228,
+     "executed": 0.7436
     },
     {
      "date": "2026-10-15",
      "index": 5554.22,
-     "trend": -0.714,
-     "risk": 0.4226,
-     "target": 0.6584,
-     "executed": 0.6871
+     "trend": -0.5641,
+     "risk": 0.288,
+     "target": 0.7078,
+     "executed": 0.7436
     },
     {
      "date": "2026-10-16",
      "index": 5668.05,
-     "trend": -0.7486,
-     "risk": 0.4254,
-     "target": 0.6526,
-     "executed": 0.6584
+     "trend": -0.5876,
+     "risk": 0.2875,
+     "target": 0.7044,
+     "executed": 0.7078
     },
     {
      "date": "2026-10-19",
      "index": 5768.01,
-     "trend": -0.7015,
-     "risk": 0.4251,
-     "target": 0.6597,
-     "executed": 0.6526
+     "trend": -0.5985,
+     "risk": 0.288,
+     "target": 0.7026,
+     "executed": 0.7078
     },
     {
      "date": "2026-10-20",
      "index": 5552.74,
-     "trend": -0.8125,
-     "risk": 0.4304,
-     "target": 0.6421,
-     "executed": 0.6597
+     "trend": -0.6314,
+     "risk": 0.2916,
+     "target": 0.697,
+     "executed": 0.7078
     },
     {
      "date": "2026-10-21",
      "index": 5735.66,
-     "trend": -0.7386,
-     "risk": 0.4428,
-     "target": 0.6506,
-     "executed": 0.6421
+     "trend": -0.6458,
+     "risk": 0.3066,
+     "target": 0.6918,
+     "executed": 0.7078
     },
     {
      "date": "2026-10-22",
      "index": 5533.77,
-     "trend": -0.7145,
-     "risk": 0.4482,
-     "target": 0.6532,
-     "executed": 0.6506
+     "trend": -0.6563,
+     "risk": 0.3066,
+     "target": 0.6902,
+     "executed": 0.7078
     },
     {
      "date": "2026-10-23",
      "index": 5550.3,
-     "trend": -0.7458,
-     "risk": 0.4458,
-     "target": 0.649,
-     "executed": 0.6532
+     "trend": -0.6733,
+     "risk": 0.3042,
+     "target": 0.6882,
+     "executed": 0.7078
     }
    ]
   }

@@ -32,6 +32,8 @@ jobs:
       - run: python -m pytest -q
       - name: Fetch data & score
         run: python -m beta_model.export --refresh
+      - name: Backtest (1990~)
+        run: python -m beta_model.backtest
 
       # 결과를 커밋해 두면 일별 모델 기록이 남고, 저장소가 활동 상태로 유지되어
       # 60일 무활동 시 예약 워크플로가 꺼지는 것도 막는다.
@@ -39,7 +41,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dashboard/public/data/beta_model.json
+          git add dashboard/public/data/beta_model.json dashboard/public/data/backtest.json
           git diff --cached --quiet || git commit -m "data: $(date -u +'%Y-%m-%d %H:%M') UTC update"
           git push
 

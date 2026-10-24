@@ -26,7 +26,13 @@ FDR_SYMBOLS: dict[str, str] = {
     "KOSPI200": "KS200",   # VKOSPI 대체 계산용
 }
 FRED_SERIES: dict[str, str] = {
-    "HY_SPREAD": "BAMLH0A0HYM2",  # ICE BofA US High Yield OAS (%)
+    # 신용 위험은 1986년부터 이력이 있는 Baa−10Y 스프레드로 계산한다 (백테스트와 운영 일치).
+    # HY OAS는 FRED가 최근 3년만 제공(ICE 라이선스)하므로 참고 지표로만 표시.
+    "BAA_SPREAD": "BAA10Y",          # Moody's Baa 회사채 − 미 10년물 (%p)
+    "HY_SPREAD": "BAMLH0A0HYM2",     # ICE BofA US High Yield OAS (%) — 참고용
+    "USDKRW_FRED": "DEXKOUS",        # 2003년 이전 원/달러 보완 (주간 지연 공시)
+    "UST3M": "DTB3",                 # 미 3개월 국채 — 현금(MMF) 수익률 근사
+    "KR3M": "IR3TIB01KRM156N",       # 한국 3개월 금리(월간) — 원화 현금 수익률 근사
 }
 
 # 시장별 구성: 추세는 지수 평균, 위험은 시장별 변동성 지수 + 공통 매크로
@@ -35,7 +41,7 @@ MARKETS: dict[str, dict] = {
     "KR": {"label": "한국", "indices": ["KOSPI", "KOSDAQ"], "vol_index": "VKOSPI"},
 }
 
-HISTORY_YEARS = 3          # 252일 백분위·Z점수 워밍업을 위해 2년보다 넉넉히 받는다
+HISTORY_START = "1990-01-01"  # 백테스트용 장기 이력 (VIX 시작점)
 SMA_WINDOWS = (20, 60, 120)
 TRADING_DAYS = 252
 
@@ -52,6 +58,11 @@ class TrendParams:
     dd_floor: float = -0.20     # 이 낙폭 이하에서 -1점
     roc_window: int = 63        # 3개월
     roc_scale: float = 0.10     # tanh(roc / scale)
+    # 정배열: 0이면 부호(±1)만, >0이면 tanh(이격도/scale) 연속값 → 이평선 근처 휩쏘 완화
+    # 기본값은 backtest.py 워크포워드(표본 내 1990~2012 선택 → 2013~ 검증)로 정함:
+    # 표본 내 샤프가 최고치와 0.01 이내인 조합 중 회전율이 가장 낮은 것
+    alignment_scale: float = 0.04
+    smooth_span: int = 10       # 합성 추세 점수 EMA 기간 (1 = 평활화 없음)
 
 
 @dataclass(frozen=True)
@@ -63,9 +74,10 @@ class RiskParams:
     spike_window: int = 10
     fx_spike_full: float = 0.03       # USD/KRW 10일 +3% → 1.0
     rate_spike_full_bp: float = 40.0  # 10Y 10일 +40bp → 1.0
-    hy_z_full: float = 2.0            # HY 스프레드 Z=2 → 1.0 (상대)
-    hy_level_lo: float = 3.0          # OAS 3% 이하 → 0 (절대)
-    hy_level_hi: float = 6.0          # OAS 6% 이상 → 1 (2008·2020·2022 스트레스 구간)
+    credit_series: str = "BAA_SPREAD"
+    credit_z_full: float = 2.0        # 스프레드 Z=2 → 1.0 (상대)
+    credit_level_lo: float = 2.5      # Baa−10Y 2.5%p 이하 → 0 (절대, 1990~ 상위 25% 수준까지는 평시)
+    credit_level_hi: float = 4.5      # 4.5%p 이상 → 1 (2008 6.2, 2020 4.3, 2001 3.5)
     # 시장별 가중치 (합 1.0)
     weights: dict = field(default_factory=lambda: {
         "US": {"vol_index": 0.35, "realized_vol": 0.15, "rates": 0.15, "fx": 0.10, "credit": 0.25},
@@ -95,6 +107,8 @@ class AllocationParams:
     max_daily_increase: float = 0.02
     # 리밸런싱 무시 구간 (목표와 현재 차이가 이보다 작으면 매매 안 함)
     rebalance_band: float = 0.03
+    # 집행 시뮬레이션에도 무시 구간 적용 여부 (False = 매일 목표 추종)
+    band_in_execution: bool = True
 
 
 TREND = TrendParams()

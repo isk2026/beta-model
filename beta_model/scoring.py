@@ -69,7 +69,11 @@ class BetaModelScoringEngine:
         tp = self.tp
         # 정배열: Price>SMA20>SMA60>SMA120 의 3개 인접 비교 + Price>SMA120 장기 확인
         pairs = [("close", "sma20"), ("sma20", "sma60"), ("sma60", "sma120"), ("close", "sma120")]
-        alignment = sum(np.sign(f[a] - f[b]) for a, b in pairs) / len(pairs)
+        if tp.alignment_scale > 0:
+            # 이격도 연속값: 이평선 바로 위/아래에서 ±1로 튀지 않는다
+            alignment = sum(np.tanh((f[a] / f[b] - 1) / tp.alignment_scale) for a, b in pairs) / len(pairs)
+        else:
+            alignment = sum(np.sign(f[a] - f[b]) for a, b in pairs) / len(pairs)
         drawdown = pd.Series(
             np.where(
                 f["drawdown"] >= tp.dd_neutral,
@@ -80,6 +84,8 @@ class BetaModelScoringEngine:
         ).where(f["drawdown"].notna())
         momentum = np.tanh(f[f"roc_{tp.roc_window}"] / tp.roc_scale)
         score = tp.w_alignment * alignment + tp.w_drawdown * drawdown + tp.w_momentum * momentum
+        if tp.smooth_span > 1:
+            score = score.ewm(span=tp.smooth_span, min_periods=1).mean().where(score.notna())
         return pd.DataFrame({
             "alignment": alignment,
             "drawdown": drawdown,
@@ -116,9 +122,13 @@ class BetaModelScoringEngine:
         fx_chg = p["USDKRW"] / p["USDKRW"].shift(w) - 1
         fx = pd.Series(linear_map(fx_chg, 0.0, rp.fx_spike_full), index=idx)
 
-        if "HY_SPREAD" in p:
-            hy = p["HY_SPREAD"]
-            credit = 0.5 * pd.Series(linear_map(rolling_zscore(hy), 0.0, rp.hy_z_full), index=idx)                 + 0.5 * pd.Series(linear_map(hy, rp.hy_level_lo, rp.hy_level_hi), index=idx)
+        if rp.credit_series in p:
+            cs = p[rp.credit_series]
+            credit = (
+                0.5 * pd.Series(linear_map(rolling_zscore(cs), 0.0, rp.credit_z_full), index=idx)
+                + 0.5 * pd.Series(linear_map(cs, rp.credit_level_lo, rp.credit_level_hi), index=idx)
+            )
+            credit = credit.where(cs.notna())
         else:
             credit = pd.Series(np.nan, index=idx)
 

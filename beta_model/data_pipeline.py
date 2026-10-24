@@ -18,7 +18,7 @@ import time
 import urllib.request
 import warnings
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from zoneinfo import ZoneInfo
 from pathlib import Path
 
@@ -140,7 +140,7 @@ def fetch_raw(use_cache: bool = True, max_age_hours: float = 6) -> tuple[pd.Data
             with CACHE_FILE.open("rb") as f:
                 return pickle.load(f)
 
-    start = datetime.now() - timedelta(days=int(365 * config.HISTORY_YEARS) + 30)
+    start = datetime.fromisoformat(config.HISTORY_START)
     raw = fetch_yfinance(config.YF_TICKERS, start)
     for name, sym in config.FDR_SYMBOLS.items():
         try:
@@ -202,6 +202,12 @@ def build_market_data(raw: pd.DataFrame, meta: dict | None = None) -> MarketData
     features: dict[str, pd.DataFrame] = {}
     for col in equity_cols:
         features[col] = compute_features(raw[col]).reindex(calendar).ffill()
+
+    # 2003년 이전 원/달러는 FRED로 보완 (yfinance 시작 이전 구간에만)
+    if "USDKRW_FRED" in raw and "USDKRW" in raw:
+        first = raw["USDKRW"].first_valid_index()
+        early = raw["USDKRW_FRED"].where(raw.index < first) if first is not None else raw["USDKRW_FRED"]
+        raw["USDKRW"] = raw["USDKRW"].combine_first(early)
 
     prices = raw.reindex(raw.index.union(calendar)).ffill().reindex(calendar)
     return MarketData(prices=prices, features=features, meta=meta or {})

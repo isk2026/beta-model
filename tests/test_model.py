@@ -6,7 +6,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from dataclasses import replace
+
 from beta_model import config
+from beta_model.backtest import ModelSpec, drawdown_episodes, metrics, simulate, static_mix
 from beta_model.allocation import (
     Regime, allocate, classify_regime, rebalance_orders, smooth_weights, target_stock_weight,
 )
@@ -22,13 +25,13 @@ def _raw(trend: float, vol_level: float, hy_jump: float = 0.0, seed: int = 0) ->
     idx = pd.bdate_range("2024-01-01", periods=N)
     def path(d):
         return 100 * np.exp(np.cumsum(d + rng.normal(0, 0.008, N)))
-    hy = np.r_[np.full(N - 20, 3.5), np.full(20, 3.5 + hy_jump)] + rng.normal(0, 0.02, N)
+    hy = np.r_[np.full(N - 20, 1.8), np.full(20, 1.8 + hy_jump)] + rng.normal(0, 0.02, N)
     return pd.DataFrame({
         "SPX": path(trend), "NDX": path(trend), "KOSPI": path(trend), "KOSDAQ": path(trend),
         "VIX": np.r_[np.full(N - 10, 15.0), np.full(10, vol_level)] + rng.normal(0, 0.3, N),
         "VKOSPI": np.r_[np.full(N - 10, 18.0), np.full(10, vol_level)] + rng.normal(0, 0.3, N),
         "US10Y": np.full(N, 4.0), "USDKRW": np.full(N, 1350.0), "DXY": np.full(N, 100.0),
-        "HY_SPREAD": hy,
+        "BAA_SPREAD": hy, "UST3M": np.full(N, 3.0), "KR3M": np.full(N, 3.0),
     }, index=idx)
 
 
@@ -111,9 +114,12 @@ def test_regimes(trend, risk, regime):
     assert classify_regime(trend, risk) == regime
 
 
+NO_BAND = replace(config.ALLOCATION, band_in_execution=False)
+
+
 def test_smoothing_is_asymmetric_and_lagged():
     tgt = pd.Series([1.0, 1.0, 0.6, 0.6, 1.0, 1.0, 1.0], index=pd.bdate_range("2024-01-01", periods=7))
-    ex = smooth_weights(tgt)
+    ex = smooth_weights(tgt, NO_BAND)
     assert ex.index[0] == tgt.index[1]                # 다음 거래일 집행
     assert ex.iloc[2] == pytest.approx(0.6)           # 하향은 즉시 (t=2 신호 → t=3)
     assert ex.iloc[4] == pytest.approx(0.62)          # 상향은 하루 +2%p
@@ -127,3 +133,33 @@ def test_rebalance_orders():
     assert rebalance_orders(100, 50, 0.80)["action"] == "BUY"
     with pytest.raises(ValueError):
         rebalance_orders(0, 0, 0.7)
+
+
+def test_band_skips_small_moves_but_completes_fills():
+    p = replace(config.ALLOCATION, band_in_execution=True, rebalance_band=0.03, max_daily_increase=0.02)
+    tgt = pd.Series([0.80, 0.82, 0.78, 0.80, 0.90, 0.90, 0.90, 0.90, 0.89, 0.89],
+                    index=pd.bdate_range("2024-01-01", periods=10))
+    ex = smooth_weights(tgt, p).round(4).tolist()  # ex[i] = tgt[i] 신호의 익일 집행
+    assert ex[:4] == [0.80, 0.80, 0.80, 0.80]      # ±2%p 흔들림은 무시
+    assert ex[4:8] == [0.82, 0.84, 0.86, 0.88]     # 3%p 넘으면 채우기 시작, 하루 +2%p
+    assert ex[8] == 0.89                           # 목표에 닿을 때까지 계속 (밴드 안이어도)
+
+
+def test_continuous_alignment_bounded_and_less_jumpy():
+    md = build_market_data(_raw(trend=0.0, vol_level=15, seed=3))
+    sign = BetaModelScoringEngine(md, replace(config.TREND, alignment_scale=0.0, smooth_span=1)).index_trend("SPX")
+    cont = BetaModelScoringEngine(md, replace(config.TREND, alignment_scale=0.04, smooth_span=10)).index_trend("SPX")
+    assert cont["trend_score"].dropna().between(-1, 1).all()
+    assert cont["trend_score"].diff().abs().mean() < sign["trend_score"].diff().abs().mean()
+
+
+def test_backtest_sanity():
+    md = build_market_data(_raw(trend=0.0005, vol_level=15))
+    df = simulate(md, "US", ModelSpec("t"))
+    assert df["weight"].between(config.ALLOCATION.floor, config.ALLOCATION.cap).all()
+    m = metrics(df)
+    assert m["mdd"] <= 0 and m["turnover"] >= 0
+    # 고정 비중 기준선은 모델과 평균 비중이 같다
+    assert static_mix(df)["weight"].iloc[0] == pytest.approx(df["weight"].mean())
+    for e in drawdown_episodes(df, min_depth=-0.01):
+        assert e["bh"] <= -0.01 and e["peak"] < e["trough"]

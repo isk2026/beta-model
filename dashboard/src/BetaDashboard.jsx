@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  ArcElement, CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Tooltip,
+  ArcElement, CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, LogarithmicScale, PointElement, Tooltip,
 } from 'chart.js'
 import { Doughnut, Line } from 'react-chartjs-2'
 import {
@@ -8,8 +8,9 @@ import {
   TrendingDown, TrendingUp, Zap,
 } from 'lucide-react'
 import { allocate, DEFAULT_PARAMS, FALLBACK_REGIMES, rebalance } from './model.js'
+import BacktestPanel from './BacktestPanel.jsx'
 
-ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
+ChartJS.register(ArcElement, CategoryScale, LinearScale, LogarithmicScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
 // ---------------------------------------------------------------- tokens
 const C = {
@@ -29,14 +30,15 @@ const PRESETS = [
   { id: 'panic', label: 'Panic / Buy the Dip', sub: '공포 국면', trend: -0.9, risk: 0.9, Icon: Zap, color: C.rose },
 ]
 const TREND_LABELS = { alignment: '이동평균 정배열', drawdown: '52주 고점 대비', momentum: '3개월 모멘텀' }
-const RISK_LABELS = { vol_index: '변동성 지수', realized_vol: '실현 변동성', rates: '미 10년물 급등', fx: '원/달러 급등', credit: '하이일드 스프레드' }
+const RISK_LABELS = { vol_index: '변동성 지수', realized_vol: '실현 변동성', rates: '미 10년물 급등', fx: '원/달러 급등', credit: '신용 스프레드 (Baa)' }
 const MACRO_META = {
   VIX: { label: 'VIX', fmt: (v) => v.toFixed(2), chg: (v) => v.toFixed(2), bad: 1 },
   VKOSPI: { label: 'VKOSPI', fmt: (v) => v.toFixed(2), chg: (v) => v.toFixed(2), bad: 1 },
   US10Y: { label: '미 10년물', fmt: (v) => `${v.toFixed(2)}%`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
   USDKRW: { label: '원/달러', fmt: (v) => v.toLocaleString('ko-KR', { maximumFractionDigits: 1 }), chg: (v) => v.toFixed(1), bad: 1 },
   DXY: { label: '달러 인덱스', fmt: (v) => v.toFixed(2), chg: (v) => v.toFixed(2), bad: 1 },
-  HY_SPREAD: { label: 'HY 스프레드', fmt: (v) => `${v.toFixed(2)}%`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
+  BAA_SPREAD: { label: 'Baa 스프레드', fmt: (v) => `${v.toFixed(2)}%p`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
+  HY_SPREAD: { label: 'HY 스프레드(참고)', fmt: (v) => `${v.toFixed(2)}%`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
 }
 
 const pct = (x, d = 0) => `${(x * 100).toFixed(d)}%`
@@ -279,7 +281,7 @@ function HistoryCharts({ history, label }) {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
       <div className="min-w-0 lg:col-span-3">
-        <p className="mb-1 text-xs text-slate-400">주식 비중 (종가 신호 → 익일 집행, 줄일 땐 즉시·채울 땐 하루 +{2}%p)</p>
+        <p className="mb-1 text-xs text-slate-400">주식 비중 (종가 신호 → 익일 집행 · 목표와 3%p 이상 차이날 때만 매매 · 줄일 땐 즉시, 채울 땐 하루 +2%p)</p>
         <div className="h-56 sm:h-64"><Line data={weight} options={pctY} /></div>
       </div>
       <div className="min-w-0 lg:col-span-2">
@@ -569,7 +571,7 @@ export default function BetaDashboard() {
                 ))}
               </div>
               <p className="mt-4 text-[11px] leading-relaxed text-slate-500">
-                변동성 지수는 252일 백분위와 절대 레벨을 반반, HY 스프레드는 Z점수와 절대 레벨을 반반 반영. 금리·환율은 10일 상승분만 위험으로 봅니다.
+                변동성 지수는 252일 백분위와 절대 레벨을, 신용(Baa 회사채−미 10년물)은 Z점수와 절대 레벨(2.5~4.5%p)을 반반 반영. 금리·환율은 10일 상승분만 위험으로 봅니다.
               </p>
             </Panel>
 
@@ -603,6 +605,8 @@ export default function BetaDashboard() {
             <HistoryCharts history={m.history} label={m.indices[Object.keys(m.indices)[0]] ? `${Object.keys(m.indices)[0]} 지수` : '지수'} />
           </Panel>
         )}
+
+        <BacktestPanel market={market} />
 
         {/* Row 4: calculator + principles */}
         <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">

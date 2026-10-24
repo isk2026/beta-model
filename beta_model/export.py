@@ -21,7 +21,7 @@ from .scoring import BetaModelScoringEngine
 
 OUT_FILE = ROOT / "dashboard" / "public" / "data" / "beta_model.json"
 HISTORY_DAYS = 252
-MACRO_COLS = ["VIX", "VKOSPI", "US10Y", "USDKRW", "DXY", "HY_SPREAD"]
+MACRO_COLS = ["VIX", "VKOSPI", "US10Y", "USDKRW", "DXY", "BAA_SPREAD", "HY_SPREAD"]
 
 
 def _r(v, n: int = 4):

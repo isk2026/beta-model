@@ -114,12 +114,21 @@ def smooth_weights(target: pd.Series, p: AllocationParams = config.ALLOCATION) -
 
     - t일 종가 신호 → t+1일 집행 (shift 1)
     - 목표가 현재보다 낮으면 즉시 하향, 높으면 하루 최대 `max_daily_increase` 만큼만 상향
+    - `band_in_execution`이면 목표와의 차이가 `rebalance_band` 이상일 때만 매매를 시작한다.
+      한번 채우기 시작하면 목표에 닿을 때까지 계속 채운다.
     """
+    band = p.rebalance_band if p.band_in_execution else 0.0
     sig = target.shift(1).dropna()
     out = np.empty(len(sig))
     cur = sig.iloc[0] if len(sig) else np.nan
+    filling = False
     for i, tgt in enumerate(sig.to_numpy()):
-        cur = tgt if tgt < cur else min(tgt, cur + p.max_daily_increase)
+        if tgt < cur - band:
+            cur, filling = tgt, False
+        elif tgt > cur + band or (filling and tgt > cur):
+            cur, filling = min(tgt, cur + p.max_daily_increase), True
+        if filling and cur >= tgt:
+            filling = False
         out[i] = cur
     return pd.Series(out, index=sig.index, name="executed_weight")
 
