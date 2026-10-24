@@ -25,7 +25,7 @@ from . import config
 from .allocation import regime_series, smooth_weights, target_stock_weight
 from .config import AllocationParams, RiskParams, TrendParams
 from .data_pipeline import ROOT, MarketData, load_market_data
-from .scoring import BetaModelScoringEngine
+from .scoring import BetaModelScoringEngine, market_price
 
 OUT_FILE = ROOT / "dashboard" / "public" / "data" / "backtest.json"
 SPLIT_DATE = "2013-01-01"           # 이전 = 표본 내(파라미터 선택), 이후 = 표본 외(검증)
@@ -72,7 +72,7 @@ def simulate(
     )
     executed = smooth_weights(target, spec.alloc)          # t-1 신호 → t 집행
     idx = executed.index
-    px = md.features[mk["indices"][0]]["close"].reindex(idx)
+    px = market_price(md, mk).reindex(idx)
     ret = px.pct_change().fillna(0.0)
 
     rf_rate = md.prices[mk.get("cash", "UST3M")]
@@ -215,14 +215,14 @@ def grid_search(md: MarketData) -> pd.DataFrame:
             alloc=replace(config.ALLOCATION, band_in_execution=band),
         )
         row = {"alignment_scale": a_scale, "smooth_span": span, "band_in_execution": band}
-        for m in config.MARKETS:
+        for m in config.CALIBRATION_MARKETS:
             ev = evaluate(md, spec, m)
             for part in ("in_sample", "out_sample"):
                 for k in ("sharpe", "calmar", "turnover", "mdd", "cagr"):
                     row[f"{m}_{part[:2]}_{k}"] = ev[part]["model"][k]
         # 선택 기준: 두 시장 표본 내 샤프 평균 (비용 차감 후라 회전율도 반영됨)
-        row["is_score"] = np.mean([row[f"{m}_in_sharpe"] for m in config.MARKETS])
-        row["oos_score"] = np.mean([row[f"{m}_ou_sharpe"] for m in config.MARKETS])
+        row["is_score"] = np.mean([row[f"{m}_in_sharpe"] for m in config.CALIBRATION_MARKETS])
+        row["oos_score"] = np.mean([row[f"{m}_ou_sharpe"] for m in config.CALIBRATION_MARKETS])
         rows.append(row)
     return pd.DataFrame(rows).sort_values("is_score", ascending=False)
 
@@ -256,7 +256,9 @@ def build_report(md: MarketData, specs: list[ModelSpec]) -> dict:
         "markets": {},
     }
     for m in config.MARKETS:
-        mk = {"label": config.MARKETS[m]["label"], "index": config.MARKETS[m]["indices"][0], "specs": {}}
+        w = config.MARKETS[m].get("index_weights")
+        index = " ".join(f"{n} {v:.0%}" for n, v in w.items()) if w else config.MARKETS[m]["indices"][0]
+        mk = {"label": config.MARKETS[m]["label"], "index": index, "specs": {}}
         for spec in specs:
             ev = evaluate(md, spec, m)
             df = ev.pop("_df")
@@ -308,7 +310,7 @@ def main() -> None:
     if args.grid:
         g = grid_search(md)
         cols = ["alignment_scale", "smooth_span", "band_in_execution", "is_score", "oos_score"] + \
-            [f"{m}_{p}_{k}" for m in config.MARKETS for p in ("in", "ou") for k in ("sharpe", "turnover")]
+            [f"{m}_{p}_{k}" for m in config.CALIBRATION_MARKETS for p in ("in", "ou") for k in ("sharpe", "turnover")]
         with pd.option_context("display.width", 250, "display.max_columns", 30):
             print(g[cols].round(3).to_string(index=False))
         return

@@ -16,6 +16,9 @@ from .scoring import BetaModelScoringEngine
 
 DAYS = 10
 US_EQ, KR_EQ = ["SPX", "NDX"], ["KOSPI", "KOSDAQ", "KOSPI200"]
+# 기술주 ETF는 미국 시나리오 하락폭에 베타를 곱한다. S&P500 대비 일간 베타는 1.1/1.4지만
+# 급락장에서는 더 커서(2022년 하락폭 비율 약 1.4/1.8) 그 사이 값을 쓴다.
+TECH_BETA = {"QQQ": 1.2, "SOXX": 1.6}
 
 # 지수: 누적 수익률, 변동성 지수: 도달 레벨, 금리: bp 변화, 환율: % 변화, 신용: %p 변화
 SCENARIOS: list[dict] = [
@@ -43,6 +46,9 @@ def shock_raw(raw: pd.DataFrame, sc: dict, days: int = DAYS) -> pd.DataFrame:
         for c in cols:
             if c in ext:
                 ext[c] = base[c] * (1 + total) ** t       # 기하 경로
+    for c, beta in TECH_BETA.items():
+        if c in ext:
+            ext[c] = base[c] * (1 + max(sc["us"] * beta, -0.6)) ** t
     for c in ("VIX", "VKOSPI"):
         if c in ext:  # 충격은 변동성을 낮추지 않는다: 오늘 수준과 시나리오 수준 중 높은 쪽
             ext[c] = base[c] + (max(sc[c], base[c]) - base[c]) * t

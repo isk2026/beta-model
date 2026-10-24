@@ -68,6 +68,7 @@ def market_payload(engine: BetaModelScoringEngine, md: MarketData, market: str) 
     ]
     return {
         "label": config.MARKETS[market]["label"],
+        "index_weights": config.MARKETS[market].get("index_weights"),
         "as_of": latest.name.strftime("%Y-%m-%d"),
         "allocation": alloc,
         "executed_weight": _r(executed.iloc[-1]),

@@ -113,7 +113,9 @@ def _select(sims: list[dict[str, pd.DataFrame]], end: pd.Timestamp) -> int:
     rows = []
     for i, by_mkt in enumerate(sims):
         sh, to = [], []
-        for df in by_mkt.values():
+        for m, df in by_mkt.items():
+            if m not in config.CALIBRATION_MARKETS:
+                continue
             d = df[df.index < end]
             if len(d) < config.TRADING_DAYS * 3:
                 continue

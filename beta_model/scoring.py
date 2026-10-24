@@ -39,6 +39,27 @@ def rolling_zscore(s: pd.Series, window: int = config.TRADING_DAYS) -> pd.Series
     return (s - mu) / sd.replace(0, np.nan)
 
 
+def index_weights(mk: dict) -> dict[str, float]:
+    """시장 구성 지수 비중 (없으면 동일가중), 합 1."""
+    w = mk.get("index_weights") or {n: 1.0 for n in mk["indices"]}
+    tot = sum(w[n] for n in mk["indices"])
+    return {n: w[n] / tot for n in mk["indices"]}
+
+
+def market_price(data: MarketData, mk: dict) -> pd.Series:
+    """시장의 대표 가격. index_weights가 있으면 매일 리밸런싱한 가중 바스켓(상장 전 종목은 제외·재정규화),
+    없으면 첫 번째 지수(기존 미국=S&P500, 한국=코스피 기준 유지)."""
+    if "index_weights" not in mk:
+        return data.features[mk["indices"][0]]["close"]
+    w = pd.Series(index_weights(mk))
+    rets = pd.DataFrame({n: data.features[n]["close"].pct_change(fill_method=None) for n in mk["indices"]})
+    avail = rets.notna().mul(w, axis=1)
+    basket = rets.fillna(0).mul(w, axis=1).sum(axis=1) / avail.sum(axis=1)
+    basket = basket.where(avail.sum(axis=1) > 0)
+    start = basket.first_valid_index()
+    return (1 + basket.loc[start:].fillna(0)).cumprod().mul(100).reindex(basket.index)
+
+
 class BetaModelScoringEngine:
     """성상현 베타 모델의 추세/위험 점수 엔진.
 
@@ -96,9 +117,23 @@ class BetaModelScoringEngine:
         })
 
     def trend_score(self, market: str) -> pd.DataFrame:
-        """시장 추세 = 구성 지수 추세의 평균."""
-        frames = [self.index_trend(n) for n in self.markets[market]["indices"]]
-        return (sum(frames) / len(frames)).clip(-1.0, 1.0)
+        """시장 추세 = 구성 지수 추세의 평균.
+
+        index_weights가 있으면 가중평균이고, 아직 상장 전인 지수는 빼고 남은 비중으로 재정규화한다
+        (SOXX 상장 전 QQQ만으로 계산). 없으면 기존처럼 모든 지수가 있어야 값이 생긴다.
+        """
+        names = self.markets[market]["indices"]
+        frames = {n: self.index_trend(n) for n in names}
+        if "index_weights" not in self.markets[market]:
+            return (sum(frames.values()) / len(frames)).clip(-1.0, 1.0)
+        w = index_weights(self.markets[market])
+        cols = frames[names[0]].columns
+        out = {}
+        for c in cols:
+            df = pd.DataFrame({n: frames[n][c] for n in names})
+            wt = df.notna().mul(pd.Series(w), axis=1)
+            out[c] = (df.fillna(0).mul(pd.Series(w), axis=1).sum(axis=1) / wt.sum(axis=1)).where(wt.sum(axis=1) > 0)
+        return pd.DataFrame(out).clip(-1.0, 1.0)
 
     # ------------------------------------------------------------------- risk
     def risk_components(self, market: str) -> pd.DataFrame:
@@ -113,9 +148,8 @@ class BetaModelScoringEngine:
             linear_map(vol, rp.vol_level_lo[vol_name], rp.vol_level_hi[vol_name]), index=idx
         )
 
-        # 시장 대표 지수(첫 번째)의 실현변동성 백분위
-        main = self.markets[market]["indices"][0]
-        rv = realized_vol(p[main].dropna(), 20).reindex(idx).ffill()
+        # 시장 대표 지수(첫 번째) — 가중 바스켓 시장은 바스켓 — 의 실현변동성 백분위
+        rv = realized_vol(market_price(self.data, self.markets[market]).dropna(), 20).reindex(idx).ffill()
         realized = rolling_percentile(rv)
 
         w = rp.spike_window

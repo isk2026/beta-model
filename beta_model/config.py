@@ -20,6 +20,8 @@ YF_TICKERS: dict[str, str] = {
     "US10Y": "^TNX",       # % 단위 (예: 4.25)
     "USDKRW": "KRW=X",
     "DXY": "DX-Y.NYB",     # 원문에 언급된 달러 인덱스 (보조 지표)
+    "QQQ": "QQQ",          # 나스닥100 ETF (1999~, 배당 재투자 수정주가)
+    "SOXX": "SOXX",        # 반도체 ETF (2001~)
 }
 # yfinance에 이력이 없는 시리즈는 FinanceDataReader 로 받는다
 FDR_SYMBOLS: dict[str, str] = {
@@ -35,11 +37,17 @@ FRED_SERIES: dict[str, str] = {
     "KR3M": "IR3TIB01KRM156N",       # 한국 3개월 금리(월간) — 원화 현금 수익률 근사
 }
 
-# 시장별 구성: 추세는 지수 평균, 위험은 시장별 변동성 지수 + 공통 매크로
+# 시장별 구성: 추세는 지수 평균(index_weights가 있으면 가중평균), 위험은 시장별 변동성 지수 + 공통 매크로.
+# index_weights가 있는 시장은 수익률·실현변동성도 그 비중의 바스켓(매일 리밸런싱)으로 계산한다.
 MARKETS: dict[str, dict] = {
     "US": {"label": "미국", "indices": ["SPX", "NDX"], "vol_index": "VIX", "cash": "UST3M"},
+    # 기술주 중심 포트폴리오용. 비중은 실제 보유 비율에 맞게 수정 (대시보드에서도 조정 가능)
+    "US_TECH": {"label": "미국(기술)", "indices": ["QQQ", "SOXX"], "index_weights": {"QQQ": 0.6, "SOXX": 0.4},
+                "vol_index": "VIX", "cash": "UST3M"},
     "KR": {"label": "한국", "indices": ["KOSPI", "KOSDAQ"], "vol_index": "VKOSPI", "cash": "KR3M"},
 }
+# 파라미터 선택(그리드·워크포워드)에 쓰는 시장. 미국(기술)은 일부러 빼서 맞춰보지 않은 표본으로 남긴다.
+CALIBRATION_MARKETS: tuple[str, ...] = ("US", "KR")
 
 HISTORY_START = "1990-01-01"  # 백테스트용 장기 이력 (VIX 시작점)
 SMA_WINDOWS = (20, 60, 120)
@@ -88,6 +96,7 @@ class RiskParams:
     # 시장별 가중치 (합 1.0)
     weights: dict = field(default_factory=lambda: {
         "US": {"vol_index": 0.35, "realized_vol": 0.15, "rates": 0.15, "fx": 0.10, "credit": 0.25},
+        "US_TECH": {"vol_index": 0.35, "realized_vol": 0.15, "rates": 0.15, "fx": 0.10, "credit": 0.25},
         "KR": {"vol_index": 0.30, "realized_vol": 0.15, "rates": 0.10, "fx": 0.20, "credit": 0.25},
     })
 

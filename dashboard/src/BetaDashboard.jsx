@@ -390,6 +390,67 @@ function RebalanceCalculator({ targetWeight, params, usdShare = 0 }) {
   )
 }
 
+const MARKET_TABS = { US: '🇺🇸 미국', US_TECH: '🇺🇸 미국(기술)', KR: '🇰🇷 한국' }
+
+// 가중 시장(미국 기술주)의 구성 비중 — 내 포트폴리오 비율로 바꾸면 추세 점수를 다시 가중평균한다.
+// 브라우저에만 저장 (기록·백테스트·알림은 beta_model/config.py 의 index_weights 기준)
+function useIndexWeights(market, defaults) {
+  const key = `beta.weights.${market}`
+  const [w, setW] = useState(null)
+  useEffect(() => {
+    if (!defaults) { setW(null); return }
+    let saved = null
+    try { saved = JSON.parse(localStorage.getItem(key)) } catch { /* 저장소 없음 */ }
+    setW(saved && Object.keys(defaults).every((k) => k in saved) ? saved : defaults)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [market, JSON.stringify(defaults)])
+  const save = (next) => {
+    setW(next)
+    try { localStorage.setItem(key, JSON.stringify(next)) } catch { /* 무시 */ }
+  }
+  return [w, save]
+}
+
+function WeightEditor({ weights, defaults, indices, onChange, liveTrend }) {
+  const names = Object.keys(weights)
+  const [a, b] = names
+  const custom = names.some((n) => Math.abs(weights[n] - defaults[n]) > 1e-9)
+  return (
+    <section className="mb-4 min-w-0 rounded-2xl border border-line bg-panel/80 p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-semibold text-slate-200">내 기술주 포트 비중 → 추세 점수 가중평균</h2>
+        {custom && (
+          <button onClick={() => onChange(defaults)} className="flex items-center gap-1 text-xs text-cyan-300 hover:text-cyan-200">
+            <RotateCcw size={12} aria-hidden /> 기본값 {names.map((n) => `${n} ${pct(defaults[n])}`).join(' · ')}
+          </button>
+        )}
+      </div>
+      <div className="mt-3 grid grid-cols-1 items-center gap-3 sm:grid-cols-[1fr_auto]">
+        <div>
+          <div className="mb-1 flex justify-between font-mono text-xs">
+            <span className="text-slate-200">{a} {pct(weights[a])}</span>
+            <span className="text-slate-200">{b} {pct(weights[b])}</span>
+          </div>
+          <input type="range" min={0} max={100} step={5} value={Math.round(weights[a] * 100)}
+            aria-label={`${a} 비중`}
+            onChange={(e) => { const x = +e.target.value / 100; onChange({ [a]: x, [b]: +(1 - x).toFixed(2) }) }}
+            className="w-full accent-emerald-400" />
+        </div>
+        <dl className="num flex gap-4 font-mono text-xs">
+          {names.map((n) => (
+            <div key={n}><dt className="font-sans text-[10px] text-slate-500">{n} 추세</dt><dd className="text-slate-200">{indices[n]?.trend_score?.toFixed(2) ?? '–'}</dd></div>
+          ))}
+          <div><dt className="font-sans text-[10px] text-slate-500">가중 추세</dt><dd className="text-emerald-300">{liveTrend.toFixed(2)}</dd></div>
+        </dl>
+      </div>
+      <p className="mt-2 text-[11px] text-slate-500">
+        위험 점수는 VIX·금리·신용·바스켓 변동성 기준으로 공통입니다. 비중은 이 브라우저에만 저장되며,
+        {custom ? ' 기본값과 달라 국면은 오늘 점수로만 판정합니다(히스테리시스·실전 기록·알림은 기본 비중 기준).' : ' 실전 기록·백테스트·알림과 같은 기준입니다.'}
+      </p>
+    </section>
+  )
+}
+
 // ---------------------------------------------------------------- page
 export default function BetaDashboard() {
   const { loading, data, error } = useModelData()
@@ -402,18 +463,25 @@ export default function BetaDashboard() {
   const usdShare = market === 'KR' ? (params.cash_usd_share ?? 0) : 0
   const regimes = data?.regimes ?? FALLBACK_REGIMES
   const m = data?.markets?.[market]
-  const live = m ? { trend: m.allocation.trend_score, risk: m.allocation.risk_score } : null
+  const [idxW, setIdxW] = useIndexWeights(market, m?.index_weights)
+  const customW = !!(m?.index_weights && idxW && Object.keys(idxW).some((n) => Math.abs(idxW[n] - m.index_weights[n]) > 1e-9))
+  const weightedTrend = () => {
+    const ns = Object.keys(idxW).filter((n) => m.indices[n]?.trend_score != null)
+    const tot = ns.reduce((s, n) => s + idxW[n], 0)
+    return tot > 0 ? ns.reduce((s, n) => s + idxW[n] * m.indices[n].trend_score, 0) / tot : m.allocation.trend_score
+  }
+  const live = m ? { trend: customW ? weightedTrend() : m.allocation.trend_score, risk: m.allocation.risk_score } : null
   const isLive = live && Math.abs(trend - live.trend) < 1e-9 && Math.abs(risk - live.risk) < 1e-9
 
   // 데이터 로드 또는 시장 전환 시 실측 점수로 슬라이더를 맞춘다
   useEffect(() => {
     if (live) { setTrend(live.trend); setRisk(live.risk); setActivePreset(null) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data, market])
+  }, [data, market, live?.trend])
 
   const a = allocate(trend, risk, params)
   // 실측값일 때는 히스테리시스가 적용된 국면(이력 기반), 시뮬레이션은 단순 판정
-  const regime = isLive && m ? m.allocation.regime : a.regime
+  const regime = isLive && m && !customW ? m.allocation.regime : a.regime
   const reg = regimes[regime]
   const rs = REGIME_STYLE[regime]
 
@@ -436,10 +504,10 @@ export default function BetaDashboard() {
           </div>
           <div className="flex flex-col items-start gap-2 sm:items-end">
             <div className="flex rounded-xl border border-line bg-panel p-1" role="tablist" aria-label="시장">
-              {['US', 'KR'].map((k) => (
+              {Object.keys(data?.markets ?? { US: 1, KR: 1 }).map((k) => (
                 <button key={k} role="tab" aria-selected={market === k} onClick={() => setMarket(k)}
-                  className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition ${market === k ? 'bg-emerald-500/15 text-emerald-300 shadow-[0_0_16px_-6px_#10b981]' : 'text-slate-400 hover:text-slate-200'}`}>
-                  {k === 'US' ? '🇺🇸 미국' : '🇰🇷 한국'}
+                  className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-semibold transition sm:px-4 ${market === k ? 'bg-emerald-500/15 text-emerald-300 shadow-[0_0_16px_-6px_#10b981]' : 'text-slate-400 hover:text-slate-200'}`}>
+                  {MARKET_TABS[k] ?? data?.markets?.[k]?.label ?? k}
                 </button>
               ))}
             </div>
@@ -464,6 +532,10 @@ export default function BetaDashboard() {
           </div>
         )}
 
+        {m?.index_weights && idxW && (
+          <WeightEditor weights={idxW} defaults={m.index_weights} indices={m.indices} onChange={setIdxW} liveTrend={live.trend} />
+        )}
+
         {/* Row 1: Regime / Allocation / Controls */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           <section className={`min-w-0 rounded-2xl border border-line bg-panel/80 p-5 ring-1 ${rs.ring} ${rs.glow} md:col-span-2 xl:col-span-1`}>
@@ -479,7 +551,7 @@ export default function BetaDashboard() {
               )}
             </div>
             <p className="mt-2 text-sm text-slate-300">{reg.summary}</p>
-            {isLive && m.allocation.regime_raw != null && m.allocation.regime_raw !== regime && (
+            {isLive && !customW && m.allocation.regime_raw != null && m.allocation.regime_raw !== regime && (
               <p className="mt-2 rounded-lg bg-white/5 px-2.5 py-1.5 text-[11px] text-slate-400">
                 경계 근처: 오늘 점수만 보면 국면 {m.allocation.regime_raw}이지만, 이중 임계값(추세 ±{params.trend_hysteresis}, 위험 ±{params.risk_hysteresis})을 넘지 않아 국면 {regime}을 유지합니다.
               </p>

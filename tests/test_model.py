@@ -260,3 +260,28 @@ def test_signal_log_alert_once(tmp_path, monkeypatch):
     assert "국면 전환" in text and "75%" in text
     log, fresh = signals.update_log(payload("2024-01-03", 3, 0.9, 0.75), "t2")   # 같은 기준일 재실행
     assert fresh == set() and signals.build_alert(log, {}, fresh) is None and len(log) == 2
+
+
+# ---------------------------------------------------- weighted market (US_TECH)
+def test_weighted_trend_and_basket():
+    from beta_model.scoring import market_price
+    raw = _raw(0.0, 15)
+    rng = np.random.default_rng(1)
+    raw["QQQ"] = 100 * np.exp(np.cumsum(0.002 + rng.normal(0, 0.01, N)))      # 상승
+    soxx = 100 * np.exp(np.cumsum(-0.002 + rng.normal(0, 0.01, N)))           # 하락, 뒤늦게 상장
+    soxx[:100] = np.nan
+    raw["SOXX"] = soxx
+    mk = {"T": {"label": "t", "indices": ["QQQ", "SOXX"], "index_weights": {"QQQ": 0.75, "SOXX": 0.25},
+                "vol_index": "VIX", "cash": "UST3M"}}
+    md = build_market_data(raw, markets=mk)
+    eng = BetaModelScoringEngine(md, markets=mk, risk_params=replace(config.RISK, weights={"T": config.RISK.weights["US"]}))
+    q, s = eng.index_trend("QQQ").trend_score, eng.index_trend("SOXX").trend_score
+    t = eng.trend_score("T").trend_score
+    i = t.index[-1]
+    assert t[i] == pytest.approx(0.75 * q[i] + 0.25 * s[i])              # 가중평균
+    j = t.index[150]
+    assert t[j] == pytest.approx(q[j])                                    # 상장 전: QQQ만
+    px = market_price(md, mk["T"])
+    r = px.pct_change().iloc[-1]
+    qr, sr = (md.features[n].close.pct_change().iloc[-1] for n in ("QQQ", "SOXX"))
+    assert r == pytest.approx(0.75 * qr + 0.25 * sr)                      # 매일 리밸런싱 바스켓
