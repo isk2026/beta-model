@@ -78,12 +78,13 @@ class RiskParams:
     credit_z_full: float = 2.0        # 스프레드 Z=2 → 1.0 (상대)
     credit_level_lo: float = 2.5      # Baa−10Y 2.5%p 이하 → 0 (절대, 1990~ 상위 25% 수준까지는 평시)
     credit_level_hi: float = 4.5      # 4.5%p 이상 → 1 (2008 6.2, 2020 4.3, 2001 3.5)
-    # 한국 시장은 국내 신용(회사채 AA− 3년 − 국고채 3년, ECOS)을 미국 Baa와 반반 섞는다.
-    # ECOS 키가 없거나 데이터 이전 구간이면 미국 Baa만 쓴다.
+    # 국내 신용(회사채 AA− 3년 − 국고채 3년, ECOS)을 한국 시장 신용 위험에 섞는 비율.
+    # 백테스트(2026-10): 50% 혼합 시 표본 내 샤프 0.456→0.451, 위험-낙폭 순위상관 −0.126→−0.115로
+    # 개선이 없어 0(미국 Baa만)으로 둔다. 국내 신용은 매크로 패널에 참고 지표로 표시.
     kr_credit_series: str = "KR_CREDIT"
-    kr_credit_blend: float = 0.5
-    kr_credit_level_lo: float = 1.0   # %p, 평시(2014~2019 0.4~0.7) 위
-    kr_credit_level_hi: float = 2.0   # %p, 2022년 레고랜드 사태 1.5 안팎, 2008년 4%p대
+    kr_credit_blend: float = 0.0
+    kr_credit_level_lo: float = 0.9   # %p, 1998~ 75분위 0.94 (Baa와 같은 원칙), 평시 2014~19 0.2~0.7
+    kr_credit_level_hi: float = 1.8   # %p, 2022 레고랜드 고점 1.77 (2020 1.41, 2008 4.65)
     # 시장별 가중치 (합 1.0)
     weights: dict = field(default_factory=lambda: {
         "US": {"vol_index": 0.35, "realized_vol": 0.15, "rates": 0.15, "fx": 0.10, "credit": 0.25},

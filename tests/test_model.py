@@ -192,7 +192,9 @@ def test_kr_credit_blends_only_for_kr():
     base_us = BetaModelScoringEngine(build_market_data(raw)).risk_components("US")["credit"]
     base_kr = BetaModelScoringEngine(build_market_data(raw)).risk_components("KR")["credit"]
     raw["KR_CREDIT"] = np.r_[np.full(N - 20, 0.6), np.full(20, 2.5)]  # 국내 신용 경색
-    e = BetaModelScoringEngine(build_market_data(raw))
+    e = BetaModelScoringEngine(build_market_data(raw), risk_params=replace(config.RISK, kr_credit_blend=0.5))
+    off = BetaModelScoringEngine(build_market_data(raw), risk_params=replace(config.RISK, kr_credit_blend=0.0))
+    assert off.risk_components("KR")["credit"].iloc[-1] == pytest.approx(base_kr.iloc[-1])
     assert e.risk_components("US")["credit"].iloc[-1] == pytest.approx(base_us.iloc[-1])
     assert e.risk_components("KR")["credit"].iloc[-1] > base_kr.iloc[-1] + 0.3
 

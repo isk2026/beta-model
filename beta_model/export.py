@@ -85,7 +85,7 @@ def macro_payload(md: MarketData) -> dict:
 def build_payload(md: MarketData) -> dict:
     engine = BetaModelScoringEngine(md)
     return {
-        "meta": md.meta,
+        "meta": md.meta | {"kr_credit_blend": config.RISK.kr_credit_blend if "KR_CREDIT" in md.prices else 0.0},
         "params": asdict(config.ALLOCATION),
         "regimes": {int(r): REGIME_INFO[r] for r in Regime},
         "macro": macro_payload(md),

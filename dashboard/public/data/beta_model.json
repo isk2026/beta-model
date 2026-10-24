@@ -1,8 +1,8 @@
 {
  "meta": {
-  "fetched_at": "2026-10-24T21:42+09:00",
+  "fetched_at": "2026-10-24T21:48+09:00",
   "vkospi_source": "proxy",
-  "kr_credit_source": null,
+  "kr_credit_source": "ecos",
   "tickers": {
    "SPX": "^GSPC",
    "NDX": "^IXIC",
@@ -18,7 +18,8 @@
    "USDKRW_FRED": "FRED:DEXKOUS",
    "UST3M": "FRED:DTB3",
    "KR3M": "FRED:IR3TIB01KRM156N"
-  }
+  },
+  "kr_credit_blend": 0.0
  },
  "params": {
   "base_mid": 0.85,
@@ -94,6 +95,10 @@
   "BAA_SPREAD": {
    "value": 1.46,
    "chg_10d": 0.01
+  },
+  "KR_CREDIT": {
+   "value": 0.689,
+   "chg_10d": 0.021
   },
   "HY_SPREAD": {
    "value": 3.4,

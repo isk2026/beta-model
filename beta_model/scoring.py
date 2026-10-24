@@ -123,7 +123,7 @@ class BetaModelScoringEngine:
         fx = pd.Series(linear_map(fx_chg, 0.0, rp.fx_spike_full), index=idx)
 
         credit = self._spread_score(p.get(rp.credit_series), rp.credit_level_lo, rp.credit_level_hi, idx)
-        if market == "KR" and rp.kr_credit_series in p:
+        if market == "KR" and rp.kr_credit_blend > 0 and rp.kr_credit_series in p:
             kr = self._spread_score(p[rp.kr_credit_series], rp.kr_credit_level_lo, rp.kr_credit_level_hi, idx)
             b = rp.kr_credit_blend
             credit = ((1 - b) * credit + b * kr).fillna(credit)

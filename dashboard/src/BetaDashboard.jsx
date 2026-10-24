@@ -569,11 +569,11 @@ export default function BetaDashboard() {
               <div className="space-y-3">
                 {Object.entries(m.risk_components).map(([k, v]) => (
                   <ComponentBar key={k} value={v} weight={m.risk_weights[k]}
-                    label={k === 'credit' && market === 'KR' && data.meta.kr_credit_source ? '신용 스프레드 (Baa·국내 AA−)' : (RISK_LABELS[k] ?? k)} />
+                    label={k === 'credit' && market === 'KR' && data.meta.kr_credit_blend > 0 ? '신용 스프레드 (Baa·국내 AA−)' : (RISK_LABELS[k] ?? k)} />
                 ))}
               </div>
               <p className="mt-4 text-[11px] leading-relaxed text-slate-500">
-                변동성 지수는 252일 백분위와 절대 레벨을, 신용(Baa 회사채−미 10년물{market === 'KR' && data.meta.kr_credit_source ? ' + 국내 AA−−국고 3년' : ''})은 Z점수와 절대 레벨을 반반 반영. 금리·환율은 10일 상승분만 위험으로 봅니다.
+                변동성 지수는 252일 백분위와 절대 레벨을, 신용(Baa 회사채−미 10년물{market === 'KR' && data.meta.kr_credit_blend > 0 ? ' + 국내 AA−−국고 3년' : ''})은 Z점수와 절대 레벨을 반반 반영. 금리·환율은 10일 상승분만 위험으로 봅니다.
               </p>
             </Panel>
 
