@@ -1,6 +1,6 @@
 {
  "meta": {
-  "fetched_at": "2026-10-24T23:07+09:00",
+  "fetched_at": "2026-10-24T23:43+09:00",
   "vkospi_source": "proxy",
   "kr_credit_source": "ecos",
   "tickers": {
@@ -12,6 +12,8 @@
    "US10Y": "^TNX",
    "USDKRW": "KRW=X",
    "DXY": "DX-Y.NYB",
+   "QQQ": "QQQ",
+   "SOXX": "SOXX",
    "KOSPI200": "KS200",
    "BAA_SPREAD": "FRED:BAA10Y",
    "HY_SPREAD": "FRED:BAMLH0A0HYM2",
@@ -111,6 +113,7 @@
  "markets": {
   "US": {
    "label": "미국",
+   "index_weights": null,
    "as_of": "2026-10-23",
    "allocation": {
     "trend_score": 0.3547413200844276,
@@ -2437,8 +2440,2341 @@
     }
    ]
   },
+  "US_TECH": {
+   "label": "미국(기술)",
+   "index_weights": {
+    "QQQ": 0.6,
+    "SOXX": 0.4
+   },
+   "as_of": "2026-10-23",
+   "allocation": {
+    "trend_score": -0.04975445581065266,
+    "risk_score": 0.2733187764418898,
+    "base_weight": 0.8425368316284021,
+    "risk_deduction": 0.05466375528837796,
+    "stock_weight": 0.7878730763400241,
+    "cash_weight": 0.21212692365997587,
+    "regime": 1,
+    "regime_name": "상승 따라가기",
+    "regime_raw": 3
+   },
+   "executed_weight": 0.8199,
+   "next_weight": 0.7879,
+   "trend_components": {
+    "alignment": -0.3095,
+    "drawdown": -0.2365,
+    "momentum": -0.0543
+   },
+   "risk_components": {
+    "vol_index": 0.535,
+    "realized_vol": 0.5737,
+    "rates": 0.0,
+    "fx": 0.0,
+    "credit": 0.0
+   },
+   "risk_weights": {
+    "vol_index": 0.35,
+    "realized_vol": 0.15,
+    "rates": 0.15,
+    "fx": 0.1,
+    "credit": 0.25
+   },
+   "indices": {
+    "QQQ": {
+     "close": 704.4,
+     "sma20": 735.24,
+     "sma60": 723.78,
+     "sma120": 718.15,
+     "drawdown": -0.0727,
+     "vol_20d": 0.1853,
+     "roc_3m": 0.0337,
+     "trend_score": 0.2453
+    },
+    "SOXX": {
+     "close": 478.2,
+     "sma20": 541.45,
+     "sma60": 532.34,
+     "sma120": 545.0,
+     "drawdown": -0.2695,
+     "vol_20d": 0.3878,
+     "roc_3m": -0.0731,
+     "trend_score": -0.4923
+    }
+   },
+   "history": [
+    {
+     "date": "2025-10-31",
+     "index": 626.13,
+     "trend": 0.8561,
+     "risk": 0.3259,
+     "target": 0.9132,
+     "executed": 0.9016,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-03",
+     "index": 629.12,
+     "trend": 0.8624,
+     "risk": 0.3301,
+     "target": 0.9133,
+     "executed": 0.9016,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-04",
+     "index": 616.35,
+     "trend": 0.8392,
+     "risk": 0.3867,
+     "target": 0.8986,
+     "executed": 0.9016,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-05",
+     "index": 620.37,
+     "trend": 0.8343,
+     "risk": 0.3849,
+     "target": 0.8982,
+     "executed": 0.9016,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-06",
+     "index": 608.81,
+     "trend": 0.8043,
+     "risk": 0.3872,
+     "target": 0.8932,
+     "executed": 0.9016,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-07",
+     "index": 606.89,
+     "trend": 0.7721,
+     "risk": 0.3635,
+     "target": 0.8931,
+     "executed": 0.9016,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-10",
+     "index": 620.32,
+     "trend": 0.77,
+     "risk": 0.3259,
+     "target": 0.9003,
+     "executed": 0.9016,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-11",
+     "index": 618.66,
+     "trend": 0.7551,
+     "risk": 0.3417,
+     "target": 0.8949,
+     "executed": 0.9016,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-12",
+     "index": 618.18,
+     "trend": 0.7478,
+     "risk": 0.3218,
+     "target": 0.8978,
+     "executed": 0.9016,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-13",
+     "index": 605.55,
+     "trend": 0.712,
+     "risk": 0.4312,
+     "target": 0.8705,
+     "executed": 0.9016,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-14",
+     "index": 606.01,
+     "trend": 0.6819,
+     "risk": 0.4377,
+     "target": 0.8648,
+     "executed": 0.8705,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-17",
+     "index": 600.84,
+     "trend": 0.6483,
+     "risk": 0.412,
+     "target": 0.8648,
+     "executed": 0.8705,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-18",
+     "index": 593.52,
+     "trend": 0.6058,
+     "risk": 0.4925,
+     "target": 0.8424,
+     "executed": 0.8705,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-19",
+     "index": 597.06,
+     "trend": 0.5808,
+     "risk": 0.424,
+     "target": 0.8523,
+     "executed": 0.8705,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-20",
+     "index": 582.93,
+     "trend": 0.5192,
+     "risk": 0.4995,
+     "target": 0.828,
+     "executed": 0.8705,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-21",
+     "index": 587.31,
+     "trend": 0.4791,
+     "risk": 0.4602,
+     "target": 0.8298,
+     "executed": 0.828,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-24",
+     "index": 602.33,
+     "trend": 0.4801,
+     "risk": 0.3945,
+     "target": 0.8431,
+     "executed": 0.828,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-25",
+     "index": 606.04,
+     "trend": 0.4865,
+     "risk": 0.3631,
+     "target": 0.8504,
+     "executed": 0.828,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-26",
+     "index": 611.4,
+     "trend": 0.5088,
+     "risk": 0.2891,
+     "target": 0.8685,
+     "executed": 0.828,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-27",
+     "index": 611.4,
+     "trend": 0.527,
+     "risk": 0.282,
+     "target": 0.8727,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2025-11-28",
+     "index": 616.35,
+     "trend": 0.558,
+     "risk": 0.2391,
+     "target": 0.8859,
+     "executed": 0.868,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-01",
+     "index": 614.28,
+     "trend": 0.5815,
+     "risk": 0.3216,
+     "target": 0.8729,
+     "executed": 0.8859,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-02",
+     "index": 619.09,
+     "trend": 0.6107,
+     "risk": 0.2535,
+     "target": 0.8909,
+     "executed": 0.8859,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-03",
+     "index": 620.6,
+     "trend": 0.6395,
+     "risk": 0.2351,
+     "target": 0.8989,
+     "executed": 0.8859,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-04",
+     "index": 620.03,
+     "trend": 0.6587,
+     "risk": 0.1881,
+     "target": 0.9112,
+     "executed": 0.8859,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-05",
+     "index": 622.55,
+     "trend": 0.6783,
+     "risk": 0.1955,
+     "target": 0.9126,
+     "executed": 0.8859,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-08",
+     "index": 621.36,
+     "trend": 0.6924,
+     "risk": 0.2511,
+     "target": 0.9036,
+     "executed": 0.8859,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-09",
+     "index": 622.13,
+     "trend": 0.7036,
+     "risk": 0.2659,
+     "target": 0.9024,
+     "executed": 0.8859,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-10",
+     "index": 624.67,
+     "trend": 0.715,
+     "risk": 0.2256,
+     "target": 0.9121,
+     "executed": 0.8859,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-11",
+     "index": 622.65,
+     "trend": 0.7193,
+     "risk": 0.1518,
+     "target": 0.9275,
+     "executed": 0.8859,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-12",
+     "index": 610.75,
+     "trend": 0.6883,
+     "risk": 0.2558,
+     "target": 0.9021,
+     "executed": 0.9059,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-15",
+     "index": 607.68,
+     "trend": 0.6551,
+     "risk": 0.2489,
+     "target": 0.8985,
+     "executed": 0.9059,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-16",
+     "index": 608.89,
+     "trend": 0.6277,
+     "risk": 0.2152,
+     "target": 0.9011,
+     "executed": 0.9059,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-17",
+     "index": 597.6,
+     "trend": 0.5633,
+     "risk": 0.3118,
+     "target": 0.8721,
+     "executed": 0.9059,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-18",
+     "index": 606.26,
+     "trend": 0.5347,
+     "risk": 0.2252,
+     "target": 0.8852,
+     "executed": 0.8721,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-19",
+     "index": 614.16,
+     "trend": 0.5334,
+     "risk": 0.123,
+     "target": 0.9054,
+     "executed": 0.8721,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-22",
+     "index": 617.11,
+     "trend": 0.5439,
+     "risk": 0.095,
+     "target": 0.9126,
+     "executed": 0.8921,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-23",
+     "index": 620.0,
+     "trend": 0.5586,
+     "risk": 0.0992,
+     "target": 0.9139,
+     "executed": 0.9121,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-24",
+     "index": 621.81,
+     "trend": 0.5751,
+     "risk": 0.0936,
+     "target": 0.9175,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-26",
+     "index": 621.77,
+     "trend": 0.5866,
+     "risk": 0.0805,
+     "target": 0.9219,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-29",
+     "index": 618.76,
+     "trend": 0.5887,
+     "risk": 0.0911,
+     "target": 0.9201,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-30",
+     "index": 617.33,
+     "trend": 0.5856,
+     "risk": 0.089,
+     "target": 0.92,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2025-12-31",
+     "index": 612.22,
+     "trend": 0.5656,
+     "risk": 0.0942,
+     "target": 0.916,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-02",
+     "index": 611.04,
+     "trend": 0.5626,
+     "risk": 0.1015,
+     "target": 0.9141,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-05",
+     "index": 615.89,
+     "trend": 0.573,
+     "risk": 0.1247,
+     "target": 0.911,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-06",
+     "index": 621.3,
+     "trend": 0.5896,
+     "risk": 0.1088,
+     "target": 0.9167,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-07",
+     "index": 621.9,
+     "trend": 0.6031,
+     "risk": 0.1208,
+     "target": 0.9163,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-08",
+     "index": 618.36,
+     "trend": 0.598,
+     "risk": 0.1292,
+     "target": 0.9139,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-09",
+     "index": 624.52,
+     "trend": 0.6119,
+     "risk": 0.096,
+     "target": 0.9226,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-12",
+     "index": 625.04,
+     "trend": 0.6338,
+     "risk": 0.145,
+     "target": 0.9161,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-13",
+     "index": 624.11,
+     "trend": 0.6452,
+     "risk": 0.2005,
+     "target": 0.9067,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-14",
+     "index": 617.45,
+     "trend": 0.6449,
+     "risk": 0.2543,
+     "target": 0.8959,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-15",
+     "index": 619.67,
+     "trend": 0.6475,
+     "risk": 0.1798,
+     "target": 0.9112,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-16",
+     "index": 619.15,
+     "trend": 0.6502,
+     "risk": 0.1714,
+     "target": 0.9132,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-19",
+     "index": 619.15,
+     "trend": 0.6525,
+     "risk": 0.1896,
+     "target": 0.9099,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-20",
+     "index": 606.0,
+     "trend": 0.6255,
+     "risk": 0.3193,
+     "target": 0.88,
+     "executed": 0.9139,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-21",
+     "index": 614.19,
+     "trend": 0.6187,
+     "risk": 0.2769,
+     "target": 0.8874,
+     "executed": 0.88,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-22",
+     "index": 618.65,
+     "trend": 0.621,
+     "risk": 0.1704,
+     "target": 0.9091,
+     "executed": 0.88,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-23",
+     "index": 620.61,
+     "trend": 0.626,
+     "risk": 0.1779,
+     "target": 0.9083,
+     "executed": 0.88,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-26",
+     "index": 623.34,
+     "trend": 0.6304,
+     "risk": 0.1344,
+     "target": 0.9177,
+     "executed": 0.88,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-27",
+     "index": 628.99,
+     "trend": 0.6437,
+     "risk": 0.1548,
+     "target": 0.9156,
+     "executed": 0.9,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-28",
+     "index": 631.07,
+     "trend": 0.6532,
+     "risk": 0.1778,
+     "target": 0.9124,
+     "executed": 0.9156,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-29",
+     "index": 627.29,
+     "trend": 0.6527,
+     "risk": 0.1849,
+     "target": 0.9109,
+     "executed": 0.9156,
+     "regime": 1
+    },
+    {
+     "date": "2026-01-30",
+     "index": 619.76,
+     "trend": 0.625,
+     "risk": 0.1972,
+     "target": 0.9043,
+     "executed": 0.9156,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-02",
+     "index": 624.01,
+     "trend": 0.6199,
+     "risk": 0.1603,
+     "target": 0.9109,
+     "executed": 0.9156,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-03",
+     "index": 614.43,
+     "trend": 0.5887,
+     "risk": 0.2084,
+     "target": 0.8966,
+     "executed": 0.9156,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-04",
+     "index": 603.69,
+     "trend": 0.5213,
+     "risk": 0.2412,
+     "target": 0.88,
+     "executed": 0.9156,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-05",
+     "index": 595.0,
+     "trend": 0.4601,
+     "risk": 0.285,
+     "target": 0.862,
+     "executed": 0.88,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-06",
+     "index": 607.58,
+     "trend": 0.4494,
+     "risk": 0.2927,
+     "target": 0.8589,
+     "executed": 0.88,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-09",
+     "index": 612.23,
+     "trend": 0.4591,
+     "risk": 0.2569,
+     "target": 0.8675,
+     "executed": 0.88,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-10",
+     "index": 609.39,
+     "trend": 0.4602,
+     "risk": 0.269,
+     "target": 0.8652,
+     "executed": 0.88,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-11",
+     "index": 611.03,
+     "trend": 0.4653,
+     "risk": 0.2792,
+     "target": 0.8639,
+     "executed": 0.88,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-12",
+     "index": 598.6,
+     "trend": 0.4381,
+     "risk": 0.3385,
+     "target": 0.848,
+     "executed": 0.88,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-13",
+     "index": 599.88,
+     "trend": 0.4205,
+     "risk": 0.3258,
+     "target": 0.8479,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-17",
+     "index": 599.26,
+     "trend": 0.4094,
+     "risk": 0.2916,
+     "target": 0.8531,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-18",
+     "index": 603.73,
+     "trend": 0.4117,
+     "risk": 0.2666,
+     "target": 0.8584,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-19",
+     "index": 601.42,
+     "trend": 0.4088,
+     "risk": 0.2659,
+     "target": 0.8582,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-20",
+     "index": 606.74,
+     "trend": 0.4232,
+     "risk": 0.2475,
+     "target": 0.864,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-23",
+     "index": 599.37,
+     "trend": 0.4159,
+     "risk": 0.2873,
+     "target": 0.8549,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-24",
+     "index": 605.81,
+     "trend": 0.4324,
+     "risk": 0.265,
+     "target": 0.8619,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-25",
+     "index": 614.59,
+     "trend": 0.4622,
+     "risk": 0.2344,
+     "target": 0.8724,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-26",
+     "index": 607.17,
+     "trend": 0.4549,
+     "risk": 0.2625,
+     "target": 0.8657,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-02-27",
+     "index": 605.23,
+     "trend": 0.4381,
+     "risk": 0.3243,
+     "target": 0.8509,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-02",
+     "index": 606.03,
+     "trend": 0.4225,
+     "risk": 0.3167,
+     "target": 0.85,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-03",
+     "index": 599.54,
+     "trend": 0.3769,
+     "risk": 0.3932,
+     "target": 0.8279,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-04",
+     "index": 608.68,
+     "trend": 0.3642,
+     "risk": 0.41,
+     "target": 0.8226,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-05",
+     "index": 606.84,
+     "trend": 0.343,
+     "risk": 0.4044,
+     "target": 0.8206,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-06",
+     "index": 597.71,
+     "trend": 0.29,
+     "risk": 0.4886,
+     "target": 0.7958,
+     "executed": 0.848,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-09",
+     "index": 605.7,
+     "trend": 0.2769,
+     "risk": 0.4992,
+     "target": 0.7917,
+     "executed": 0.7958,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-10",
+     "index": 605.71,
+     "trend": 0.2668,
+     "risk": 0.4389,
+     "target": 0.8022,
+     "executed": 0.7958,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-11",
+     "index": 605.63,
+     "trend": 0.2616,
+     "risk": 0.5276,
+     "target": 0.7837,
+     "executed": 0.7958,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-12",
+     "index": 595.23,
+     "trend": 0.2236,
+     "risk": 0.6287,
+     "target": 0.7578,
+     "executed": 0.7958,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-13",
+     "index": 591.7,
+     "trend": 0.185,
+     "risk": 0.6226,
+     "target": 0.7532,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-16",
+     "index": 598.34,
+     "trend": 0.1743,
+     "risk": 0.5555,
+     "target": 0.7651,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-17",
+     "index": 601.26,
+     "trend": 0.1825,
+     "risk": 0.5172,
+     "target": 0.7739,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-18",
+     "index": 592.88,
+     "trend": 0.1727,
+     "risk": 0.4533,
+     "target": 0.7853,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-19",
+     "index": 591.01,
+     "trend": 0.1633,
+     "risk": 0.5179,
+     "target": 0.7709,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-20",
+     "index": 580.08,
+     "trend": 0.1356,
+     "risk": 0.5124,
+     "target": 0.7679,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-23",
+     "index": 586.74,
+     "trend": 0.1223,
+     "risk": 0.5104,
+     "target": 0.7663,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-24",
+     "index": 582.73,
+     "trend": 0.1073,
+     "risk": 0.5054,
+     "target": 0.765,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-25",
+     "index": 586.56,
+     "trend": 0.1037,
+     "risk": 0.4448,
+     "target": 0.7766,
+     "executed": 0.7578,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-26",
+     "index": 572.56,
+     "trend": 0.0575,
+     "risk": 0.5039,
+     "target": 0.7579,
+     "executed": 0.7578,
+     "regime": 1
+    },
+    {
+     "date": "2026-03-27",
+     "index": 561.38,
+     "trend": -0.0018,
+     "risk": 0.5988,
+     "target": 0.73,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-30",
+     "index": 557.09,
+     "trend": -0.0801,
+     "risk": 0.5197,
+     "target": 0.734,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-03-31",
+     "index": 575.95,
+     "trend": -0.0906,
+     "risk": 0.5258,
+     "target": 0.7313,
+     "executed": 0.7578,
+     "regime": 2
+    },
+    {
+     "date": "2026-04-01",
+     "index": 583.06,
+     "trend": -0.0723,
+     "risk": 0.4463,
+     "target": 0.7499,
+     "executed": 0.7578,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-02",
+     "index": 583.73,
+     "trend": -0.0523,
+     "risk": 0.4004,
+     "target": 0.7621,
+     "executed": 0.7578,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-03",
+     "index": 583.73,
+     "trend": -0.036,
+     "risk": 0.4151,
+     "target": 0.7616,
+     "executed": 0.7578,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-06",
+     "index": 587.24,
+     "trend": -0.0137,
+     "risk": 0.383,
+     "target": 0.7713,
+     "executed": 0.7578,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-07",
+     "index": 587.33,
+     "trend": 0.0061,
+     "risk": 0.4504,
+     "target": 0.7608,
+     "executed": 0.7578,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-08",
+     "index": 604.79,
+     "trend": 0.0656,
+     "risk": 0.3457,
+     "target": 0.7907,
+     "executed": 0.7578,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-09",
+     "index": 608.89,
+     "trend": 0.1229,
+     "risk": 0.3107,
+     "target": 0.8063,
+     "executed": 0.7778,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-10",
+     "index": 609.76,
+     "trend": 0.1746,
+     "risk": 0.3073,
+     "target": 0.8147,
+     "executed": 0.7978,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-13",
+     "index": 616.07,
+     "trend": 0.2258,
+     "risk": 0.3052,
+     "target": 0.8228,
+     "executed": 0.8147,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-14",
+     "index": 627.26,
+     "trend": 0.2851,
+     "risk": 0.292,
+     "target": 0.8344,
+     "executed": 0.8147,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-15",
+     "index": 636.04,
+     "trend": 0.3449,
+     "risk": 0.2857,
+     "target": 0.8446,
+     "executed": 0.8147,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-16",
+     "index": 639.1,
+     "trend": 0.4008,
+     "risk": 0.2798,
+     "target": 0.8542,
+     "executed": 0.8147,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-17",
+     "index": 647.46,
+     "trend": 0.4528,
+     "risk": 0.265,
+     "target": 0.8649,
+     "executed": 0.8347,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-20",
+     "index": 645.41,
+     "trend": 0.4962,
+     "risk": 0.3006,
+     "target": 0.8643,
+     "executed": 0.8547,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-21",
+     "index": 642.95,
+     "trend": 0.5366,
+     "risk": 0.3149,
+     "target": 0.8675,
+     "executed": 0.8643,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-22",
+     "index": 653.71,
+     "trend": 0.5762,
+     "risk": 0.3046,
+     "target": 0.8755,
+     "executed": 0.8643,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-23",
+     "index": 650.03,
+     "trend": 0.606,
+     "risk": 0.2967,
+     "target": 0.8816,
+     "executed": 0.8643,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-24",
+     "index": 662.46,
+     "trend": 0.639,
+     "risk": 0.2642,
+     "target": 0.893,
+     "executed": 0.8643,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-27",
+     "index": 662.81,
+     "trend": 0.6652,
+     "risk": 0.2301,
+     "target": 0.9038,
+     "executed": 0.8643,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-28",
+     "index": 656.14,
+     "trend": 0.6735,
+     "risk": 0.2458,
+     "target": 0.9019,
+     "executed": 0.8843,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-29",
+     "index": 660.16,
+     "trend": 0.6885,
+     "risk": 0.2909,
+     "target": 0.8951,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-04-30",
+     "index": 666.31,
+     "trend": 0.7115,
+     "risk": 0.2382,
+     "target": 0.9091,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-01",
+     "index": 672.71,
+     "trend": 0.7357,
+     "risk": 0.2309,
+     "target": 0.9142,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-04",
+     "index": 671.44,
+     "trend": 0.7522,
+     "risk": 0.3151,
+     "target": 0.8998,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-05",
+     "index": 680.15,
+     "trend": 0.7734,
+     "risk": 0.2644,
+     "target": 0.9131,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-06",
+     "index": 694.28,
+     "trend": 0.7957,
+     "risk": 0.2179,
+     "target": 0.9258,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-07",
+     "index": 693.45,
+     "trend": 0.8093,
+     "risk": 0.2147,
+     "target": 0.9285,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-08",
+     "index": 709.71,
+     "trend": 0.8276,
+     "risk": 0.2273,
+     "target": 0.9287,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-11",
+     "index": 711.77,
+     "trend": 0.8429,
+     "risk": 0.2721,
+     "target": 0.922,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-12",
+     "index": 705.73,
+     "trend": 0.847,
+     "risk": 0.3095,
+     "target": 0.9151,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-13",
+     "index": 713.18,
+     "trend": 0.8581,
+     "risk": 0.3381,
+     "target": 0.9111,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-14",
+     "index": 718.25,
+     "trend": 0.8693,
+     "risk": 0.2788,
+     "target": 0.9246,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-15",
+     "index": 707.41,
+     "trend": 0.8645,
+     "risk": 0.4186,
+     "target": 0.896,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-18",
+     "index": 704.37,
+     "trend": 0.8516,
+     "risk": 0.4061,
+     "target": 0.8965,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-19",
+     "index": 700.03,
+     "trend": 0.8364,
+     "risk": 0.4233,
+     "target": 0.8908,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-20",
+     "index": 711.63,
+     "trend": 0.8435,
+     "risk": 0.432,
+     "target": 0.8901,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-21",
+     "index": 712.98,
+     "trend": 0.851,
+     "risk": 0.4183,
+     "target": 0.894,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-22",
+     "index": 716.01,
+     "trend": 0.8625,
+     "risk": 0.407,
+     "target": 0.898,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-26",
+     "index": 728.72,
+     "trend": 0.8757,
+     "risk": 0.3901,
+     "target": 0.9033,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-27",
+     "index": 727.89,
+     "trend": 0.8835,
+     "risk": 0.2853,
+     "target": 0.9255,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-28",
+     "index": 734.03,
+     "trend": 0.8934,
+     "risk": 0.2123,
+     "target": 0.9416,
+     "executed": 0.9019,
+     "regime": 1
+    },
+    {
+     "date": "2026-05-29",
+     "index": 736.73,
+     "trend": 0.9018,
+     "risk": 0.1852,
+     "target": 0.9482,
+     "executed": 0.9219,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-01",
+     "index": 741.15,
+     "trend": 0.9097,
+     "risk": 0.2286,
+     "target": 0.9407,
+     "executed": 0.9419,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-02",
+     "index": 744.57,
+     "trend": 0.9169,
+     "risk": 0.2252,
+     "target": 0.9425,
+     "executed": 0.9419,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-03",
+     "index": 742.62,
+     "trend": 0.9212,
+     "risk": 0.25,
+     "target": 0.9382,
+     "executed": 0.9419,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-04",
+     "index": 739.03,
+     "trend": 0.9183,
+     "risk": 0.2194,
+     "target": 0.9439,
+     "executed": 0.9419,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-05",
+     "index": 703.55,
+     "trend": 0.857,
+     "risk": 0.443,
+     "target": 0.89,
+     "executed": 0.9419,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-08",
+     "index": 714.54,
+     "trend": 0.8346,
+     "risk": 0.4223,
+     "target": 0.8907,
+     "executed": 0.89,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-09",
+     "index": 706.32,
+     "trend": 0.8044,
+     "risk": 0.3855,
+     "target": 0.8936,
+     "executed": 0.89,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-10",
+     "index": 692.21,
+     "trend": 0.7551,
+     "risk": 0.4447,
+     "target": 0.8743,
+     "executed": 0.89,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-11",
+     "index": 715.59,
+     "trend": 0.7592,
+     "risk": 0.3847,
+     "target": 0.887,
+     "executed": 0.89,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-12",
+     "index": 719.8,
+     "trend": 0.7697,
+     "risk": 0.3559,
+     "target": 0.8943,
+     "executed": 0.89,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-15",
+     "index": 742.41,
+     "trend": 0.8017,
+     "risk": 0.2322,
+     "target": 0.9238,
+     "executed": 0.89,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-16",
+     "index": 728.3,
+     "trend": 0.804,
+     "risk": 0.2454,
+     "target": 0.9215,
+     "executed": 0.91,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-17",
+     "index": 720.97,
+     "trend": 0.8024,
+     "risk": 0.3147,
+     "target": 0.9074,
+     "executed": 0.9215,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-18",
+     "index": 739.04,
+     "trend": 0.8256,
+     "risk": 0.2401,
+     "target": 0.9258,
+     "executed": 0.9215,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-19",
+     "index": 739.04,
+     "trend": 0.8445,
+     "risk": 0.2503,
+     "target": 0.9266,
+     "executed": 0.9215,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-22",
+     "index": 737.18,
+     "trend": 0.8584,
+     "risk": 0.2794,
+     "target": 0.9229,
+     "executed": 0.9215,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-23",
+     "index": 712.91,
+     "trend": 0.8313,
+     "risk": 0.358,
+     "target": 0.9031,
+     "executed": 0.9215,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-24",
+     "index": 709.88,
+     "trend": 0.8056,
+     "risk": 0.3379,
+     "target": 0.9033,
+     "executed": 0.9215,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-25",
+     "index": 715.63,
+     "trend": 0.7998,
+     "risk": 0.3618,
+     "target": 0.8976,
+     "executed": 0.9215,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-26",
+     "index": 705.78,
+     "trend": 0.7685,
+     "risk": 0.3755,
+     "target": 0.8902,
+     "executed": 0.9215,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-29",
+     "index": 723.33,
+     "trend": 0.7714,
+     "risk": 0.3474,
+     "target": 0.8962,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-06-30",
+     "index": 735.63,
+     "trend": 0.7939,
+     "risk": 0.3056,
+     "target": 0.908,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-01",
+     "index": 724.42,
+     "trend": 0.7829,
+     "risk": 0.3362,
+     "target": 0.9002,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-02",
+     "index": 711.86,
+     "trend": 0.746,
+     "risk": 0.2946,
+     "target": 0.903,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-03",
+     "index": 711.86,
+     "trend": 0.7159,
+     "risk": 0.2417,
+     "target": 0.909,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-06",
+     "index": 722.07,
+     "trend": 0.7067,
+     "risk": 0.1975,
+     "target": 0.9165,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-07",
+     "index": 708.69,
+     "trend": 0.6752,
+     "risk": 0.2324,
+     "target": 0.9048,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-08",
+     "index": 710.7,
+     "trend": 0.6541,
+     "risk": 0.3203,
+     "target": 0.8841,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-09",
+     "index": 722.53,
+     "trend": 0.6541,
+     "risk": 0.259,
+     "target": 0.8963,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-10",
+     "index": 724.75,
+     "trend": 0.6545,
+     "risk": 0.247,
+     "target": 0.8988,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-13",
+     "index": 711.0,
+     "trend": 0.6316,
+     "risk": 0.3465,
+     "target": 0.8754,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-14",
+     "index": 718.94,
+     "trend": 0.6241,
+     "risk": 0.2957,
+     "target": 0.8845,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-15",
+     "index": 716.99,
+     "trend": 0.6105,
+     "risk": 0.2186,
+     "target": 0.8978,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-16",
+     "index": 705.21,
+     "trend": 0.5789,
+     "risk": 0.2729,
+     "target": 0.8822,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-17",
+     "index": 694.61,
+     "trend": 0.5397,
+     "risk": 0.3261,
+     "target": 0.8657,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-20",
+     "index": 695.34,
+     "trend": 0.505,
+     "risk": 0.3461,
+     "target": 0.8565,
+     "executed": 0.8902,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-21",
+     "index": 708.23,
+     "trend": 0.4993,
+     "risk": 0.2853,
+     "target": 0.8678,
+     "executed": 0.8565,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-22",
+     "index": 704.62,
+     "trend": 0.4921,
+     "risk": 0.263,
+     "target": 0.8712,
+     "executed": 0.8565,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-23",
+     "index": 691.24,
+     "trend": 0.4659,
+     "risk": 0.3592,
+     "target": 0.848,
+     "executed": 0.8565,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-24",
+     "index": 683.52,
+     "trend": 0.4248,
+     "risk": 0.3332,
+     "target": 0.8471,
+     "executed": 0.8565,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-27",
+     "index": 681.41,
+     "trend": 0.3782,
+     "risk": 0.3083,
+     "target": 0.8451,
+     "executed": 0.8565,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-28",
+     "index": 674.79,
+     "trend": 0.3239,
+     "risk": 0.2887,
+     "target": 0.8408,
+     "executed": 0.8565,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-29",
+     "index": 661.04,
+     "trend": 0.2495,
+     "risk": 0.3628,
+     "target": 0.8149,
+     "executed": 0.8565,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-30",
+     "index": 682.84,
+     "trend": 0.2278,
+     "risk": 0.2818,
+     "target": 0.8278,
+     "executed": 0.8149,
+     "regime": 1
+    },
+    {
+     "date": "2026-07-31",
+     "index": 687.27,
+     "trend": 0.211,
+     "risk": 0.2725,
+     "target": 0.8272,
+     "executed": 0.8149,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-03",
+     "index": 699.34,
+     "trend": 0.2106,
+     "risk": 0.2247,
+     "target": 0.8367,
+     "executed": 0.8149,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-04",
+     "index": 723.1,
+     "trend": 0.2569,
+     "risk": 0.2266,
+     "target": 0.8432,
+     "executed": 0.8149,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-05",
+     "index": 716.55,
+     "trend": 0.2749,
+     "risk": 0.1945,
+     "target": 0.8523,
+     "executed": 0.8149,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-06",
+     "index": 713.91,
+     "trend": 0.2784,
+     "risk": 0.1674,
+     "target": 0.8583,
+     "executed": 0.8349,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-07",
+     "index": 722.28,
+     "trend": 0.3034,
+     "risk": 0.1594,
+     "target": 0.8636,
+     "executed": 0.8549,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-10",
+     "index": 720.12,
+     "trend": 0.296,
+     "risk": 0.1964,
+     "target": 0.8551,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-11",
+     "index": 717.7,
+     "trend": 0.2875,
+     "risk": 0.1925,
+     "target": 0.8546,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-12",
+     "index": 722.95,
+     "trend": 0.3046,
+     "risk": 0.1673,
+     "target": 0.8622,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-13",
+     "index": 731.31,
+     "trend": 0.3232,
+     "risk": 0.1438,
+     "target": 0.8697,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-14",
+     "index": 730.31,
+     "trend": 0.3347,
+     "risk": 0.143,
+     "target": 0.8716,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-17",
+     "index": 729.11,
+     "trend": 0.3574,
+     "risk": 0.1809,
+     "target": 0.8674,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-18",
+     "index": 716.76,
+     "trend": 0.3459,
+     "risk": 0.2132,
+     "target": 0.8593,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-19",
+     "index": 715.33,
+     "trend": 0.3263,
+     "risk": 0.1623,
+     "target": 0.8665,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-20",
+     "index": 710.19,
+     "trend": 0.2934,
+     "risk": 0.1964,
+     "target": 0.8547,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-21",
+     "index": 712.7,
+     "trend": 0.2659,
+     "risk": 0.1813,
+     "target": 0.8536,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-24",
+     "index": 705.58,
+     "trend": 0.2182,
+     "risk": 0.1825,
+     "target": 0.8462,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-25",
+     "index": 709.98,
+     "trend": 0.1795,
+     "risk": 0.1624,
+     "target": 0.8444,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-26",
+     "index": 710.63,
+     "trend": 0.1498,
+     "risk": 0.1465,
+     "target": 0.8432,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-27",
+     "index": 720.36,
+     "trend": 0.1417,
+     "risk": 0.0989,
+     "target": 0.8515,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-28",
+     "index": 715.68,
+     "trend": 0.1172,
+     "risk": 0.1077,
+     "target": 0.846,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-08-31",
+     "index": 716.01,
+     "trend": 0.0968,
+     "risk": 0.1233,
+     "target": 0.8399,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-01",
+     "index": 706.9,
+     "trend": 0.0579,
+     "risk": 0.1433,
+     "target": 0.83,
+     "executed": 0.8636,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-02",
+     "index": 708.5,
+     "trend": 0.0282,
+     "risk": 0.1151,
+     "target": 0.8312,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-03",
+     "index": 716.92,
+     "trend": 0.0162,
+     "risk": 0.0645,
+     "target": 0.8395,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-04",
+     "index": 718.21,
+     "trend": 0.0423,
+     "risk": 0.0629,
+     "target": 0.8438,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-07",
+     "index": 718.21,
+     "trend": 0.0638,
+     "risk": 0.0921,
+     "target": 0.8411,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-08",
+     "index": 717.61,
+     "trend": 0.0768,
+     "risk": 0.1375,
+     "target": 0.834,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-09",
+     "index": 715.56,
+     "trend": 0.0927,
+     "risk": 0.1752,
+     "target": 0.8289,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-10",
+     "index": 707.95,
+     "trend": 0.0898,
+     "risk": 0.2635,
+     "target": 0.8108,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-11",
+     "index": 714.14,
+     "trend": 0.088,
+     "risk": 0.1818,
+     "target": 0.8268,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-14",
+     "index": 708.44,
+     "trend": 0.0507,
+     "risk": 0.2296,
+     "target": 0.8117,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-15",
+     "index": 703.81,
+     "trend": 0.0054,
+     "risk": 0.2148,
+     "target": 0.8079,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-16",
+     "index": 703.99,
+     "trend": -0.025,
+     "risk": 0.234,
+     "target": 0.7994,
+     "executed": 0.83,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-17",
+     "index": 716.17,
+     "trend": -0.0152,
+     "risk": 0.1903,
+     "target": 0.8096,
+     "executed": 0.7994,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-18",
+     "index": 720.7,
+     "trend": 0.0013,
+     "risk": 0.1998,
+     "target": 0.8102,
+     "executed": 0.7994,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-21",
+     "index": 741.47,
+     "trend": 0.0521,
+     "risk": 0.2464,
+     "target": 0.8085,
+     "executed": 0.7994,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-22",
+     "index": 747.46,
+     "trend": 0.1191,
+     "risk": 0.2041,
+     "target": 0.827,
+     "executed": 0.7994,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-23",
+     "index": 741.21,
+     "trend": 0.1653,
+     "risk": 0.2308,
+     "target": 0.8286,
+     "executed": 0.7994,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-24",
+     "index": 741.1,
+     "trend": 0.1972,
+     "risk": 0.2491,
+     "target": 0.8298,
+     "executed": 0.7994,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-25",
+     "index": 744.5,
+     "trend": 0.24,
+     "risk": 0.1943,
+     "target": 0.8471,
+     "executed": 0.8194,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-28",
+     "index": 736.53,
+     "trend": 0.2478,
+     "risk": 0.2543,
+     "target": 0.8363,
+     "executed": 0.8394,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-29",
+     "index": 737.93,
+     "trend": 0.2515,
+     "risk": 0.2403,
+     "target": 0.8397,
+     "executed": 0.8394,
+     "regime": 1
+    },
+    {
+     "date": "2026-09-30",
+     "index": 739.77,
+     "trend": 0.2676,
+     "risk": 0.2278,
+     "target": 0.8446,
+     "executed": 0.8394,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-01",
+     "index": 742.03,
+     "trend": 0.3026,
+     "risk": 0.2322,
+     "target": 0.8489,
+     "executed": 0.8394,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-02",
+     "index": 749.58,
+     "trend": 0.339,
+     "risk": 0.1841,
+     "target": 0.864,
+     "executed": 0.8394,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-05",
+     "index": 756.2,
+     "trend": 0.3855,
+     "risk": 0.2173,
+     "target": 0.8644,
+     "executed": 0.8394,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-06",
+     "index": 759.66,
+     "trend": 0.4223,
+     "risk": 0.1823,
+     "target": 0.8769,
+     "executed": 0.8394,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-07",
+     "index": 757.73,
+     "trend": 0.4364,
+     "risk": 0.1391,
+     "target": 0.8876,
+     "executed": 0.8594,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-08",
+     "index": 747.58,
+     "trend": 0.4183,
+     "risk": 0.1238,
+     "target": 0.888,
+     "executed": 0.8794,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-09",
+     "index": 751.27,
+     "trend": 0.4149,
+     "risk": 0.0945,
+     "target": 0.8933,
+     "executed": 0.888,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-12",
+     "index": 746.04,
+     "trend": 0.3786,
+     "risk": 0.0736,
+     "target": 0.8921,
+     "executed": 0.888,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-13",
+     "index": 743.57,
+     "trend": 0.3472,
+     "risk": 0.0757,
+     "target": 0.8869,
+     "executed": 0.888,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-14",
+     "index": 728.95,
+     "trend": 0.2875,
+     "risk": 0.1781,
+     "target": 0.8575,
+     "executed": 0.888,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-15",
+     "index": 728.0,
+     "trend": 0.2407,
+     "risk": 0.1431,
+     "target": 0.8575,
+     "executed": 0.8575,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-16",
+     "index": 709.8,
+     "trend": 0.1669,
+     "risk": 0.2756,
+     "target": 0.8199,
+     "executed": 0.8575,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-19",
+     "index": 718.36,
+     "trend": 0.1093,
+     "risk": 0.1976,
+     "target": 0.8269,
+     "executed": 0.8199,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-20",
+     "index": 717.63,
+     "trend": 0.0605,
+     "risk": 0.1544,
+     "target": 0.8282,
+     "executed": 0.8199,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-21",
+     "index": 725.2,
+     "trend": 0.0389,
+     "risk": 0.1374,
+     "target": 0.8283,
+     "executed": 0.8199,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-22",
+     "index": 704.47,
+     "trend": -0.0103,
+     "risk": 0.2658,
+     "target": 0.7953,
+     "executed": 0.8199,
+     "regime": 1
+    },
+    {
+     "date": "2026-10-23",
+     "index": 704.4,
+     "trend": -0.0498,
+     "risk": 0.2733,
+     "target": 0.7879,
+     "executed": 0.8199,
+     "regime": 1
+    }
+   ]
+  },
   "KR": {
    "label": "한국",
+   "index_weights": null,
    "as_of": "2026-10-23",
    "allocation": {
     "trend_score": -0.6733081090608957,
@@ -4777,6 +7113,14 @@
     "regime": 1,
     "regime_name": "상승 따라가기"
    },
+   "US_TECH": {
+    "trend": -0.0498,
+    "risk": 0.2733,
+    "target": 0.7879,
+    "executed": 0.8199,
+    "regime": 1,
+    "regime_name": "상승 따라가기"
+   },
    "KR": {
     "trend": -0.6733,
     "risk": 0.3042,
@@ -4797,6 +7141,14 @@
       "risk": 0.2916,
       "target": 0.7554,
       "executed": 0.7881,
+      "regime": 3,
+      "regime_name": "하락 방어"
+     },
+     "US_TECH": {
+      "trend": -0.572,
+      "risk": 0.3161,
+      "target": 0.701,
+      "executed": 0.7189,
       "regime": 3,
       "regime_name": "하락 방어"
      },
@@ -4823,6 +7175,14 @@
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
+     "US_TECH": {
+      "trend": -0.6122,
+      "risk": 0.7362,
+      "target": 0.6109,
+      "executed": 0.6455,
+      "regime": 4,
+      "regime_name": "최대 방어 / 공포"
+     },
      "KR": {
       "trend": -0.8389,
       "risk": 0.7045,
@@ -4845,6 +7205,14 @@
       "executed": 0.7595,
       "regime": 1,
       "regime_name": "상승 따라가기"
+     },
+     "US_TECH": {
+      "trend": -0.4396,
+      "risk": 0.504,
+      "target": 0.6833,
+      "executed": 0.6915,
+      "regime": 3,
+      "regime_name": "하락 방어"
      },
      "KR": {
       "trend": -0.8685,
@@ -4869,6 +7237,14 @@
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
+     "US_TECH": {
+      "trend": -0.7148,
+      "risk": 0.6958,
+      "target": 0.6036,
+      "executed": 0.6209,
+      "regime": 4,
+      "regime_name": "최대 방어 / 공포"
+     },
      "KR": {
       "trend": -0.9093,
       "risk": 0.6376,
@@ -4889,6 +7265,14 @@
       "risk": 0.7526,
       "target": 0.609,
       "executed": 0.6464,
+      "regime": 4,
+      "regime_name": "최대 방어 / 공포"
+     },
+     "US_TECH": {
+      "trend": -0.7533,
+      "risk": 0.7382,
+      "target": 0.6,
+      "executed": 0.6167,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
@@ -4944,6 +7328,27 @@
      "executed": 0.8695,
      "next_weight": 0.8695,
      "action": "HOLD"
+    }
+   ]
+  },
+  "US_TECH": {
+   "since": "2026-10-23",
+   "days": 1,
+   "model_return": 0.0,
+   "index_return": 0.0,
+   "regime_changes": 0,
+   "trades": 1,
+   "rows": [
+    {
+     "as_of": "2026-10-23",
+     "close": 704.4,
+     "trend": -0.0498,
+     "risk": 0.2733,
+     "regime": 1,
+     "target": 0.7879,
+     "executed": 0.8199,
+     "next_weight": 0.7879,
+     "action": "SELL"
     }
    ]
   }
