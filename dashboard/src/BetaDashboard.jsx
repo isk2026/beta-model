@@ -10,6 +10,7 @@ import {
 import { allocate, DEFAULT_PARAMS, FALLBACK_REGIMES, rebalance } from './model.js'
 import BacktestPanel from './BacktestPanel.jsx'
 import ScenarioPanel from './ScenarioPanel.jsx'
+import SectorPanel from './SectorPanel.jsx'
 import ValidationPanel from './ValidationPanel.jsx'
 import LivePanel from './LivePanel.jsx'
 
@@ -712,6 +713,7 @@ export default function BetaDashboard() {
 
         {m && <LivePanel log={data?.signal_log} market={market} label={m.label} />}
         {m && <ScenarioPanel scenarios={data?.scenarios} market={market} label={m.label} />}
+        <SectorPanel sectors={data?.sectors} market={market} />
         <BacktestPanel market={market} />
         <ValidationPanel />
 

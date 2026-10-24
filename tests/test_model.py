@@ -285,3 +285,19 @@ def test_weighted_trend_and_basket():
     r = px.pct_change().iloc[-1]
     qr, sr = (md.features[n].close.pct_change().iloc[-1] for n in ("QQQ", "SOXX"))
     assert r == pytest.approx(0.75 * qr + 0.25 * sr)                      # 매일 리밸런싱 바스켓
+
+
+# ---------------------------------------------------- sector monitor
+def test_sector_payload_ranks_and_leaders():
+    from beta_model.sectors import BENCH, EXTRA, SECTORS, sector_payload
+    rng = np.random.default_rng(2)
+    idx = pd.bdate_range("2022-01-03", periods=600)
+    drift = {t: (i - 5) * 0.0004 for i, t in enumerate(SECTORS)}          # 뒤 섹터일수록 강함
+    px = pd.DataFrame({t: 100 * np.exp(np.cumsum(drift.get(t, 0.0002) + rng.normal(0, 0.005, 600)))
+                       for t in [BENCH, *SECTORS, *EXTRA]}, index=idx)
+    p = sector_payload(px)
+    scores = [x["score"] for x in p["sectors"]]
+    assert scores == sorted(scores, reverse=True) and [x["rank"] for x in p["sectors"]] == list(range(1, 12))
+    assert len(p["leaders"]) <= 3
+    assert all(x["trend"] > 0 and x["above_sma200"] for x in p["sectors"] if x["leader"])
+    assert p["sectors"][0]["ticker"] == list(SECTORS)[-1]                  # 가장 강한 drift가 1위

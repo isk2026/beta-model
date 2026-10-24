@@ -18,6 +18,7 @@ from . import config
 from .allocation import REGIME_INFO, Regime, allocate, regime_series, smooth_weights, target_stock_weight
 from .data_pipeline import ROOT, MarketData, build_market_data, fetch_raw
 from .scenarios import run_scenarios
+from .sectors import fetch_sectors, sector_payload
 from .signals import build_alert, live_payload, next_weight, update_log
 from .scoring import BetaModelScoringEngine
 
@@ -114,6 +115,10 @@ def main() -> None:
     md = build_market_data(raw, meta)
     payload = build_payload(md)
     payload["scenarios"] = run_scenarios(raw, meta)
+    try:  # 섹터 모니터는 참고 정보 — 실패해도 본 모델 갱신은 계속
+        payload["sectors"] = sector_payload(fetch_sectors(use_cache=not args.refresh))
+    except Exception as exc:  # noqa: BLE001
+        logging.error("섹터 모니터 실패: %s", exc)
     log, fresh = update_log(payload, run_at=meta.get("fetched_at", ""))
     payload["signal_log"] = live_payload(log)
     alert = build_alert(log, {m: d["label"] for m, d in payload["markets"].items()}, fresh)
