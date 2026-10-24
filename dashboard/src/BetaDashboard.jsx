@@ -713,7 +713,7 @@ export default function BetaDashboard() {
 
         {m && <LivePanel log={data?.signal_log} market={market} label={m.label} />}
         {m && <ScenarioPanel scenarios={data?.scenarios} market={market} label={m.label} />}
-        <SectorPanel sectors={data?.sectors} market={market} />
+        <SectorPanel sectors={market === 'KR' ? data?.sectors_kr : data?.sectors} />
         <BacktestPanel market={market} />
         <ValidationPanel />
 

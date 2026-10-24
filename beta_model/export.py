@@ -115,10 +115,12 @@ def main() -> None:
     md = build_market_data(raw, meta)
     payload = build_payload(md)
     payload["scenarios"] = run_scenarios(raw, meta)
-    try:  # 섹터 모니터는 참고 정보 — 실패해도 본 모델 갱신은 계속
-        payload["sectors"] = sector_payload(fetch_sectors(use_cache=not args.refresh))
-    except Exception as exc:  # noqa: BLE001
-        logging.error("섹터 모니터 실패: %s", exc)
+    # 섹터 모니터는 참고 정보 — 실패해도 본 모델 갱신은 계속. sectors = 미국(기존 키), sectors_kr = 한국
+    for key, uni in (("sectors", "US"), ("sectors_kr", "KR")):
+        try:
+            payload[key] = sector_payload(fetch_sectors(use_cache=not args.refresh, universe=uni), uni)
+        except Exception as exc:  # noqa: BLE001
+            logging.error("섹터 모니터(%s) 실패: %s", uni, exc)
     log, fresh = update_log(payload, run_at=meta.get("fetched_at", ""))
     payload["signal_log"] = live_payload(log)
     alert = build_alert(log, {m: d["label"] for m, d in payload["markets"].items()}, fresh)

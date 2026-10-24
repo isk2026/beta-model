@@ -301,3 +301,31 @@ def test_sector_payload_ranks_and_leaders():
     assert len(p["leaders"]) <= 3
     assert all(x["trend"] > 0 and x["above_sma200"] for x in p["sectors"] if x["leader"])
     assert p["sectors"][0]["ticker"] == list(SECTORS)[-1]                  # 가장 강한 drift가 1위
+
+
+def test_sector_payload_us_keys_backward_compatible():
+    from beta_model.sectors import US, sector_payload
+    idx = pd.bdate_range("2022-01-03", periods=400)
+    px = pd.DataFrame({t: 100 * np.exp(np.linspace(0, 0.1 + i * 0.01, 400)) for i, t in enumerate(US.columns)}, index=idx)
+    p = sector_payload(px)
+    assert {"as_of", "benchmark", "sectors", "leaders", "tech", "rank_history"} <= set(p)
+    assert p["benchmark"]["ticker"] == "SPY" and p["universe"] == "US"
+    assert [x["ticker"] for x in p["tech"]] == ["QQQ", "SOXX"]
+
+
+def test_sector_payload_kr_universe_skips_short_history():
+    from beta_model.sectors import KR, sector_payload
+    rng = np.random.default_rng(3)
+    idx = pd.bdate_range("2021-01-04", periods=700)
+    px = pd.DataFrame({t: 100 * np.exp(np.cumsum(0.0003 + rng.normal(0, 0.01, 700))) for t in KR.columns}, index=idx)
+    late = list(KR.sectors)[-1]
+    px.loc[px.index[:500], late] = np.nan                                  # 상장 200거래일 → 순위 제외
+    px.loc[px.index[-3], list(KR.sectors)[0]] = np.nan                     # 중간 결측은 ffill
+    p = sector_payload(px, "KR")
+    tickers = [x["ticker"] for x in p["sectors"]]
+    assert late not in tickers and len(tickers) == len(KR.sectors) - 1 == p["n_sectors"]
+    assert p["benchmark"]["ticker"] == "069500" and p["benchmark"]["name"] == "KODEX 200"
+    assert all(late not in r for r in p["rank_history"].values())
+    assert [x["ticker"] for x in p["tech"]] == list(KR.extra)
+    assert all(np.isfinite(x["score"]) and np.isfinite(x["trend"]) for x in p["sectors"])
+    assert KR.yf_map()["139260"] == "139260.KS"
