@@ -73,20 +73,31 @@ function Panel({ title, icon: Icon, right, children, className = '' }) {
   )
 }
 
-function ScoreSlider({ label, value, min, max, step, onChange, color, hint, live }) {
+// 슬라이더 눈금: [값, 라벨]. 구간 경계는 인접 눈금의 중간값.
+const TREND_SCALE = [[-1, '강한 하락'], [-0.5, '하락'], [0, '중립'], [0.5, '상승'], [1, '강한 상승']]
+const RISK_SCALE = [[0, '안정'], [0.25, '낮은 불안'], [0.5, '경계'], [0.75, '높은 불안'], [1, '공포']]
+const levelOf = (scale, v) => scale.reduce((best, s) => (Math.abs(s[0] - v) < Math.abs(best[0] - v) ? s : best))
+
+function ScoreSlider({ label, desc, value, min, max, step, onChange, color, scale, live }) {
   const fill = ((value - min) / (max - min)) * 100
   const livePos = live == null ? null : ((live - min) / (max - min)) * 100
+  const level = levelOf(scale, value)
   return (
     <div>
-      <div className="mb-2 flex items-baseline justify-between">
-        <label className="text-xs font-medium text-slate-400">{label}</label>
-        <span className="num font-mono text-2xl font-semibold" style={{ color, textShadow: `0 0 18px ${color}66` }}>
-          {min < 0 ? signed(value) : value.toFixed(2)}
+      <div className="mb-1 flex items-baseline justify-between gap-2">
+        <label className="text-xs font-medium text-slate-300">{label}</label>
+        <span className="flex items-baseline gap-2">
+          <span className="rounded-md px-1.5 py-0.5 text-[11px] font-semibold" style={{ color, background: `${color}1f` }}>{level[1]}</span>
+          <span className="num font-mono text-2xl font-semibold" style={{ color, textShadow: `0 0 18px ${color}66` }}>
+            {min < 0 ? signed(value) : value.toFixed(2)}
+          </span>
         </span>
       </div>
+      <p className="mb-3 text-[11px] leading-relaxed text-slate-500">{desc}</p>
       <div className="relative">
         <input
           type="range" min={min} max={max} step={step} value={value} aria-label={label}
+          aria-valuetext={`${value.toFixed(2)} ${level[1]}`}
           onChange={(e) => onChange(parseFloat(e.target.value))}
           style={{ '--thumb': color, '--track': `linear-gradient(90deg, ${color} 0%, ${color} ${fill}%, #1f2937 ${fill}%)` }}
         />
@@ -97,8 +108,18 @@ function ScoreSlider({ label, value, min, max, step, onChange, color, hint, live
           />
         )}
       </div>
-      <div className="mt-1.5 flex justify-between text-[11px] text-slate-500">
-        <span>{min}</span><span>{hint}</span><span>{max}</span>
+      <div className="relative mt-1.5 h-8 text-[10px] leading-tight sm:text-[11px]">
+        {scale.map(([v, text], i) => {
+          const pos = ((v - min) / (max - min)) * 100
+          const align = i === 0 ? 'translate-x-0 text-left' : i === scale.length - 1 ? '-translate-x-full text-right' : '-translate-x-1/2 text-center'
+          const active = level[0] === v
+          return (
+            <span key={v} className={`absolute top-0 ${align} ${active ? 'font-semibold text-slate-100' : 'text-slate-500'}`} style={{ left: `${pos}%` }}>
+              <span className="num block font-mono">{min < 0 && v > 0 ? `+${v}` : v}</span>
+              <span className="block whitespace-nowrap">{text}</span>
+            </span>
+          )
+        })}
       </div>
     </div>
   )
@@ -480,14 +501,21 @@ export default function BetaDashboard() {
               </button>
             )}>
             <div className="space-y-6">
-              <ScoreSlider label="추세 점수 (핸들)" value={trend} min={-1} max={1} step={0.01}
+              <ScoreSlider label="추세 점수 (핸들 · 방향)" value={trend}
+                desc="이동평균 정배열 50% + 52주 고점 대비 낙폭 25% + 3개월 모멘텀 25%. 0 이상이면 상승 국면, 높을수록 기본 주식 비중↑" min={-1} max={1} step={0.01}
                 onChange={(v) => { setTrend(v); setActivePreset(null) }}
-                color={trend >= 0 ? C.emerald : C.rose} hint="0 = 중립" live={live?.trend} />
-              <ScoreSlider label="위험 점수 (브레이크)" value={risk} min={0} max={1} step={0.01}
+                color={trend >= 0 ? C.emerald : C.rose} scale={TREND_SCALE} live={live?.trend} />
+              <ScoreSlider label="위험 점수 (브레이크 · 불안감)" value={risk}
+                desc={`변동성 지수·실현변동성·금리/환율 급등·하이일드 스프레드 종합. ${params.risk_threshold} 이상이면 '높은 불안' 국면, 1.0이면 주식 −${pct(params.risk_span)}p`} min={0} max={1} step={0.01}
                 onChange={(v) => { setRisk(v); setActivePreset(null) }}
-                color={riskColor(risk)} hint={`${params.risk_threshold} = 경계`} live={live?.risk} />
+                color={riskColor(risk)} scale={RISK_SCALE} live={live?.risk} />
             </div>
-            <div className="mt-6 grid grid-cols-2 gap-2">
+            {live && (
+              <p className="mt-4 flex items-center gap-1.5 text-[11px] text-slate-500">
+                <span className="inline-block h-3 w-0.5 rounded bg-slate-300" aria-hidden /> 슬라이더 위 흰 눈금 = 오늘 실측값 · 움직여서 "만약 ~라면"을 시뮬레이션
+              </p>
+            )}
+            <div className="mt-4 grid grid-cols-2 gap-2">
               {PRESETS.map((p) => (
                 <button key={p.id} onClick={() => applyPreset(p)}
                   className={`flex items-center gap-2 rounded-xl border p-2.5 text-left transition hover:bg-white/5 ${activePreset === p.id ? 'bg-white/5' : 'border-line'}`}
