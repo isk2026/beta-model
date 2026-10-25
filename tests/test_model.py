@@ -506,3 +506,22 @@ def test_notify_cli_never_fails(tmp_path, monkeypatch):
         raise RuntimeError("boom")
     monkeypatch.setattr(notify, "load_weekly_inputs", broken)
     assert notify.main(["weekly"]) == 0
+
+
+# ---------------------------------------------------- breadth risk component
+def test_breadth_component():
+    raw = _raw(0.0, 15)
+    n = len(raw)
+    raw["SPY"] = np.linspace(100, 130, n)                          # 지수는 상승
+    raw["RSP"] = np.r_[np.linspace(100, 125, n - 63), np.linspace(125, 112, 63)]  # 동일가중은 최근 하락
+    for i, t in enumerate(config.BREADTH_SECTORS):                  # 11개 중 8개 섹터가 최근 급락 → 200일선 아래
+        tail = np.linspace(150, 100, 40) if i < 8 else np.linspace(150, 170, 40)
+        raw[t] = np.r_[np.linspace(100, 150, n - 40), tail]
+    eng = BetaModelScoringEngine(build_market_data(raw))
+    b = eng.breadth().iloc[-1]
+    assert b.ew_gap < -0.05 and b.sect_below200 == pytest.approx(8 / 11)
+    assert b.breadth > 0.8
+    assert eng.risk_components("US")["breadth"].iloc[-1] == pytest.approx(b.breadth)
+    # 데이터가 없으면 NaN → 위험 점수는 나머지 가중치로 재정규화
+    e0 = _engine(trend=0.0, vol_level=15)
+    assert e0.breadth()["breadth"].isna().all() and e0.risk_score("US")["risk_score"].notna().iloc[-1]

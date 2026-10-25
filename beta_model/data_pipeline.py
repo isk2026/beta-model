@@ -152,7 +152,7 @@ def fetch_raw(use_cache: bool = True, max_age_hours: float = 6) -> tuple[pd.Data
                 return pickle.load(f)
 
     start = datetime.fromisoformat(config.HISTORY_START)
-    raw = fetch_yfinance(config.YF_TICKERS, start)
+    raw = fetch_yfinance(config.YF_TICKERS | config.BREADTH_TICKERS, start)
     for name, sym in config.FDR_SYMBOLS.items():
         try:
             raw = raw.join(fetch_fdr(sym, start).rename(name), how="outer")

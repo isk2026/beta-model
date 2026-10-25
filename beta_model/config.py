@@ -23,6 +23,9 @@ YF_TICKERS: dict[str, str] = {
     "QQQ": "QQQ",          # 나스닥100 ETF (1999~, 배당 재투자 수정주가)
     "SOXX": "SOXX",        # 반도체 ETF (2001~)
 }
+# 시장 폭(breadth) 위험 요소용: 동일가중 S&P500(RSP) vs SPY, 섹터 ETF 11개의 200일선 위치
+BREADTH_SECTORS: tuple[str, ...] = ("XLK", "XLF", "XLV", "XLY", "XLP", "XLE", "XLI", "XLB", "XLU", "XLRE", "XLC")
+BREADTH_TICKERS: dict[str, str] = {"SPY": "SPY", "RSP": "RSP"} | {t: t for t in BREADTH_SECTORS}
 # yfinance에 이력이 없는 시리즈는 FinanceDataReader 로 받는다
 FDR_SYMBOLS: dict[str, str] = {
     "KOSPI200": "KS200",   # VKOSPI 대체 계산용
@@ -32,6 +35,8 @@ FRED_SERIES: dict[str, str] = {
     # HY OAS는 FRED가 최근 3년만 제공(ICE 라이선스)하므로 참고 지표로만 표시.
     "BAA_SPREAD": "BAA10Y",          # Moody's Baa 회사채 − 미 10년물 (%p)
     "HY_SPREAD": "BAMLH0A0HYM2",     # ICE BofA US High Yield OAS (%) — 참고용
+    "CCC_OAS": "BAMLH0A3HYC",        # ICE BofA CCC 이하 OAS — 참고용 (FRED 3년치뿐이라 검증 불가)
+    "BB_OAS": "BAMLH0A1HYBB",        # ICE BofA BB OAS — 참고용 (CCC−BB = 최하위 신용 스트레스)
     "USDKRW_FRED": "DEXKOUS",        # 2003년 이전 원/달러 보완 (주간 지연 공시)
     "UST3M": "DTB3",                 # 미 3개월 국채 — 현금(MMF) 수익률 근사
     "KR3M": "IR3TIB01KRM156N",       # 한국 3개월 금리(월간) — 원화 현금 수익률 근사
@@ -86,6 +91,13 @@ class RiskParams:
     credit_z_full: float = 2.0        # 스프레드 Z=2 → 1.0 (상대)
     credit_level_lo: float = 2.5      # Baa−10Y 2.5%p 이하 → 0 (절대, 1990~ 상위 25% 수준까지는 평시)
     credit_level_hi: float = 4.5      # 4.5%p 이상 → 1 (2008 6.2, 2020 4.3, 2001 3.5)
+    # 시장 폭(breadth) = 동일가중 열위 50% + 섹터 200일선 이탈 비율 50%. 지수는 오르는데 속은 약해지는
+    # '좁은 장세'를 잡는다. 후보 지표 20여 개(유가·엔화·금리커브·MOVE·SKEW·NFCI·신용 추세 등) 중
+    # 향후 63일 −10% 낙폭 예측력(AUC)이 미국·한국, 표본 내·외 모두에서 일관되게 오른 유일한 지표.
+    breadth_ew_window: int = 63       # RSP/SPY 상대수익 기간
+    breadth_ew_full: float = 0.05     # 동일가중이 63일간 5% 이상 뒤처지면 → 1
+    breadth_sect_lo: float = 0.2      # 200일선 아래 섹터 비율 20% 이하 → 0
+    breadth_sect_hi: float = 0.8      # 80% 이상 → 1
     # 국내 신용(회사채 AA− 3년 − 국고채 3년, ECOS)을 한국 시장 신용 위험에 섞는 비율.
     # 백테스트(2026-10): 50% 혼합 시 표본 내 샤프 0.456→0.451, 위험-낙폭 순위상관 −0.126→−0.115로
     # 개선이 없어 0(미국 Baa만)으로 둔다. 국내 신용은 매크로 패널에 참고 지표로 표시.
@@ -95,9 +107,10 @@ class RiskParams:
     kr_credit_level_hi: float = 1.8   # %p, 2022 레고랜드 고점 1.77 (2020 1.41, 2008 4.65)
     # 시장별 가중치 (합 1.0)
     weights: dict = field(default_factory=lambda: {
-        "US": {"vol_index": 0.35, "realized_vol": 0.15, "rates": 0.15, "fx": 0.10, "credit": 0.25},
-        "US_TECH": {"vol_index": 0.35, "realized_vol": 0.15, "rates": 0.15, "fx": 0.10, "credit": 0.25},
-        "KR": {"vol_index": 0.30, "realized_vol": 0.15, "rates": 0.10, "fx": 0.20, "credit": 0.25},
+        # breadth 0.20 추가 (기존 가중치는 ×0.8). 0.10~0.25 모두 결과가 비슷해 중간값 — beta_model 검증 README 참고
+        "US": {"vol_index": 0.28, "realized_vol": 0.12, "rates": 0.12, "fx": 0.08, "credit": 0.20, "breadth": 0.20},
+        "US_TECH": {"vol_index": 0.28, "realized_vol": 0.12, "rates": 0.12, "fx": 0.08, "credit": 0.20, "breadth": 0.20},
+        "KR": {"vol_index": 0.24, "realized_vol": 0.12, "rates": 0.08, "fx": 0.16, "credit": 0.20, "breadth": 0.20},
     })
 
 

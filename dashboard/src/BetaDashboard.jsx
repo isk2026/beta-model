@@ -34,7 +34,7 @@ const PRESETS = [
   { id: 'panic', label: 'Panic / Buy the Dip', sub: '공포 국면', trend: -0.9, risk: 0.9, Icon: Zap, color: C.rose },
 ]
 const TREND_LABELS = { alignment: '이동평균 정배열', drawdown: '52주 고점 대비', momentum: '3개월 모멘텀' }
-const RISK_LABELS = { vol_index: '변동성 지수', realized_vol: '실현 변동성', rates: '미 10년물 급등', fx: '원/달러 급등', credit: '신용 스프레드 (Baa)' }
+const RISK_LABELS = { vol_index: '변동성 지수', realized_vol: '실현 변동성', rates: '미 10년물 급등', fx: '원/달러 급등', credit: '신용 스프레드 (Baa)', breadth: '시장 폭 (동일가중·섹터)' }
 const MACRO_META = {
   VIX: { label: 'VIX', fmt: (v) => v.toFixed(2), chg: (v) => v.toFixed(2), bad: 1 },
   VKOSPI: { label: 'VKOSPI', fmt: (v) => v.toFixed(2), chg: (v) => v.toFixed(2), bad: 1 },
@@ -43,6 +43,9 @@ const MACRO_META = {
   DXY: { label: '달러 인덱스', fmt: (v) => v.toFixed(2), chg: (v) => v.toFixed(2), bad: 1 },
   BAA_SPREAD: { label: 'Baa 스프레드', fmt: (v) => `${v.toFixed(2)}%p`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
   KR_CREDIT: { label: '국내 신용 AA−', fmt: (v) => `${v.toFixed(2)}%p`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
+  BREADTH_EW: { label: '동일가중 vs S&P 63일', fmt: (v) => `${v >= 0 ? '+' : ''}${(v * 100).toFixed(1)}%`, chg: (v) => `${(v * 100).toFixed(1)}%p`, bad: -1 },
+  BREADTH_SECT: { label: '200일선 아래 섹터', fmt: (v) => `${Math.round(v * 11)}/11`, chg: (v) => `${(v * 100).toFixed(0)}%p`, bad: 1 },
+  CCC_BB: { label: 'CCC−BB 스프레드(참고)', fmt: (v) => `${v.toFixed(2)}%p`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
   HY_SPREAD: { label: 'HY 스프레드(참고)', fmt: (v) => `${v.toFixed(2)}%`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
 }
 
@@ -693,7 +696,7 @@ export default function BetaDashboard() {
                 ))}
               </div>
               <p className="mt-4 text-[11px] leading-relaxed text-slate-500">
-                변동성 지수는 252일 백분위와 절대 레벨을, 신용(Baa 회사채−미 10년물{market === 'KR' && data.meta.kr_credit_blend > 0 ? ' + 국내 AA−−국고 3년' : ''})은 Z점수와 절대 레벨을 반반 반영. 금리·환율은 10일 상승분만 위험으로 봅니다.
+                변동성 지수는 252일 백분위와 절대 레벨을, 신용(Baa 회사채−미 10년물{market === 'KR' && data.meta.kr_credit_blend > 0 ? ' + 국내 AA−−국고 3년' : ''})은 Z점수와 절대 레벨을 반반 반영. 금리·환율은 10일 상승분만 위험으로 봅니다. 시장 폭은 동일가중 S&P(RSP)가 SPY보다 63일간 뒤처진 정도와 200일선 아래 섹터 비율로, 지수는 버티는데 속이 약해지는 '좁은 장세'를 잡습니다(미국 기준, 모든 시장 공통).
               </p>
             </Panel>
 
@@ -703,12 +706,13 @@ export default function BetaDashboard() {
                   const meta = MACRO_META[k]
                   if (!meta || v.value == null) return null
                   const up = (v.chg_10d ?? 0) > 0
+                  const worse = up === (meta.bad > 0)   // bad = 오르면 나쁜 지표(1) / 내리면 나쁜 지표(−1)
                   return (
                     <div key={k} className="rounded-xl bg-ink/70 p-3">
                       <p className="text-[11px] text-slate-400">{meta.label}{k === 'VKOSPI' && data.meta.vkospi_source === 'proxy' ? '*' : ''}</p>
                       <p className="num font-mono text-base text-slate-100">{meta.fmt(v.value)}</p>
                       {v.chg_10d != null && (
-                        <p className={`num flex items-center gap-1 font-mono text-[11px] ${up ? 'text-rose-300' : 'text-emerald-300'}`}>
+                        <p className={`num flex items-center gap-1 font-mono text-[11px] ${worse ? 'text-rose-300' : 'text-emerald-300'}`}>
                           {up ? <TrendingUp size={11} aria-hidden /> : <TrendingDown size={11} aria-hidden />}
                           {up ? '+' : ''}{meta.chg(v.chg_10d)} <span className="font-sans text-slate-500">10일</span>
                         </p>

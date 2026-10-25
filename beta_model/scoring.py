@@ -167,7 +167,32 @@ class BetaModelScoringEngine:
         return pd.DataFrame({
             "vol_index": vol_index, "realized_vol": realized,
             "rates": rates, "fx": fx, "credit": credit,
+            "breadth": self.breadth()["breadth"],
         })
+
+    def breadth(self) -> pd.DataFrame:
+        """미국 시장 폭(모든 시장 공통): 동일가중(RSP) 대비 SPY 열위 + 200일선 아래 섹터 비율.
+
+        데이터가 없는 구간(RSP 2003년, 섹터 ETF 1999년 이전)은 NaN → 위험 점수에서 재정규화.
+        """
+        p, rp = self.data.prices, self.rp
+        idx = p.index
+        nan = pd.Series(np.nan, index=idx)
+        if {"RSP", "SPY"} <= set(p.columns):
+            n = rp.breadth_ew_window
+            ew_gap = (p["RSP"] / p["RSP"].shift(n)) / (p["SPY"] / p["SPY"].shift(n)) - 1
+        else:
+            ew_gap = nan
+        secs = [c for c in config.BREADTH_SECTORS if c in p.columns]
+        if secs:
+            s = p[secs]
+            sect_below = (s < s.rolling(200).mean()).where(s.rolling(200).count() == 200).mean(axis=1)
+        else:
+            sect_below = nan
+        ew = pd.Series(linear_map(-ew_gap, 0.0, rp.breadth_ew_full), index=idx).where(ew_gap.notna())
+        sect = pd.Series(linear_map(sect_below, rp.breadth_sect_lo, rp.breadth_sect_hi), index=idx).where(sect_below.notna())
+        return pd.DataFrame({"ew_gap": ew_gap, "sect_below200": sect_below,
+                             "breadth": pd.concat([ew, sect], axis=1).mean(axis=1)})
 
     def _spread_score(self, spread: pd.Series | None, lo: float, hi: float, idx: pd.Index) -> pd.Series:
         """신용 스프레드 → 0~1: Z점수(상대) 50% + 절대 레벨 50%."""

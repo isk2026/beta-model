@@ -25,7 +25,8 @@ from .scoring import BetaModelScoringEngine
 
 OUT_FILE = ROOT / "dashboard" / "public" / "data" / "beta_model.json"
 HISTORY_DAYS = 252
-MACRO_COLS = ["VIX", "VKOSPI", "US10Y", "USDKRW", "DXY", "BAA_SPREAD", "KR_CREDIT", "HY_SPREAD"]
+MACRO_COLS = ["VIX", "VKOSPI", "US10Y", "USDKRW", "DXY", "BAA_SPREAD", "KR_CREDIT", "BREADTH_EW", "BREADTH_SECT",
+              "HY_SPREAD", "CCC_BB"]
 
 
 def _r(v, n: int = 4):
@@ -84,7 +85,12 @@ def market_payload(engine: BetaModelScoringEngine, md: MarketData, market: str) 
 
 
 def macro_payload(md: MarketData) -> dict:
-    p = md.prices
+    p = md.prices.copy()
+    # 파생 지표: 시장 폭(위험 점수 구성요소)과 최하위 신용 스트레스(참고)
+    b = BetaModelScoringEngine(md).breadth()
+    p["BREADTH_EW"], p["BREADTH_SECT"] = b["ew_gap"], b["sect_below200"]
+    if {"CCC_OAS", "BB_OAS"} <= set(p.columns):
+        p["CCC_BB"] = p["CCC_OAS"] - p["BB_OAS"]
     out = {}
     for c in MACRO_COLS:
         if c not in p:
