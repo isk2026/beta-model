@@ -1,8 +1,8 @@
 {
  "meta": {
-  "fetched_at": "2026-10-25T12:48+09:00",
+  "fetched_at": "2026-10-25T13:34+09:00",
   "vkospi_source": "proxy",
-  "kr_credit_source": "ecos",
+  "kr_credit_source": null,
   "tickers": {
    "SPX": "^GSPC",
    "NDX": "^IXIC",
@@ -23,7 +23,8 @@
    "UST3M": "FRED:DTB3",
    "KR3M": "FRED:IR3TIB01KRM156N"
   },
-  "kr_credit_blend": 0.0
+  "kr_credit_blend": 0.0,
+  "vol_proxy_mode": "keep"
  },
  "params": {
   "base_mid": 0.85,
@@ -102,10 +103,6 @@
   "BAA_SPREAD": {
    "value": 1.46,
    "chg_10d": 0.01
-  },
-  "KR_CREDIT": {
-   "value": 0.689,
-   "chg_10d": 0.021
   },
   "BREADTH_EW": {
    "value": -0.0291,
@@ -2464,12 +2461,12 @@
    },
    "as_of": "2026-10-23",
    "allocation": {
-    "trend_score": -0.19727009351440636,
+    "trend_score": -0.19727008972777593,
     "risk_score": 0.3172900569114542,
-    "base_weight": 0.820409485972839,
+    "base_weight": 0.8204094865408336,
     "risk_deduction": 0.06345801138229083,
-    "stock_weight": 0.7569514745905482,
-    "cash_weight": 0.24304852540945177,
+    "stock_weight": 0.7569514751585428,
+    "cash_weight": 0.24304852484145723,
     "regime": 3,
     "regime_name": "하락 방어",
     "regime_raw": 3
@@ -8109,6 +8106,7 @@
    "index_return": 0.0,
    "regime_changes": 0,
    "trades": 0,
+   "revised_days": 0,
    "rows": [
     {
      "as_of": "2026-10-23",
@@ -8119,7 +8117,10 @@
      "target": 0.6802,
      "executed": 0.6948,
      "next_weight": 0.6948,
-     "action": "HOLD"
+     "action": "HOLD",
+     "first_action": "HOLD",
+     "first_next_weight": 0.6948,
+     "revisions": 0
     }
    ]
   },
@@ -8130,6 +8131,7 @@
    "index_return": 0.0,
    "regime_changes": 0,
    "trades": 0,
+   "revised_days": 0,
    "rows": [
     {
      "as_of": "2026-10-23",
@@ -8140,7 +8142,10 @@
      "target": 0.8486,
      "executed": 0.8731,
      "next_weight": 0.8731,
-     "action": "HOLD"
+     "action": "HOLD",
+     "first_action": "HOLD",
+     "first_next_weight": 0.8731,
+     "revisions": 0
     }
    ]
   },
@@ -8151,6 +8156,7 @@
    "index_return": 0.0,
    "regime_changes": 0,
    "trades": 0,
+   "revised_days": 0,
    "rows": [
     {
      "as_of": "2026-10-23",
@@ -8161,7 +8167,10 @@
      "target": 0.757,
      "executed": 0.7684,
      "next_weight": 0.7684,
-     "action": "HOLD"
+     "action": "HOLD",
+     "first_action": "HOLD",
+     "first_next_weight": 0.7684,
+     "revisions": 0
     }
    ]
   }
