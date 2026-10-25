@@ -12,7 +12,7 @@ import pandas as pd
 
 from . import config
 from .config import RiskParams, TrendParams
-from .data_pipeline import MarketData, realized_vol
+from .data_pipeline import LONG_SMA, VKOSPI_PROXY_COL, MarketData, realized_vol
 
 
 def _clip(x, lo: float, hi: float):
@@ -107,14 +107,25 @@ class BetaModelScoringEngine:
         ).where(f["drawdown"].notna())
         momentum = np.tanh(f[f"roc_{tp.roc_window}"] / tp.roc_scale)
         score = tp.w_alignment * alignment + tp.w_drawdown * drawdown + tp.w_momentum * momentum
+        comps = {"alignment": alignment, "drawdown": drawdown, "momentum": momentum}
+        if tp.w_long > 0:   # 장기 추세 요소 (실험용) — 꺼져 있으면 기존 계산과 완전히 같다
+            comps["long"] = self._long_trend(f)
+            total = tp.w_alignment + tp.w_drawdown + tp.w_momentum + tp.w_long
+            score = (score + tp.w_long * comps["long"]) / total
         if tp.smooth_span > 1:
             score = score.ewm(span=tp.smooth_span, min_periods=1).mean().where(score.notna())
-        return pd.DataFrame({
-            "alignment": alignment,
-            "drawdown": drawdown,
-            "momentum": momentum,
-            "trend_score": _clip(score, -1.0, 1.0),
-        })
+        return pd.DataFrame({**comps, "trend_score": _clip(score, -1.0, 1.0)})
+
+    def _long_trend(self, f: pd.DataFrame) -> pd.Series:
+        """장기 추세 −1~+1: 12-1개월 모멘텀 또는 200일선 이격도의 tanh."""
+        tp = self.tp
+        if tp.long_kind == "tsmom":
+            x = f["mom_12_1"]
+        elif tp.long_kind == "sma200":
+            x = f["close"] / f[f"sma{LONG_SMA}"] - 1
+        else:
+            raise ValueError(f"unknown long_kind: {tp.long_kind}")
+        return np.tanh(x / tp.long_scale)
 
     def trend_score(self, market: str) -> pd.DataFrame:
         """시장 추세 = 구성 지수 추세의 평균.
@@ -147,6 +158,11 @@ class BetaModelScoringEngine:
         vol_index = 0.5 * rolling_percentile(vol) + 0.5 * pd.Series(
             linear_map(vol, rp.vol_level_lo[vol_name], rp.vol_level_hi[vol_name]), index=idx
         )
+        if rp.vol_proxy_mode == "drop":
+            # proxy(실현변동성 대체값)인 날은 실현변동성 요소와 같은 신호 → 빼고 재정규화(risk_score)
+            vol_index = vol_index.mask(self.vol_is_proxy(vol_name))
+        elif rp.vol_proxy_mode != "keep":
+            raise ValueError(f"unknown vol_proxy_mode: {rp.vol_proxy_mode}")
 
         # 시장 대표 지수(첫 번째) — 가중 바스켓 시장은 바스켓 — 의 실현변동성 백분위
         rv = realized_vol(market_price(self.data, self.markets[market]).dropna(), 20).reindex(idx).ffill()
@@ -169,6 +185,18 @@ class BetaModelScoringEngine:
             "rates": rates, "fx": fx, "credit": credit,
             "breadth": self.breadth()["breadth"],
         })
+
+    def vol_is_proxy(self, vol_name: str) -> pd.Series:
+        """변동성 지수가 날짜별로 proxy인지(True). VKOSPI만 해당.
+
+        표시 열(VKOSPI_PROXY)이 있으면 그 값을, 없으면(이전 캐시) meta 의 출처로 판단한다.
+        """
+        idx = self.data.prices.index
+        if vol_name != "VKOSPI":
+            return pd.Series(False, index=idx)
+        if VKOSPI_PROXY_COL in self.data.prices:
+            return self.data.prices[VKOSPI_PROXY_COL].fillna(0) > 0.5
+        return pd.Series(self.data.meta.get("vkospi_source") == "proxy", index=idx)
 
     def breadth(self) -> pd.DataFrame:
         """미국 시장 폭(모든 시장 공통): 동일가중(RSP) 대비 SPY 열위 + 200일선 아래 섹터 비율.
@@ -214,9 +242,17 @@ class BetaModelScoringEngine:
 
     # ---------------------------------------------------------------- summary
     def scores(self, market: str) -> pd.DataFrame:
+        """추세·위험 점수 시계열.
+
+        끝부분은 이 시장 지수에 실제 종가가 있는 마지막 날에서 자른다. 공통 달력(미·한 거래일 합집합)의
+        마지막 날이 다른 나라 거래일이면 이 시장 값은 전일 ffill 이라, 그 날짜로 기준일을 잡으면
+        '어제 데이터로 계산한 오늘 신호'가 생긴다 (16:30 KST 실행의 미국, 한국 휴장일의 한국).
+        """
         t = self.trend_score(market).add_prefix("trend_").rename(columns={"trend_trend_score": "trend_score"})
         r = self.risk_score(market).add_prefix("risk_").rename(columns={"risk_risk_score": "risk_score"})
-        return t.join(r).dropna(subset=["trend_score", "risk_score"])
+        out = t.join(r).dropna(subset=["trend_score", "risk_score"])
+        last = self.data.last_trade_date(self.markets[market]["indices"])
+        return out.loc[:last] if last is not None else out
 
     def latest(self, market: str) -> dict:
         row = self.scores(market).iloc[-1]

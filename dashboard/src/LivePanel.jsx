@@ -19,7 +19,9 @@ export default function LivePanel({ log, market, label }) {
           <h2 className="flex items-center gap-2 text-sm font-semibold tracking-wide text-slate-200">
             <ClipboardList size={16} className="text-slate-400" aria-hidden /> 실전 신호 기록 · {label}
           </h2>
-          <p className="mt-1 text-[11px] text-slate-500">{g.since}부터 매 갱신마다 저장 — 사후 수정 불가한 실제 기록</p>
+          <p className="mt-1 text-[11px] text-slate-500">
+            {g.since}부터 매 갱신마다 저장 — 최초 알림 값은 보존, 같은 기준일 재계산으로 신호가 바뀐 날은 <span className="text-amber-300">정정</span> 표시
+          </p>
         </div>
         <dl className="num flex gap-3 font-mono text-xs">
           <div><dt className="font-sans text-[10px] text-slate-500">기록일</dt><dd className="text-slate-200">{g.days}</dd></div>
@@ -40,13 +42,20 @@ export default function LivePanel({ log, market, label }) {
           <tbody className="text-slate-300">
             {g.rows.map((r) => {
               const [txt, cls] = ACTION[r.action] ?? ACTION.HOLD
+              const revised = r.revisions > 0
+              const firstTxt = (ACTION[r.first_action] ?? ACTION.HOLD)[0]
               return (
                 <tr key={r.as_of} className="border-t border-line">
                   <td className="py-1 text-left">{r.as_of}</td>
                   <td className="hidden sm:table-cell">{r.trend?.toFixed(2)}</td><td className="hidden sm:table-cell">{r.risk?.toFixed(2)}</td>
                   <td style={{ color: REGIME_COLOR[r.regime] }}>{r.regime}</td>
                   <td>{pct(r.target)}</td><td>{pct(r.executed)}</td><td>{pct(r.next_weight)}</td>
-                  <td className={`font-sans ${cls}`}>{txt}</td>
+                  <td className={`font-sans ${cls}`}>
+                    {txt}
+                    {revised && (
+                      <span className="ml-1 text-amber-300" title={`최초 알림: ${firstTxt} · 다음날 ${pct(r.first_next_weight)}`}>정정</span>
+                    )}
+                  </td>
                 </tr>
               )
             })}

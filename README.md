@@ -22,6 +22,8 @@ python -m beta_model.export --refresh   # 데이터 수집 + JSON 생성 (매일
 python -m beta_model.backtest           # 장기 백테스트 리포트
 python -m beta_model.backtest --grid    # 파라미터 그리드 (표본 내 선택 → 표본 외 확인)
 python -m beta_model.validation         # 견고성 검증 (다른 나라·워크포워드·부트스트랩·민감도·비용) ~5분
+python -m beta_model.experiments long-trend   # 채택 전 실험: 장기 추세 요소 (data/experiments/*.csv)
+python -m beta_model.experiments vol-proxy    # 채택 전 실험: VKOSPI proxy keep/drop
 python -m pytest -q                     # 테스트
 
 cd dashboard
@@ -201,6 +203,26 @@ KRX 로그인이 필요해 쓰지 않는다. 260거래일 미만 섹터는 순�
 | 가상 충격 | 10거래일 시나리오(완만한 조정·금리 쇼크·원화 급락·2008형·2020형)를 실제 엔진에 통과 | 대시보드 '스트레스 시나리오' — 최악에서도 60% 하한 |
 
 **정리:** "하락을 줄인다"는 효과는 시장·기간·파라미터를 바꿔도 유지되는 견고한 결과다. "수익을 높인다"는 근거는 없다.
+
+## 정확도 점검 (2026-10)
+
+**1. 시장별 기준일 · 실전 기록 보존** (적용됨)
+- 공통 달력(미·한 거래일 합집합)의 마지막 날이 다른 나라 거래일이면, 그 시장 값은 전일 ffill이다.
+  이전에는 그 날짜로 기준일을 잡아 16:30 KST 실행에서 '전일 미국 데이터로 계산한 오늘 미국 신호'가 알림·기록됐다.
+  → `scores()`가 시장 지수에 실제 종가가 있는 마지막 날에서 끝난다 (`MarketData.trade_dates`). 과거 구간 백테스트 값은 바뀌지 않는다.
+- 같은 기준일 재계산(예: 16:30 한국 신호 → 다음날 07:30 미국 종가 반영)이 기록을 덮어써 '실제로 낸 신호'가 사라졌다.
+  → `first_*` 열에 최초(알림 시점) 값을 보존, 재계산으로 매매·국면·다음날 비중(2%p 이상)이 바뀌면 **정정 알림**, 대시보드에 '정정' 표시.
+- 실전 성과(`live_payload`)의 시차를 백테스트와 같게: t일 신호 → t+1일 종가 집행 → t+2일 수익.
+
+**2. VKOSPI proxy** (옵션 추가, 기본값 유지)
+- 실제 VKOSPI가 없으면 변동성 지수 요소(0.24)가 KOSPI200 실현변동성×1.15라 실현변동성 요소(0.12)와 사실상 같은 신호다.
+- `RiskParams.vol_proxy_mode`: `"keep"`(현행) / `"drop"`(proxy인 날 변동성 지수 요소 제외·재정규화).
+  기존 한국 검증이 모두 keep 기준이라 기본값은 유지 → `python -m beta_model.experiments vol-proxy` 결과로 결정. 근본 해결은 KRX 인증키.
+
+**3. 장기 추세 요소** (실험 코드, 기본 꺼짐)
+- 현재 추세 요소는 가장 긴 것이 120일선·3개월 ROC·52주 낙폭. 12-1개월 모멘텀 / 200일선 이격도를 `TrendParams.w_long`으로 추가할 수 있다.
+- `python -m beta_model.experiments long-trend`: 12개 조합 + 기준선을 같은 기간으로 잘라 비교,
+  표본 내 선택(샤프 최고치 0.01 이내 중 회전율 최저) → 표본 외·미국(기술) 확인 → 채택/기각 권고, 추세 IC·위험 AUC 함께 출력.
 
 ## 한국 데이터 인증키 (선택)
 

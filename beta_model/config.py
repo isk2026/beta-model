@@ -76,6 +76,13 @@ class TrendParams:
     # 표본 내 샤프가 최고치와 0.01 이내인 조합 중 회전율이 가장 낮은 것
     alignment_scale: float = 0.04
     smooth_span: int = 10       # 합성 추세 점수 EMA 기간 (1 = 평활화 없음)
+    # 장기 추세 요소 (실험용, 기본 꺼짐). w_long > 0 이면 네 요소 가중치 합으로 나눠 재정규화한다.
+    #   long_kind="tsmom": tanh(12-1개월 수익률 / long_scale)   — 시계열 모멘텀
+    #   long_kind="sma200": tanh((종가/200일선 − 1) / long_scale) — 200일선 이격도
+    # 채택 여부는 `python -m beta_model.experiments long-trend` 결과(표본 내 선택 → 표본 외 확인)로 정한다.
+    w_long: float = 0.0
+    long_kind: str = "tsmom"
+    long_scale: float = 0.20
 
 
 @dataclass(frozen=True)
@@ -84,6 +91,12 @@ class RiskParams:
     # (조용한 1년 뒤에는 VIX 16도 백분위 90%가 될 수 있어 레벨로 보정)
     vol_level_lo: dict = field(default_factory=lambda: {"VIX": 13.0, "VKOSPI": 15.0})
     vol_level_hi: dict = field(default_factory=lambda: {"VIX": 35.0, "VKOSPI": 40.0})
+    # VKOSPI가 실현변동성 대체값(proxy)인 날의 변동성 지수 요소 처리.
+    #   "keep": 현재 방식 그대로 (proxy도 내재변동성처럼 사용 — 실현변동성 요소와 사실상 같은 신호)
+    #   "drop": proxy인 날은 변동성 지수 요소를 빼고 나머지 가중치로 재정규화 (이중 계산 제거)
+    # 지금까지의 한국 백테스트·AUC는 모두 proxy+keep 기준이다. 바꾸기 전에
+    # `python -m beta_model.experiments vol-proxy` 로 표본 내/외 결과를 확인할 것.
+    vol_proxy_mode: str = "keep"
     spike_window: int = 10
     fx_spike_full: float = 0.03       # USD/KRW 10일 +3% → 1.0
     rate_spike_full_bp: float = 40.0  # 10Y 10일 +40bp → 1.0

@@ -549,7 +549,8 @@ export default function BetaDashboard() {
         {data?.meta?.vkospi_source === 'proxy' && market === 'KR' && (
           <div className="mb-6 flex items-start gap-3 rounded-xl border border-line bg-panel p-3 text-xs text-slate-400">
             <Info size={16} className="mt-0.5 shrink-0 text-cyan-400" aria-hidden />
-            VKOSPI는 무료 API가 없어 KOSPI200 20일 실현변동성×1.15로 대체 계산 중입니다. 실제 값을 쓰려면 <code className="font-mono">data/vkospi.csv</code>(Date,Close)를 넣으세요.
+            VKOSPI는 무료 API가 없어 KOSPI200 20일 실현변동성×1.15로 대체 계산 중입니다 — 위험 점수의 실현변동성 요소와 사실상 같은 신호입니다
+            ({data.meta.vol_proxy_mode === 'drop' ? '변동성 지수 요소를 빼고 재정규화' : '변동성 지수 요소에 그대로 사용'}). 실제 값을 쓰려면 KRX 인증키를 등록하거나 <code className="font-mono">data/vkospi.csv</code>(Date,Close)를 넣으세요.
           </div>
         )}
 

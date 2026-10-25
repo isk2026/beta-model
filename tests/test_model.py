@@ -253,13 +253,136 @@ def test_signal_log_alert_once(tmp_path, monkeypatch):
                                    "executed_weight": ex, "next_weight": nxt,
                                    "history": [{"index": 100.0, "trend": 0.1, "risk": 0.2, "target": nxt}]}}}
 
-    log, fresh = signals.update_log(payload("2024-01-02", 1, 0.9, 0.9), "t")
-    assert fresh == {"US"} and signals.build_alert(log, {}, fresh) is None      # 첫 기록: 비교 대상 없음, 매매 없음
-    log, fresh = signals.update_log(payload("2024-01-03", 3, 0.9, 0.75), "t")
-    text = signals.build_alert(log, {}, fresh)
+    log, fresh, rev = signals.update_log(payload("2024-01-02", 1, 0.9, 0.9), "t")
+    assert fresh == {"US"} and signals.build_alert(log, {}, fresh, revised=rev) is None  # 첫 기록: 비교 대상 없음, 매매 없음
+    log, fresh, rev = signals.update_log(payload("2024-01-03", 3, 0.9, 0.75), "t")
+    text = signals.build_alert(log, {}, fresh, revised=rev)
     assert "국면 전환" in text and "75%" in text
-    log, fresh = signals.update_log(payload("2024-01-03", 3, 0.9, 0.75), "t2")   # 같은 기준일 재실행
-    assert fresh == set() and signals.build_alert(log, {}, fresh) is None and len(log) == 2
+    log, fresh, rev = signals.update_log(payload("2024-01-03", 3, 0.9, 0.75), "t2")   # 같은 기준일 재실행(같은 값)
+    assert fresh == set() and rev == {} and signals.build_alert(log, {}, fresh, revised=rev) is None and len(log) == 2
+
+
+def _log_payload(as_of, regime, ex, nxt, trend=0.1, risk=0.2, close=100.0, market="KR"):
+    return {"markets": {market: {"as_of": as_of, "label": "한국", "allocation": {"regime": regime},
+                                 "executed_weight": ex, "next_weight": nxt,
+                                 "history": [{"index": close, "trend": trend, "risk": risk, "target": nxt}]}}}
+
+
+def test_signal_log_keeps_first_values_and_alerts_revision(tmp_path, monkeypatch):
+    """16:30 한국 신호(유지) → 다음날 07:30 미국 종가 반영 재계산(줄이기): 최초값 보존 + 정정 알림 1회."""
+    from beta_model import signals
+    monkeypatch.setattr(signals, "LOG_FILE", tmp_path / "log.csv")
+    monkeypatch.setattr(signals, "ALERT_FILE", tmp_path / "alert.md")
+    signals.update_log(_log_payload("2024-01-02", 1, 0.9, 0.9), "d1")
+    log, fresh, rev = signals.update_log(_log_payload("2024-01-03", 1, 0.9, 0.9, risk=0.30), "16:30")
+    assert fresh == {"KR"} and rev == {}
+    log, fresh, rev = signals.update_log(_log_payload("2024-01-03", 2, 0.9, 0.8, risk=0.55), "07:30")
+    assert fresh == set() and rev == {"KR": {"regime": 1, "action": "HOLD", "next_weight": 0.9}}
+    row = log[log.as_of == "2024-01-03"].iloc[0]
+    assert row.first_action == "HOLD" and row.first_risk == pytest.approx(0.30) and row.first_run_at == "16:30"
+    assert row.action == "SELL" and row.risk == pytest.approx(0.55) and row.revisions == 1
+    text = signals.build_alert(log, {"KR": "한국"}, fresh, revised=rev)
+    assert "재계산 정정" in text and "80%" in text and "정정)" in text
+    # 같은 값으로 또 재계산 → 이미 알렸으므로 정정 없음, 최초값은 그대로
+    log, fresh, rev = signals.update_log(_log_payload("2024-01-03", 2, 0.9, 0.8, risk=0.56), "16:30b")
+    assert rev == {} and log[log.as_of == "2024-01-03"].iloc[0].first_action == "HOLD"
+    # 미세한 변화(다음날 비중 1%p)는 정정 아님
+    assert not signals.is_material_change({"regime": 2, "action": "SELL", "next_weight": 0.80},
+                                          {"regime": 2, "action": "SELL", "next_weight": 0.79})
+
+
+def test_signal_log_reads_old_format(tmp_path, monkeypatch):
+    """first_*/alert_* 열이 없는 기존 로그도 그대로 이어서 쓴다."""
+    from beta_model import signals
+    f = tmp_path / "log.csv"
+    pd.DataFrame([{"as_of": "2024-01-02", "market": "KR", "close": 100.0, "trend": 0.1, "risk": 0.2, "regime": 1,
+                   "target": 0.9, "executed": 0.9, "next_weight": 0.9, "action": "HOLD", "run_at": "old"}]).to_csv(f, index=False)
+    monkeypatch.setattr(signals, "LOG_FILE", f)
+    log, fresh, rev = signals.update_log(_log_payload("2024-01-02", 1, 0.9, 0.9), "new")
+    assert fresh == set() and rev == {} and log.iloc[0].first_run_at == "old"
+    assert list(log.columns) == signals.COLUMNS
+
+
+def test_live_payload_uses_backtest_lag():
+    """t일 수익에는 t−2일에 알린 다음날 비중이 적용된다 (종가 신호 → 익일 종가 집행 → 그다음 날 수익)."""
+    from beta_model import signals
+    log = pd.DataFrame({
+        "as_of": ["2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05"], "market": "US",
+        "close": [100.0, 110.0, 121.0, 108.9], "trend": 0.0, "risk": 0.0, "regime": 1, "target": 1.0,
+        "executed": [1.0, 1.0, 1.0, 0.5], "next_weight": [0.5, 0.5, 0.5, 0.5], "action": "HOLD", "run_at": "x",
+    })
+    g = signals.live_payload(log)["US"]
+    # 1/3: 직전 집행 1.0 × +10%, 1/4: 1/2 알림 0.5 × +10%, 1/5: 1/3 알림 0.5 × −10%
+    assert g["model_return"] == pytest.approx(round(1.10 * 1.05 * 0.95 - 1, 4))
+
+
+# ---------------------------------------------------- 시장별 기준일 (as_of)
+def test_scores_end_at_market_own_last_trade_date():
+    """공통 달력 마지막 날이 한국만 거래한 날이면 미국 점수는 전일에서 끝난다(전일 값 ffill로 '오늘 신호'를 만들지 않음)."""
+    raw = _raw(0.0005, 15)
+    last = raw.index[-1]
+    raw.loc[last, ["SPX", "NDX"]] = np.nan                      # 16:30 KST: 미국 당일 장 전
+    e = BetaModelScoringEngine(build_market_data(raw))
+    assert e.scores("US").index[-1] == raw.index[-2]
+    assert e.scores("KR").index[-1] == last
+    raw2 = _raw(0.0005, 15)
+    raw2.loc[raw2.index[-1], ["KOSPI", "KOSDAQ"]] = np.nan      # 한국 휴장일(미국만 거래)
+    e2 = BetaModelScoringEngine(build_market_data(raw2))
+    assert e2.scores("KR").index[-1] == raw2.index[-2] and e2.scores("US").index[-1] == raw2.index[-1]
+
+
+# ---------------------------------------------------- VKOSPI proxy 처리
+def test_vol_proxy_drop_removes_vol_index_only_where_proxy():
+    from beta_model.data_pipeline import VKOSPI_PROXY_COL
+    raw = _raw(0.0, 30)
+    raw[VKOSPI_PROXY_COL] = 0.0
+    raw.loc[raw.index[:400], VKOSPI_PROXY_COL] = 1.0            # 앞 400일만 proxy (krx+proxy)
+    md = build_market_data(raw)
+    keep = BetaModelScoringEngine(md).risk_score("KR")
+    drop = BetaModelScoringEngine(md, risk_params=replace(config.RISK, vol_proxy_mode="drop")).risk_score("KR")
+    assert drop["vol_index"].iloc[300:400].isna().all() and drop["vol_index"].iloc[400:].notna().all()
+    assert drop["risk_score"].iloc[400:].equals(keep["risk_score"].iloc[400:])       # 실제값 구간은 동일
+    assert drop["risk_score"].iloc[300:400].between(0, 1).all()                      # 재정규화된 값
+    us_drop = BetaModelScoringEngine(md, risk_params=replace(config.RISK, vol_proxy_mode="drop")).risk_score("US")
+    assert us_drop["risk_score"].equals(BetaModelScoringEngine(md).risk_score("US")["risk_score"])  # VIX는 무관
+
+
+def test_vol_proxy_falls_back_to_meta_source():
+    md = build_market_data(_raw(0.0, 30), meta={"vkospi_source": "proxy"})          # 이전 캐시: 표시 열 없음
+    e = BetaModelScoringEngine(md, risk_params=replace(config.RISK, vol_proxy_mode="drop"))
+    assert e.vol_is_proxy("VKOSPI").all() and not e.vol_is_proxy("VIX").any()
+    assert e.risk_components("KR")["vol_index"].isna().all()
+    with pytest.raises(ValueError):
+        BetaModelScoringEngine(md, risk_params=replace(config.RISK, vol_proxy_mode="bad")).risk_components("KR")
+
+
+def test_vkospi_proxy_flag(tmp_path, monkeypatch):
+    from beta_model import data_pipeline
+    idx = pd.bdate_range("2020-01-01", periods=10)
+    vk = pd.Series(20.0, index=idx)
+    assert data_pipeline.vkospi_proxy_flag(vk, "proxy").eq(1).all()
+    assert data_pipeline.vkospi_proxy_flag(vk, "krx").eq(0).all()
+    csv = tmp_path / "vkospi.csv"
+    pd.DataFrame({"Date": idx[4:], "Close": 20.0}).to_csv(csv, index=False)
+    monkeypatch.setattr(data_pipeline, "VKOSPI_CSV", csv)
+    flag = data_pipeline.vkospi_proxy_flag(vk, "krx+proxy")
+    assert flag.iloc[:4].eq(1).all() and flag.iloc[4:].eq(0).all()
+
+
+# ---------------------------------------------------- 장기 추세 요소 (실험용)
+def test_long_trend_off_by_default_and_bounded_when_on():
+    md = build_market_data(_raw(0.0005, 15))
+    base = BetaModelScoringEngine(md).index_trend("SPX")
+    assert "long" not in base.columns                                              # 기본: 기존과 동일
+    same = BetaModelScoringEngine(md, trend_params=replace(config.TREND, w_long=0.0, long_kind="sma200")).index_trend("SPX")
+    assert same["trend_score"].equals(base["trend_score"])
+    for kind, scale in (("tsmom", 0.2), ("sma200", 0.05)):
+        tp = replace(config.TREND, w_long=0.25, long_kind=kind, long_scale=scale)
+        t = BetaModelScoringEngine(md, trend_params=tp).index_trend("SPX")
+        assert t["long"].dropna().between(-1, 1).all() and t["trend_score"].dropna().between(-1, 1).all()
+        assert t["long"].first_valid_index() > base["trend_score"].first_valid_index()  # 200/252일 워밍업
+    with pytest.raises(ValueError):
+        BetaModelScoringEngine(md, trend_params=replace(config.TREND, w_long=0.2, long_kind="x")).index_trend("SPX")
 
 
 # ---------------------------------------------------- weighted market (US_TECH)
@@ -525,3 +648,48 @@ def test_breadth_component():
     # 데이터가 없으면 NaN → 위험 점수는 나머지 가중치로 재정규화
     e0 = _engine(trend=0.0, vol_level=15)
     assert e0.breadth()["breadth"].isna().all() and e0.risk_score("US")["risk_score"].notna().iloc[-1]
+
+
+# ---------------------------------------------------- 실험 모듈 (experiments.py)
+def test_experiment_metrics_helpers():
+    from beta_model import experiments as ex
+    idx = pd.bdate_range("2024-01-01", periods=6)
+    p = pd.Series([100.0, 100, 95, 85, 100, 100], index=idx)
+    assert ex.forward_return(pd.Series([100.0, 110, 121, 133.1]), 1).iloc[0] == pytest.approx(0.1)   # t+1 → t+2
+    ev = ex.forward_drop_event(p, h=2, drop=-0.10)
+    assert ev.iloc[:3].tolist() == [1.0, 1.0, 0.0] and ev.iloc[3:].isna().all()                      # 끝은 미확정
+    s = pd.Series([0.1, 0.2, 0.8, 0.9])
+    assert ex.auc(s, pd.Series([0, 0, 1, 1])) == pytest.approx(1.0)
+    assert ex.auc(s, pd.Series([1, 1, 0, 0])) == pytest.approx(0.0)
+    assert np.isnan(ex.auc(s, pd.Series([0, 0, 0, 0])))
+
+
+def _long_raw(n: int = 1600, seed: int = 5) -> pd.DataFrame:
+    rng = np.random.default_rng(seed)
+    idx = pd.bdate_range("2005-01-03", periods=n)
+    drift = np.where(np.arange(n) % 500 < 300, 0.0006, -0.0008)                                  # 상승·하락 반복
+
+    def path():
+        return 100 * np.exp(np.cumsum(drift + rng.normal(0, 0.01, n)))
+    vix = 15 + 20 * (drift < 0) + rng.normal(0, 1, n)
+    return pd.DataFrame({
+        "SPX": path(), "NDX": path(), "KOSPI": path(), "KOSDAQ": path(), "QQQ": path(), "SOXX": path(),
+        "VIX": vix, "VKOSPI": vix + 3, "US10Y": 4.0 + rng.normal(0, 0.02, n), "USDKRW": 1300 * np.exp(np.cumsum(rng.normal(0, 0.003, n))),
+        "DXY": 100.0, "BAA_SPREAD": 2.0 + 0.8 * (drift < 0), "UST3M": 2.0, "KR3M": 2.5,
+    }, index=idx)
+
+
+def test_experiment_run_and_select_on_synthetic():
+    from beta_model import experiments as ex
+    from beta_model.backtest import ModelSpec
+    md = build_market_data(_long_raw(), meta={"vkospi_source": "proxy"})
+    specs = [ModelSpec("기준선"), ModelSpec("tsmom", trend=replace(config.TREND, w_long=0.25, long_kind="tsmom"))]
+    t = ex.run_specs(md, specs, split="2008-06-01")
+    assert list(t["spec"]) == ["기준선", "tsmom"]
+    assert t["US_start"].nunique() == 1                         # 두 조합을 같은 시작일로 잘랐다
+    assert {"cal_is_sharpe", "cal_oos_sharpe", "US_TECH_full_sharpe", "KR_oos_auc", "US_is_ic63"} <= set(t.columns)
+    assert ex.select(t) in {"기준선", "tsmom"}
+    assert ex.verdict(t, "기준선", "기준선")[-1].startswith("→ 기준선 유지")
+    table, lines = ex.vol_proxy(md, split="2008-06-01")
+    assert list(table["spec"]) == ["keep", "drop"] and "proxy 비율: 전체 기간의 100%" in lines[0]
+    assert lines[-1].startswith("→ ")

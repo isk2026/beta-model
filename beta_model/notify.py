@@ -167,14 +167,23 @@ def sector_items(f: Fmt, market: str, sectors: dict | None, leaders: dict | None
 # ---------------------------------------------------------------------------
 # 신호 알림
 # ---------------------------------------------------------------------------
-def alert_sections(log: pd.DataFrame, labels: dict[str, str], markets: set[str]) -> list[dict]:
-    """알릴 시장별 (현재 행, 직전 행, 국면 변화, 매매) 정리. 알릴 것이 없으면 빈 리스트."""
+def alert_sections(log: pd.DataFrame, labels: dict[str, str], markets: set[str],
+                   revised: dict[str, dict] | None = None) -> list[dict]:
+    """알릴 시장별 (현재 행, 직전 행, 국면 변화, 매매) 정리. 알릴 것이 없으면 빈 리스트.
+
+    revised: 같은 기준일 재계산으로 신호가 바뀐 시장 → 그 전에 알렸던 {regime, action, next_weight}.
+    """
+    revised = revised or {}
     out = []
     for m, g in log.groupby("market"):
-        if m not in markets:
-            continue
         g = g.sort_values("as_of")
         cur = g.iloc[-1]
+        if m in revised:
+            out.append({"market": m, "label": labels.get(m, m), "cur": cur, "prev_regime": None,
+                        "revision": revised[m]})
+            continue
+        if m not in markets:
+            continue
         prev = g.iloc[-2] if len(g) > 1 else None
         changed = prev is not None and int(prev.regime) != int(cur.regime)
         if changed or cur.action != "HOLD":
@@ -189,6 +198,14 @@ def render_alert(f: Fmt, sections: list[dict], sectors: dict | None = None, lead
     for s in sections:
         c = s["cur"]
         items = []
+        if s.get("revision"):     # 같은 기준일 재계산 정정 (예: 한국 신호에 밤사이 미국 종가 반영)
+            r = s["revision"]
+            items.append(f"{f.b('재계산 정정')} — 이전 알림: 국면 {f.t(regime_label(r['regime']))}, "
+                         + trade_text(f, r["action"], c.executed, float(r["next_weight"])))
+            items.append(f"현재: 국면 {f.b(regime_label(c.regime))}, " + trade_text(f, c.action, c.executed, c.next_weight))
+            items.append(f.t(f"추세 {c.trend:+.2f} · 위험 {c.risk:.2f} · 목표 {pct(c.target)}"))
+            blocks.append(f.head(f"{s['label']} ({c.as_of} 종가 기준, 정정)") + "\n" + f.bullets(items))
+            continue
         if s["prev_regime"] is not None:
             items.append(f"국면 전환 {f.t(regime_label(s['prev_regime']))} → {f.b(regime_label(c.regime))}")
         else:

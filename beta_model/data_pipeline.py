@@ -34,6 +34,12 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 CACHE_FILE = DATA_DIR / "cache" / "raw.pkl"
 VKOSPI_PROXY_RATIO = 1.15  # 내재변동성은 통상 실현변동성보다 10~20% 높다
+# raw/prices 에 함께 싣는 표시 열: 1 = 그날 VKOSPI 값이 실현변동성 대체값(proxy), 0 = KRX 실제값
+VKOSPI_PROXY_COL = "VKOSPI_PROXY"
+# 장기 추세 요소(실험용, TrendParams.w_long) 지표 기간
+LONG_SMA = 200          # 200일선
+MOM_LOOKBACK = 252      # 12개월
+MOM_SKIP = 21           # 최근 1개월 제외 (단기 반전 회피)
 
 
 @dataclass
@@ -43,6 +49,14 @@ class MarketData:
     prices: pd.DataFrame                       # 공통 달력, ffill 된 종가 (wide)
     features: dict[str, pd.DataFrame]          # 지수별 SMA/MDD/변동성/ROC
     meta: dict = field(default_factory=dict)   # 출처, proxy 여부 등
+    # 지수별 '실제로 종가가 있는' 거래일 (공통 달력 ffill 전). 시장별 기준일(as_of) 판정에 쓴다.
+    # 비어 있으면(직접 만든 MarketData 등) 기준일을 자르지 않는다.
+    trade_dates: dict[str, pd.DatetimeIndex] = field(default_factory=dict)
+
+    def last_trade_date(self, names: list[str]) -> pd.Timestamp | None:
+        """`names` 중 하나라도 실제 종가가 있는 마지막 날. 기록이 없으면 None."""
+        last = [self.trade_dates[n].max() for n in names if n in self.trade_dates and len(self.trade_dates[n])]
+        return max(last) if last else None
 
     def to_payload(self, tail: int = 1) -> dict:
         """최근 `tail`일 데이터를 JSON 직렬화 가능한 dict로 변환."""
@@ -143,6 +157,19 @@ def load_vkospi(kospi200: pd.Series) -> tuple[pd.Series, str]:
     return combined, ("krx+proxy" if len(early) else "krx")
 
 
+def vkospi_proxy_flag(vk: pd.Series, source: str) -> pd.Series:
+    """VKOSPI 각 날짜가 proxy인지(1) 실제값인지(0). load_vkospi 결과와 출처로 만든다.
+
+    'krx+proxy'는 실제값이 시작되기 전 구간만 proxy다. load_vkospi 가 실제 CSV 앞에 proxy를 붙이므로
+    CSV의 첫 날짜를 경계로 쓴다(CSV를 다시 읽지 않도록 값이 바뀌는 지점 대신 파일 기준).
+    """
+    flag = pd.Series(1.0 if source == "proxy" else 0.0, index=vk.index, name=VKOSPI_PROXY_COL)
+    if source == "krx+proxy" and VKOSPI_CSV.exists():
+        first_real = pd.read_csv(VKOSPI_CSV, parse_dates=["Date"], index_col="Date").index.min()
+        flag[flag.index < first_real] = 1.0
+    return flag
+
+
 def fetch_raw(use_cache: bool = True, max_age_hours: float = 6) -> tuple[pd.DataFrame, dict]:
     """원시 종가 테이블(열=심볼, 휴장일 NaN 유지)과 메타 정보를 반환."""
     if use_cache and CACHE_FILE.exists():
@@ -169,6 +196,7 @@ def fetch_raw(use_cache: bool = True, max_age_hours: float = 6) -> tuple[pd.Data
     base = raw["KOSPI200"] if raw.get("KOSPI200", pd.Series()).notna().sum() > 60 else raw["KOSPI"]
     vk, vk_src = load_vkospi(base)
     raw = raw.join(vk, how="outer")
+    raw = raw.join(vkospi_proxy_flag(vk, vk_src), how="outer")
     meta = {
         "fetched_at": datetime.now(ZoneInfo("Asia/Seoul")).isoformat(timespec="minutes"),
         "vkospi_source": vk_src,
@@ -203,6 +231,9 @@ def compute_features(close: pd.Series) -> pd.DataFrame:
     df["drawdown"] = close / df["high_52w"] - 1.0
     df["vol_20d"] = realized_vol(close, 20)
     df[f"roc_{config.TREND.roc_window}"] = close.pct_change(config.TREND.roc_window)
+    # 장기 추세(실험용): 200일선, 12-1개월 모멘텀 (t−21일 종가 / t−252일 종가 − 1)
+    df[f"sma{LONG_SMA}"] = close.rolling(LONG_SMA).mean()
+    df["mom_12_1"] = close.shift(MOM_SKIP) / close.shift(MOM_LOOKBACK) - 1.0
     return df
 
 
@@ -215,8 +246,10 @@ def build_market_data(raw: pd.DataFrame, meta: dict | None = None, markets: dict
     calendar = raw[equity_cols].dropna(how="all").index
 
     features: dict[str, pd.DataFrame] = {}
+    trade_dates: dict[str, pd.DatetimeIndex] = {}
     for col in equity_cols:
         features[col] = compute_features(raw[col]).reindex(calendar).ffill()
+        trade_dates[col] = raw[col].dropna().index
 
     # 2003년 이전 원/달러는 FRED로 보완 (yfinance 시작 이전 구간에만)
     if "USDKRW_FRED" in raw and "USDKRW" in raw:
@@ -225,7 +258,7 @@ def build_market_data(raw: pd.DataFrame, meta: dict | None = None, markets: dict
         raw["USDKRW"] = raw["USDKRW"].combine_first(early)
 
     prices = raw.reindex(raw.index.union(calendar)).ffill().reindex(calendar)
-    return MarketData(prices=prices, features=features, meta=meta or {})
+    return MarketData(prices=prices, features=features, meta=meta or {}, trade_dates=trade_dates)
 
 
 def load_market_data(use_cache: bool = True) -> MarketData:

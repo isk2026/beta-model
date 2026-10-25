@@ -46,9 +46,9 @@ def market_payload(engine: BetaModelScoringEngine, md: MarketData, market: str) 
     alloc["regime_name"] = REGIME_INFO[Regime(alloc["regime"])]["name"]
 
     indices = {}
-    for name in config.MARKETS[market]["indices"]:
-        f = md.features[name].iloc[-1]
-        t = engine.index_trend(name).iloc[-1]
+    for name in config.MARKETS[market]["indices"]:   # 이 시장의 기준일(as_of) 값 — 달력 마지막 행이 아님
+        f = md.features[name].loc[latest.name]
+        t = engine.index_trend(name).loc[latest.name]
         indices[name] = {
             "close": _r(f.close, 2),
             **{k: _r(f[k], 2) for k in ("sma20", "sma60", "sma120")},
@@ -103,7 +103,8 @@ def macro_payload(md: MarketData) -> dict:
 def build_payload(md: MarketData) -> dict:
     engine = BetaModelScoringEngine(md)
     return {
-        "meta": md.meta | {"kr_credit_blend": config.RISK.kr_credit_blend if "KR_CREDIT" in md.prices else 0.0},
+        "meta": md.meta | {"kr_credit_blend": config.RISK.kr_credit_blend if "KR_CREDIT" in md.prices else 0.0,
+                           "vol_proxy_mode": config.RISK.vol_proxy_mode},
         "params": asdict(config.ALLOCATION),
         "regimes": {int(r): REGIME_INFO[r] for r in Regime},
         "macro": macro_payload(md),
@@ -138,7 +139,7 @@ def main() -> None:
                 payload[key], spx, payload["markets"]["US"]["allocation"]["trend_score"], us_trend)
         except Exception as exc:  # noqa: BLE001
             logging.error("섹터 위성 비중 실패: %s", exc)
-    log, fresh = update_log(payload, run_at=meta.get("fetched_at", ""))
+    log, fresh, revised = update_log(payload, run_at=meta.get("fetched_at", ""))
     payload["signal_log"] = live_payload(log)
     leaders = None
     try:  # 주도 섹터 변화 추적 (data/sector_leaders.json) — 참고 정보
@@ -146,7 +147,7 @@ def main() -> None:
     except Exception as exc:  # noqa: BLE001
         logging.error("주도 섹터 기록 실패: %s", exc)
     alert = build_alert(log, {m: d["label"] for m, d in payload["markets"].items()}, fresh,
-                        payload.get("sectors"), leaders)
+                        payload.get("sectors"), leaders, revised=revised)
     if alert:
         print("알림:\n" + alert)
     args.out.parent.mkdir(parents=True, exist_ok=True)
