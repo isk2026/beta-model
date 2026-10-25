@@ -1,8 +1,8 @@
 {
  "meta": {
-  "fetched_at": "2026-10-25T13:34+09:00",
+  "fetched_at": "2026-10-25T19:57+09:00",
   "vkospi_source": "proxy",
-  "kr_credit_source": null,
+  "kr_credit_source": "ecos",
   "tickers": {
    "SPX": "^GSPC",
    "NDX": "^IXIC",
@@ -104,6 +104,10 @@
    "value": 1.46,
    "chg_10d": 0.01
   },
+  "KR_CREDIT": {
+   "value": 0.689,
+   "chg_10d": 0.021
+  },
   "BREADTH_EW": {
    "value": -0.0291,
    "chg_10d": 0.0059
@@ -119,6 +123,10 @@
   "CCC_BB": {
    "value": 11.3,
    "chg_10d": 0.65
+  },
+  "KR_FOREIGN_60D": {
+   "value": -0.0109,
+   "chg_10d": -0.0044
   }
  },
  "markets": {
@@ -2461,12 +2469,12 @@
    },
    "as_of": "2026-10-23",
    "allocation": {
-    "trend_score": -0.19727008972777593,
+    "trend_score": -0.1972700932253159,
     "risk_score": 0.3172900569114542,
-    "base_weight": 0.8204094865408336,
+    "base_weight": 0.8204094860162026,
     "risk_deduction": 0.06345801138229083,
-    "stock_weight": 0.7569514751585428,
-    "cash_weight": 0.24304852484145723,
+    "stock_weight": 0.7569514746339118,
+    "cash_weight": 0.24304852536608823,
     "regime": 3,
     "regime_name": "하락 방어",
     "regime_raw": 3
