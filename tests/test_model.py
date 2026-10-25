@@ -650,6 +650,31 @@ def test_breadth_component():
     assert e0.breadth()["breadth"].isna().all() and e0.risk_score("US")["risk_score"].notna().iloc[-1]
 
 
+# ---------------------------------------------------- 외국인 수급 (참고 지표)
+def test_foreign_flow_ratio_counts_korean_days_once():
+    from beta_model.export import MACRO_COLS, foreign_flow_ratio, macro_payload
+
+    raw = _raw(0.0, 15)
+    n = len(raw)
+    raw["KR_FOREIGN_NET"] = -10.0                               # 억원/일
+    raw["KOSPI_MCAP"] = np.linspace(100_000.0, 110_000.0, n)    # 억원 (매일 변함)
+    hol = raw.index[n - 20:n - 17]                              # 최근 60일 안의 한국 휴장(미국은 개장)
+    raw.loc[hol, ["KOSPI", "KOSDAQ", "KR_FOREIGN_NET", "KOSPI_MCAP"]] = np.nan
+    md = build_market_data(raw)
+    assert md.prices.loc[hol, "KR_FOREIGN_NET"].notna().all()   # 공통 달력에서는 ffill 됨
+    m = macro_payload(md)["KR_FOREIGN_60D"]
+    # 휴장일 ffill 사본을 빼고 한국 거래일 60일만 합산: −10 × 60 / 시총
+    assert m["value"] == pytest.approx(-600 / raw["KOSPI_MCAP"].iloc[-1], abs=1e-4)
+    s = foreign_flow_ratio(md.prices["KR_FOREIGN_NET"], md.prices["KOSPI_MCAP"])
+    assert s.iloc[-1] == pytest.approx(-600 / raw["KOSPI_MCAP"].iloc[-1])
+    assert s.loc[hol].notna().all() and s.iloc[:59].isna().all() and pd.notna(s.iloc[59])   # 휴장일은 ffill, 60일 미만은 NaN
+    # 데이터가 없으면 항목 자체가 빠지고, 위험 점수에는 영향이 없다 (참고 지표)
+    base = build_market_data(raw.drop(columns=["KR_FOREIGN_NET", "KOSPI_MCAP"]))
+    assert "KR_FOREIGN_60D" in MACRO_COLS and "KR_FOREIGN_60D" not in macro_payload(base)
+    pd.testing.assert_frame_equal(BetaModelScoringEngine(md).risk_score("KR"),
+                                  BetaModelScoringEngine(base).risk_score("KR"))
+
+
 # ---------------------------------------------------- 실험 모듈 (experiments.py)
 def test_experiment_metrics_helpers():
     from beta_model import experiments as ex

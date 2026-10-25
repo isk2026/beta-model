@@ -37,11 +37,14 @@ VKOSPI_START = date(2010, 1, 4)  # KRX Open API 제공 시작
 ECOS_URL = "https://ecos.bok.or.kr/api/StatisticSearch/{key}/json/kr/{start}/{end}/{stat}/D/{frm}/{to}/{item}"
 KRX_URL = "https://data-dbg.krx.co.kr/svc/apis/idx/drvprod_dd_trd"
 
-# name: (통계표, 항목) — ECOS 817Y002 시장금리(일별)
+# name: (통계표, 항목) — 817Y002 시장금리(일별), 802Y001 주식시장(일별)
 ECOS_SERIES: dict[str, tuple[str, str]] = {
     "KR_AA3Y": ("817Y002", "010300000"),   # 회사채(3년, AA-)  1995~
     "KTB3Y": ("817Y002", "010200000"),     # 국고채(3년)       1998~
     "CD91": ("817Y002", "010502000"),      # CD(91일)          1995~  → 원화 현금 수익률
+    # 외국인 수급 (참고 지표 전용 — 점수에 쓰지 않음). 두 항목 모두 단위 억원.
+    "KR_FOREIGN_NET": ("802Y001", "0030000"),  # 외국인 순매수(유가증권시장) 2003~
+    "KOSPI_MCAP": ("802Y001", "0183000"),      # 시가총액(유가증권시장)
 }
 
 
@@ -91,7 +94,7 @@ def fetch_ecos_all(start: date) -> pd.DataFrame:
     """ECOS_SERIES 전체 + 파생 KR_CREDIT(= AA− − 국고 3년, %p). 키가 없으면 빈 DataFrame."""
     key = get_key("ECOS_API_KEY")
     if not key:
-        log.info("ECOS_API_KEY 없음 → 국내 신용 스프레드/CD 금리 생략")
+        log.info("ECOS_API_KEY 없음 → 국내 신용 스프레드/CD 금리/외국인 수급 생략")
         return pd.DataFrame()
     cols = {}
     for name, (stat, item) in ECOS_SERIES.items():

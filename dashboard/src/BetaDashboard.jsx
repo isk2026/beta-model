@@ -47,6 +47,7 @@ const MACRO_META = {
   BREADTH_SECT: { label: '200일선 아래 섹터', fmt: (v) => `${Math.round(v * 11)}/11`, chg: (v) => `${(v * 100).toFixed(0)}%p`, bad: 1 },
   CCC_BB: { label: 'CCC−BB 스프레드(참고)', fmt: (v) => `${v.toFixed(2)}%p`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
   HY_SPREAD: { label: 'HY 스프레드(참고)', fmt: (v) => `${v.toFixed(2)}%`, chg: (v) => `${(v * 100).toFixed(0)}bp`, bad: 1 },
+  KR_FOREIGN_60D: { label: '외국인 60일 순매수(참고)', fmt: (v) => `${v >= 0 ? '+' : ''}${(v * 100).toFixed(2)}%`, chg: (v) => `${(v * 100).toFixed(2)}%p`, bad: -1 },
 }
 
 const pct = (x, d = 0) => `${(x * 100).toFixed(d)}%`

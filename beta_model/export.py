@@ -26,7 +26,21 @@ from .scoring import BetaModelScoringEngine
 OUT_FILE = ROOT / "dashboard" / "public" / "data" / "beta_model.json"
 HISTORY_DAYS = 252
 MACRO_COLS = ["VIX", "VKOSPI", "US10Y", "USDKRW", "DXY", "BAA_SPREAD", "KR_CREDIT", "BREADTH_EW", "BREADTH_SECT",
-              "HY_SPREAD", "CCC_BB"]
+              "HY_SPREAD", "CCC_BB", "KR_FOREIGN_60D"]
+FOREIGN_WINDOW = 60  # 한국 거래일
+
+
+def foreign_flow_ratio(net: pd.Series, mcap: pd.Series, window: int = FOREIGN_WINDOW) -> pd.Series:
+    """외국인 순매수 rolling 합 / 시가총액 (비율, −0.004 = 시총의 −0.4%). 참고 지표 전용 — 점수에 쓰지 않는다.
+
+    두 입력은 같은 단위(ECOS 802Y001: 억원). 공통 달력에서 ffill 된 행(미국만 열린 날 등)이 섞이면
+    같은 날 순매수가 두 번 합산되므로, 시가총액이 직전 행과 똑같은 행은 ffill 사본으로 보고 제외한 뒤
+    한국 거래일 기준으로 합산하고, 결과를 원래 인덱스에 다시 ffill 한다.
+    """
+    kr = pd.concat({"net": net, "mcap": mcap}, axis=1).dropna()
+    kr = kr[kr["mcap"].diff().ne(0)]
+    ratio = kr["net"].rolling(window).sum() / kr["mcap"]
+    return ratio.reindex(net.index.union(kr.index)).ffill().reindex(net.index)
 
 
 def _r(v, n: int = 4):
@@ -91,11 +105,16 @@ def macro_payload(md: MarketData) -> dict:
     p["BREADTH_EW"], p["BREADTH_SECT"] = b["ew_gap"], b["sect_below200"]
     if {"CCC_OAS", "BB_OAS"} <= set(p.columns):
         p["CCC_BB"] = p["CCC_OAS"] - p["BB_OAS"]
+    # 외국인 60일 순매수 / 시가총액 (참고 지표: 단독 AUC는 있으나 위험 점수에 섞으면 IS AUC가 떨어져 표시만 함)
+    if {"KR_FOREIGN_NET", "KOSPI_MCAP"} <= set(p.columns):
+        p["KR_FOREIGN_60D"] = foreign_flow_ratio(p["KR_FOREIGN_NET"], p["KOSPI_MCAP"])
     out = {}
     for c in MACRO_COLS:
         if c not in p:
             continue
         s = p[c].dropna()
+        if s.empty:
+            continue
         out[c] = {"value": _r(s.iloc[-1]), "chg_10d": _r(s.iloc[-1] - s.iloc[-11]) if len(s) > 11 else None}
     return out
 
