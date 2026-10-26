@@ -718,3 +718,30 @@ def test_experiment_run_and_select_on_synthetic():
     table, lines = ex.vol_proxy(md, split="2008-06-01")
     assert list(table["spec"]) == ["keep", "drop"] and "proxy 비율: 전체 기간의 100%" in lines[0]
     assert lines[-1].startswith("→ ")
+
+
+def test_despike_fixes_one_day_error_only():
+    from beta_model.data_pipeline import despike
+    idx = pd.bdate_range("2019-04-05", periods=7)
+    s = pd.Series([13.6, 13.2, 12.7, 30.4, 12.3, 12.4, 12.9], index=idx)       # KRX 원자료 2019-04-10 오류
+    assert despike(s).iloc[3] == pytest.approx((12.7 + 12.3) / 2)
+    surge = pd.Series([20.0, 21.0, 45.0, 44.0, 40.0], index=pd.bdate_range("2024-08-01", periods=5))
+    assert despike(surge).equals(surge)                                       # 실제 급등(다음날도 높음)은 유지
+
+
+def test_drop_unclosed_bars():
+    """장중 실행: 아직 마감 안 된 오늘 봉은 버린다 (한국 15:50 KST, 미국·환율 16:15 ET)."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    from beta_model.data_pipeline import drop_unclosed
+    idx = pd.to_datetime(["2026-10-23", "2026-10-26"])
+    raw = pd.DataFrame({"KOSPI": [5550.0, 5469.0], "SPX": [7623.0, np.nan], "USDKRW": [1320.0, 1325.0],
+                        "069500": [1.0, 2.0]}, index=idx)
+    kst = ZoneInfo("Asia/Seoul")
+    noon = drop_unclosed(raw, datetime(2026, 10, 26, 12, 42, tzinfo=kst))      # 한국 장중, 뉴욕은 일요일 밤
+    assert noon.index[-1] == pd.Timestamp("2026-10-23")                        # 오늘 행 전체 제외
+    after = drop_unclosed(raw, datetime(2026, 10, 26, 16, 47, tzinfo=kst))     # 한국 마감 후, 뉴욕은 03:47
+    assert after.loc["2026-10-26", "KOSPI"] == 5469.0 and after.loc["2026-10-26", "069500"] == 2.0
+    assert np.isnan(after.loc["2026-10-26", "USDKRW"])                         # 환율은 뉴욕 마감 전 → 제외
+    morning = drop_unclosed(raw, datetime(2026, 10, 27, 7, 13, tzinfo=kst))    # 다음날 아침: 뉴욕 10/26 마감 후
+    assert morning.loc["2026-10-26", "USDKRW"] == 1325.0

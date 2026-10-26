@@ -29,7 +29,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .data_pipeline import CACHE_FILE, MarketData, compute_features, fetch_yfinance
+from .data_pipeline import CACHE_FILE, MarketData, compute_features, drop_unclosed, fetch_yfinance
 from .scoring import BetaModelScoringEngine
 
 log = logging.getLogger(__name__)
@@ -93,7 +93,7 @@ def fetch_sectors(use_cache: bool = True, max_age_hours: float = 6, universe: st
     if use_cache and u.cache.exists() and (time.time() - u.cache.stat().st_mtime) / 3600 < max_age_hours:
         with u.cache.open("rb") as f:
             return pickle.load(f)
-    px = fetch_yfinance(u.yf_map(), u.start)
+    px = drop_unclosed(fetch_yfinance(u.yf_map(), u.start))
     u.cache.parent.mkdir(parents=True, exist_ok=True)
     with u.cache.open("wb") as f:
         pickle.dump(px, f)

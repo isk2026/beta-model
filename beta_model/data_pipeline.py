@@ -134,6 +134,22 @@ def fetch_fdr(symbol: str, start: datetime) -> pd.Series:
     return s.rename(symbol)
 
 
+def despike(s: pd.Series, k: float = 1.8) -> pd.Series:
+    """하루짜리 오류값 제거: 전·후일 모두의 k배 이상(또는 1/k 이하)이고 전·후일끼리는 비슷하면 두 값의 평균으로.
+
+    KRX VKOSPI 원자료에 실제로 있다 (2019-04-10 30.40, 전후 12.67·12.29). 진짜 급등은 다음날에도 높게
+    남으므로(2020-03, 2024-08-05 다음날도 고점권) 전·후일이 서로 비슷할 때만 고친다.
+    """
+    prev, nxt = s.shift(1), s.shift(-1)
+    hi = (s > k * prev) & (s > k * nxt)
+    lo = (s < prev / k) & (s < nxt / k)
+    calm = (prev / nxt).between(1 / 1.3, 1.3)
+    bad = (hi | lo) & calm
+    if bad.any():
+        log.warning("VKOSPI 하루 오류값 보정: %s", ", ".join(f"{d:%Y-%m-%d} {v:.2f}" for d, v in s[bad].items()))
+    return s.mask(bad, (prev + nxt) / 2)
+
+
 def load_vkospi(kospi200: pd.Series) -> tuple[pd.Series, str]:
     """VKOSPI 시리즈와 출처를 반환.
 
@@ -146,7 +162,7 @@ def load_vkospi(kospi200: pd.Series) -> tuple[pd.Series, str]:
     if not VKOSPI_CSV.exists():
         return proxy, "proxy"
     df = pd.read_csv(VKOSPI_CSV, parse_dates=["Date"], index_col="Date")
-    real = pd.to_numeric(df["Close"], errors="coerce").dropna()
+    real = despike(pd.to_numeric(df["Close"], errors="coerce").dropna())
     if len(real) <= config.TRADING_DAYS:
         log.warning("vkospi.csv 데이터가 252일 미만이라 proxy 사용")
         return proxy, "proxy"
@@ -168,6 +184,34 @@ def vkospi_proxy_flag(vk: pd.Series, source: str) -> pd.Series:
         first_real = pd.read_csv(VKOSPI_CSV, parse_dates=["Date"], index_col="Date").index.min()
         flag[flag.index < first_real] = 1.0
     return flag
+
+
+# 장중 실행(수동 갱신 등)에서 yfinance는 아직 끝나지 않은 오늘 봉을 준다 → 종가 신호 모델에 미완성 가격이 섞인다.
+# 시장이 닫히고 여유(데이터 확정 지연)를 둔 뒤에만 그날 값을 쓴다.
+KR_CLOSE = ("Asia/Seoul", 15, 50)          # 15:30 마감 + 20분
+US_CLOSE = ("America/New_York", 16, 15)    # 16:00 마감 + 15분 (환율·금리·FRED 포함 나머지 전부)
+
+
+def is_kr_column(name: str) -> bool:
+    """한국 시장 시각을 따르는 열: 한국 지수·VKOSPI·ECOS 시리즈·국내 상장 ETF(.KS/.KQ)."""
+    from .kr_sources import ECOS_SERIES
+    return (name in {"KOSPI", "KOSDAQ", "KOSPI200", "VKOSPI", "KR_CREDIT", *ECOS_SERIES}
+            or name.endswith((".KS", ".KQ")) or name[:6].isdigit())
+
+
+def drop_unclosed(raw: pd.DataFrame, now: datetime | None = None) -> pd.DataFrame:
+    """아직 마감되지 않은(또는 미래 날짜의) 봉을 NaN으로. 한국 열은 서울 15:50, 나머지는 뉴욕 16:15 기준."""
+    raw = raw.copy()
+    for (tz, hh, mm), kr in ((KR_CLOSE, True), (US_CLOSE, False)):
+        local = (now or datetime.now(ZoneInfo("UTC"))).astimezone(ZoneInfo(tz))
+        today = pd.Timestamp(local.date())
+        closed = (local.hour, local.minute) >= (hh, mm)
+        cols = [c for c in raw.columns if is_kr_column(str(c)) == kr]
+        late = raw.index > today if closed else raw.index >= today
+        if cols and late.any() and raw.loc[late, cols].notna().any().any():
+            log.info("미마감 봉 제외(%s): %s", tz, ", ".join(f"{d:%Y-%m-%d}" for d in raw.index[late]))
+            raw.loc[late, cols] = np.nan
+    return raw.dropna(how="all")
 
 
 def fetch_raw(use_cache: bool = True, max_age_hours: float = 6) -> tuple[pd.DataFrame, dict]:
@@ -193,6 +237,7 @@ def fetch_raw(use_cache: bool = True, max_age_hours: float = 6) -> tuple[pd.Data
     ecos = fetch_ecos_all(start.date())
     if not ecos.empty:
         raw = raw.join(ecos, how="outer")
+    raw = drop_unclosed(raw)
     base = raw["KOSPI200"] if raw.get("KOSPI200", pd.Series()).notna().sum() > 60 else raw["KOSPI"]
     vk, vk_src = load_vkospi(base)
     raw = raw.join(vk, how="outer")
