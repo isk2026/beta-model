@@ -2,9 +2,15 @@ name: Update & Deploy
 
 on:
   schedule:
-    - cron: "30 7 * * 1-5"   # 16:30 KST — 한국장 마감(15:30) 후
-    - cron: "30 22 * * 1-5"  # 07:30 KST — 미국장 마감(05:00/06:00 KST) 후
-    - cron: "0 23 * * 6"     # 일 08:00 KST — 주간 견고성 검증
+    # GitHub 예약 실행은 정각·30분에 몰려 수십 분~수 시간 늦거나 아예 빠질 수 있다 (2026-10 실제로 누락).
+    # → 혼잡한 정각/30분을 피하고, 같은 장마감에 2~3번 실행해 하나가 빠져도 갱신되게 한다.
+    #   같은 기준일 재실행은 기록을 덮어쓰고 알림은 처음 한 번만(신호가 바뀌면 정정) 보내므로 중복 알림은 없다.
+    - cron: "47 7 * * 1-5"   # 16:47 KST — 한국장 마감(15:30) 후
+    - cron: "23 8 * * 1-5"   # 17:23 KST — 예비
+    - cron: "41 9 * * 1-5"   # 18:41 KST — 예비
+    - cron: "13 22 * * 1-5"  # 07:13 KST — 미국장 마감(05:00/06:00 KST) 후
+    - cron: "7 23 * * 1-5"   # 08:07 KST — 예비
+    - cron: "17 23 * * 6"    # 일 08:17 KST — 주간 견고성 검증 + 주간 요약
   workflow_dispatch:
     inputs:
       weekly_summary:
@@ -51,7 +57,7 @@ jobs:
           ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
         run: python -m beta_model.backtest
       - name: Robustness validation (weekly / manual)
-        if: github.event.schedule == '0 23 * * 6' || github.event_name == 'workflow_dispatch'
+        if: github.event.schedule == '17 23 * * 6' || github.event_name == 'workflow_dispatch'
         env:
           ECOS_API_KEY: ${{ secrets.ECOS_API_KEY }}
         run: python -m beta_model.validation
@@ -71,7 +77,7 @@ jobs:
 
       # 일요일 08:00 KST: 시장별 국면·비중·주간 신호·주도 섹터 요약 (텔레그램 전용, Issue 없음)
       - name: Weekly summary (Telegram)
-        if: github.event.schedule == '0 23 * * 6' || inputs.weekly_summary
+        if: github.event.schedule == '17 23 * * 6' || inputs.weekly_summary
         continue-on-error: true
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

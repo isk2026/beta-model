@@ -34,14 +34,15 @@ npm run dev                             # http://localhost:5173
 ## 모바일 조회 · 자동 갱신
 
 - 대시보드: **https://isk2026.github.io/beta-model/** (휴대폰 브라우저 → 공유 → "홈 화면에 추가"하면 앱처럼 열림)
-- GitHub Actions(`.github/workflows/update.yml`)가 평일 두 번 데이터 수집 → 테스트 → 점수 계산 → 배포:
-  - **16:30 KST** — 한국장 마감(15:30) 후
-  - **07:30 KST** — 미국장 마감(05:00 서머타임 / 06:00) 후
+- GitHub Actions(`.github/workflows/update.yml`)가 평일 장 마감 뒤 데이터 수집 → 테스트 → 점수 계산 → 배포:
+  - **16:47 KST** (예비 17:23, 18:41) — 한국장 마감(15:30) 후
+  - **07:13 KST** (예비 08:07) — 미국장 마감(05:00 서머타임 / 06:00) 후
+- GitHub 예약 실행은 정각·30분에 몰려 늦거나 아예 빠질 수 있어(2026-10 16:30 실행 누락) 혼잡 시각을 피하고
+  같은 장마감에 여러 번 돌린다. 같은 기준일 재실행은 기록을 덮어쓰고 알림은 한 번만(신호가 바뀌면 정정) 간다.
 - 실행마다 `dashboard/public/data/beta_model.json`을 커밋해 일별 모델 기록을 남긴다.
-- 수동 갱신: GitHub 저장소 → Actions → *Update & Deploy* → *Run workflow*
-  (또는 `gh workflow run update.yml`)
-- GitHub 예약 실행은 수 분~수십 분 늦게 시작될 수 있다.
-- 매주 일요일 08:00 KST에 견고성 검증(`validation.json`)을 다시 돌린다.
+- 수동 갱신: 대시보드 상단 **지금 갱신 실행** → GitHub에서 *Run workflow* → 약 5분 뒤 **새로 불러오기**
+  (또는 `gh workflow run update.yml`). 공개 페이지에 쓰기 토큰을 넣을 수 없어 GitHub 실행 페이지로 연결한다.
+- 매주 일요일 08:17 KST에 견고성 검증(`validation.json`)과 텔레그램 주간 요약.
 
 ### 실전 기록 · 알림
 
@@ -53,7 +54,7 @@ npm run dev                             # http://localhost:5173
   (`beta_model/notify.py` — 시크릿이 없으면 건너뛰고, 실패해도 워크플로는 계속되며 오류 메시지에서 토큰을 가린다).
   - 알림 내용: 시장별 국면(전환 시 이전 → 새 국면), 다음 거래일 매매(일괄 줄이기 / 분할 늘리기), 추세·위험·목표.
     미국·미국(기술)은 주도 섹터와 직전 기준일 대비 변화도 붙는다 (`data/sector_leaders.json`에 기준일별 기록).
-  - **주간 요약**(텔레그램 전용, Issue 없음): 일요일 08:00 KST 실행에서 시장별 국면·비중·추세/위험,
+  - **주간 요약**(텔레그램 전용, Issue 없음): 일요일 08:17 KST 실행에서 시장별 국면·비중·추세/위험,
     그 주의 국면 전환·매매, 주도 섹터, 대시보드 링크. 수동 전송: *Run workflow* → `weekly_summary` 체크.
     미리보기: `python -m beta_model.notify weekly --dry-run`.
 

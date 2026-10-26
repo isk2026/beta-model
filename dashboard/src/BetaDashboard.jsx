@@ -4,7 +4,7 @@ import {
 } from 'chart.js'
 import { Doughnut, Line } from 'react-chartjs-2'
 import {
-  Activity, AlertTriangle, Calculator, Compass, Gauge, Info, RotateCcw, ShieldAlert, ShieldCheck,
+  Activity, AlertTriangle, Calculator, Compass, ExternalLink, Gauge, Info, RefreshCw, RotateCcw, ShieldAlert, ShieldCheck,
   TrendingDown, TrendingUp, Zap,
 } from 'lucide-react'
 import { allocate, DEFAULT_PARAMS, FALLBACK_REGIMES, rebalance } from './model.js'
@@ -55,15 +55,21 @@ const signed = (x, d = 2) => `${x >= 0 ? '+' : ''}${x.toFixed(d)}`
 const riskColor = (r) => (r < 0.33 ? C.emerald : r < 0.66 ? C.amber : C.rose)
 
 // ---------------------------------------------------------------- data hook
+// 데이터 갱신(수집·계산)은 GitHub Actions가 한다 — 정적 페이지에서 직접 실행하려면 쓰기 권한 토큰을
+// 공개 페이지에 넣어야 해서 위험하다. 대신 실행 페이지로 연결(저장소 주인만 'Run workflow' 가능)한다.
+const UPDATE_URL = 'https://github.com/isk2026/beta-model/actions/workflows/update.yml'
+
 function useModelData() {
   const [state, setState] = useState({ loading: true, data: null, error: null })
+  const [nonce, setNonce] = useState(0)
   useEffect(() => {
-    fetch(`./data/beta_model.json?t=${Date.now()}`)
+    fetch(`./data/beta_model.json?t=${Date.now()}`, { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then((data) => setState({ loading: false, data, error: null }))
-      .catch((error) => setState({ loading: false, data: null, error }))
-  }, [])
-  return state
+      .catch((error) => setState((s) => ({ loading: false, data: s.data, error: s.data ? null : error })))
+  }, [nonce])
+  const reload = () => { setState((s) => ({ ...s, loading: true })); setNonce((n) => n + 1) }
+  return { ...state, reload }
 }
 
 // ---------------------------------------------------------------- primitives
@@ -472,7 +478,7 @@ function WeightEditor({ weights, defaults, indices, onChange, liveTrend }) {
 
 // ---------------------------------------------------------------- page
 export default function BetaDashboard() {
-  const { loading, data, error } = useModelData()
+  const { loading, data, error, reload } = useModelData()
   const [market, setMarket] = useState('US')
   const [trend, setTrend] = useState(0.5)
   const [risk, setRisk] = useState(0.3)
@@ -536,6 +542,17 @@ export default function BetaDashboard() {
             <p className="text-xs text-slate-500">
               {loading ? '데이터 로딩 중…' : m ? `기준일 ${m.as_of} 종가 · 갱신 ${data.meta.fetched_at?.slice(0, 16).replace('T', ' ')} KST` : '데모 모드'}
             </p>
+            <div className="flex gap-2 text-xs">
+              <button onClick={reload} disabled={loading} title="서버에 올라간 최신 결과를 다시 불러옵니다"
+                className="flex items-center gap-1 rounded-lg border border-line px-2.5 py-1 text-slate-300 hover:text-slate-100 disabled:opacity-50">
+                <RefreshCw size={12} className={loading ? 'animate-spin' : ''} aria-hidden /> 새로 불러오기
+              </button>
+              <a href={UPDATE_URL} target="_blank" rel="noreferrer"
+                title="GitHub에서 'Run workflow' → 약 5분 뒤 '새로 불러오기'"
+                className="flex items-center gap-1 rounded-lg border border-emerald-500/40 px-2.5 py-1 text-emerald-300 hover:bg-emerald-500/10">
+                <ExternalLink size={12} aria-hidden /> 지금 갱신 실행
+              </a>
+            </div>
           </div>
         </header>
 
