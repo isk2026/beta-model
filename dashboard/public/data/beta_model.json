@@ -1,6 +1,6 @@
 {
  "meta": {
-  "fetched_at": "2026-10-28T00:33+09:00",
+  "fetched_at": "2026-10-28T08:41+09:00",
   "vkospi_source": "krx+proxy",
   "kr_credit_source": "ecos",
   "tickers": {
@@ -81,36 +81,36 @@
  },
  "macro": {
   "VIX": {
-   "value": 18.39,
-   "chg_10d": 3.18
+   "value": 17.52,
+   "chg_10d": 2.25
   },
   "VKOSPI": {
-   "value": 52.46,
-   "chg_10d": 11.73
+   "value": 51.33,
+   "chg_10d": 2.8
   },
   "US10Y": {
-   "value": 4.986,
-   "chg_10d": -0.254
+   "value": 4.993,
+   "chg_10d": -0.224
   },
   "USDKRW": {
-   "value": 1321.76,
-   "chg_10d": -19.08
+   "value": 1326.13,
+   "chg_10d": -8.0
   },
   "DXY": {
-   "value": 101.96,
-   "chg_10d": -0.62
+   "value": 102.365,
+   "chg_10d": 0.185
   },
   "BAA_SPREAD": {
-   "value": 1.47,
-   "chg_10d": 0.02
+   "value": 1.45,
+   "chg_10d": -0.01
   },
   "KR_CREDIT": {
-   "value": 0.687,
-   "chg_10d": 0.006
+   "value": 0.689,
+   "chg_10d": -0.01
   },
   "BREADTH_EW": {
-   "value": -0.0388,
-   "chg_10d": -0.0111
+   "value": -0.0255,
+   "chg_10d": 0.0162
   },
   "BREADTH_SECT": {
    "value": 0.3636,
@@ -118,29 +118,29 @@
   },
   "HY_SPREAD": {
    "value": 3.3,
-   "chg_10d": 0.19
+   "chg_10d": 0.14
   },
   "CCC_BB": {
    "value": 11.47,
-   "chg_10d": 0.82
+   "chg_10d": 0.71
   },
   "KR_FOREIGN_60D": {
-   "value": -0.0106,
-   "chg_10d": -0.0035
+   "value": -0.0092,
+   "chg_10d": -0.001
   }
  },
  "markets": {
   "US": {
    "label": "미국",
    "index_weights": null,
-   "as_of": "2026-10-26",
+   "as_of": "2026-10-27",
    "allocation": {
-    "trend_score": 0.3431652673722104,
-    "risk_score": 0.2552778370391044,
-    "base_weight": 0.9014747901058315,
-    "risk_deduction": 0.051055567407820884,
-    "stock_weight": 0.8504192226980106,
-    "cash_weight": 0.14958077730198938,
+    "trend_score": 0.35512469615244807,
+    "risk_score": 0.21362481803569885,
+    "base_weight": 0.9032687044228672,
+    "risk_deduction": 0.042724963607139774,
+    "stock_weight": 0.8605437408157275,
+    "cash_weight": 0.1394562591842725,
     "regime": 1,
     "regime_name": "상승 따라가기",
     "regime_raw": 1
@@ -148,17 +148,17 @@
    "executed_weight": 0.8731,
    "next_weight": 0.8731,
    "trend_components": {
-    "alignment": 0.0573,
-    "drawdown": 0.65,
-    "momentum": 0.3997
+    "alignment": 0.1537,
+    "drawdown": 0.7351,
+    "momentum": 0.5932
    },
    "risk_components": {
-    "vol_index": 0.4552,
-    "realized_vol": 0.1912,
+    "vol_index": 0.3876,
+    "realized_vol": 0.2231,
     "rates": 0.0,
     "fx": 0.0,
     "credit": 0.0,
-    "breadth": 0.5244
+    "breadth": 0.3916
    },
    "risk_weights": {
     "vol_index": 0.28,
@@ -170,36 +170,27 @@
    },
    "indices": {
     "SPX": {
-     "close": 7676.77,
-     "sma20": 7727.13,
-     "sma60": 7703.59,
-     "sma120": 7581.81,
-     "drawdown": -0.0182,
-     "vol_20d": 0.0992,
-     "roc_3m": 0.0334,
-     "trend_score": 0.3949
+     "close": 7722.6,
+     "sma20": 7729.72,
+     "sma60": 7705.63,
+     "sma120": 7584.79,
+     "drawdown": -0.0123,
+     "vol_20d": 0.1012,
+     "roc_3m": 0.0556,
+     "trend_score": 0.4054
     },
     "NDX": {
-     "close": 26169.38,
-     "sma20": 26829.24,
-     "sma60": 26574.39,
-     "sma120": 26278.03,
-     "drawdown": -0.0518,
-     "vol_20d": 0.1746,
-     "roc_3m": 0.052,
-     "trend_score": 0.2915
+     "close": 26477.81,
+     "sma20": 26813.25,
+     "sma60": 26583.79,
+     "sma120": 26283.35,
+     "drawdown": -0.0407,
+     "vol_20d": 0.1806,
+     "roc_3m": 0.0832,
+     "trend_score": 0.3049
     }
    },
    "history": [
-    {
-     "date": "2025-11-03",
-     "index": 6851.97,
-     "trend": 0.7693,
-     "risk": 0.3582,
-     "target": 0.8938,
-     "executed": 0.9109,
-     "regime": 1
-    },
     {
      "date": "2025-11-04",
      "index": 6771.55,
@@ -2458,6 +2449,15 @@
      "target": 0.8504,
      "executed": 0.8731,
      "regime": 1
+    },
+    {
+     "date": "2026-10-27",
+     "index": 7722.6,
+     "trend": 0.3551,
+     "risk": 0.2136,
+     "target": 0.8605,
+     "executed": 0.8731,
+     "regime": 1
     }
    ]
   },
@@ -2467,14 +2467,14 @@
     "QQQ": 0.4,
     "SOXX": 0.6
    },
-   "as_of": "2026-10-26",
+   "as_of": "2026-10-27",
    "allocation": {
-    "trend_score": -0.2055022662003157,
-    "risk_score": 0.3045208649275506,
-    "base_weight": 0.8191746600699527,
-    "risk_deduction": 0.060904172985510124,
-    "stock_weight": 0.7582704870844426,
-    "cash_weight": 0.24172951291555744,
+    "trend_score": -0.17965255449238798,
+    "risk_score": 0.2657363718205594,
+    "base_weight": 0.8230521168261418,
+    "risk_deduction": 0.05314727436411189,
+    "stock_weight": 0.7699048424620298,
+    "cash_weight": 0.23009515753797016,
     "regime": 3,
     "regime_name": "하락 방어",
     "regime_raw": 3
@@ -2482,17 +2482,17 @@
    "executed_weight": 0.7684,
    "next_weight": 0.7684,
    "trend_components": {
-    "alignment": -0.3651,
-    "drawdown": -0.4499,
-    "momentum": 0.21
+    "alignment": -0.298,
+    "drawdown": -0.4022,
+    "momentum": 0.745
    },
    "risk_components": {
-    "vol_index": 0.4552,
-    "realized_vol": 0.6016,
+    "vol_index": 0.3876,
+    "realized_vol": 0.6574,
     "rates": 0.0,
     "fx": 0.0,
     "credit": 0.0,
-    "breadth": 0.5244
+    "breadth": 0.3916
    },
    "risk_weights": {
     "vol_index": 0.28,
@@ -2504,36 +2504,27 @@
    },
    "indices": {
     "QQQ": {
-     "close": 712.2,
-     "sma20": 734.02,
-     "sma60": 724.19,
-     "sma120": 718.42,
-     "drawdown": -0.0625,
-     "vol_20d": 0.1889,
-     "roc_3m": 0.0554,
-     "trend_score": 0.2334
+     "close": 721.25,
+     "sma20": 733.18,
+     "sma60": 724.56,
+     "sma120": 718.64,
+     "drawdown": -0.0506,
+     "vol_20d": 0.1953,
+     "roc_3m": 0.0911,
+     "trend_score": 0.2507
     },
     "SOXX": {
-     "close": 491.83,
-     "sma20": 538.0,
-     "sma60": 532.12,
-     "sma120": 545.08,
-     "drawdown": -0.2486,
-     "vol_20d": 0.4064,
-     "roc_3m": 0.0014,
-     "trend_score": -0.4981
+     "close": 511.06,
+     "sma20": 535.18,
+     "sma60": 532.19,
+     "sma120": 545.12,
+     "drawdown": -0.2193,
+     "vol_20d": 0.4325,
+     "roc_3m": 0.0998,
+     "trend_score": -0.4665
     }
    },
    "history": [
-    {
-     "date": "2025-11-03",
-     "index": 629.12,
-     "trend": 0.8895,
-     "risk": 0.3735,
-     "target": 0.9087,
-     "executed": 0.8994,
-     "regime": 1
-    },
     {
      "date": "2025-11-04",
      "index": 616.35,
@@ -4790,6 +4781,15 @@
      "trend": -0.2055,
      "risk": 0.3045,
      "target": 0.7583,
+     "executed": 0.7684,
+     "regime": 3
+    },
+    {
+     "date": "2026-10-27",
+     "index": 721.25,
+     "trend": -0.1797,
+     "risk": 0.2657,
+     "target": 0.7699,
      "executed": 0.7684,
      "regime": 3
     }
@@ -7131,17 +7131,17 @@
   "days": 10,
   "today": {
    "US": {
-    "trend": 0.3432,
-    "risk": 0.2553,
-    "target": 0.8504,
+    "trend": 0.3551,
+    "risk": 0.2136,
+    "target": 0.8605,
     "executed": 0.8731,
     "regime": 1,
     "regime_name": "상승 따라가기"
    },
    "US_TECH": {
-    "trend": -0.2055,
-    "risk": 0.3045,
-    "target": 0.7583,
+    "trend": -0.1797,
+    "risk": 0.2657,
+    "target": 0.7699,
     "executed": 0.7684,
     "regime": 3,
     "regime_name": "하락 방어"
@@ -7162,26 +7162,26 @@
     "desc": "미·한 −8%, VIX 24",
     "markets": {
      "US": {
-      "trend": -0.2143,
-      "risk": 0.3033,
-      "target": 0.7572,
-      "executed": 0.7908,
+      "trend": -0.1738,
+      "risk": 0.3124,
+      "target": 0.7614,
+      "executed": 0.7703,
       "regime": 3,
       "regime_name": "하락 방어"
      },
      "US_TECH": {
-      "trend": -0.6455,
-      "risk": 0.3229,
-      "target": 0.6886,
-      "executed": 0.6977,
+      "trend": -0.6135,
+      "risk": 0.343,
+      "target": 0.6894,
+      "executed": 0.7051,
       "regime": 3,
       "regime_name": "하락 방어"
      },
      "KR": {
-      "trend": -0.8696,
-      "risk": 0.3325,
-      "target": 0.6531,
-      "executed": 0.6891,
+      "trend": -0.8721,
+      "risk": 0.3215,
+      "target": 0.6549,
+      "executed": 0.6549,
       "regime": 3,
       "regime_name": "하락 방어"
      }
@@ -7193,26 +7193,26 @@
     "desc": "미 10년물 +60bp, 미·한 −10%, 원/달러 +4%",
     "markets": {
      "US": {
-      "trend": -0.2807,
-      "risk": 0.6661,
-      "target": 0.6747,
-      "executed": 0.7054,
+      "trend": -0.2462,
+      "risk": 0.6643,
+      "target": 0.6802,
+      "executed": 0.6956,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "US_TECH": {
-      "trend": -0.678,
-      "risk": 0.6651,
-      "target": 0.6153,
-      "executed": 0.6258,
+      "trend": -0.6524,
+      "risk": 0.6758,
+      "target": 0.617,
+      "executed": 0.6413,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "KR": {
-      "trend": -0.8794,
-      "risk": 0.6187,
+      "trend": -0.882,
+      "risk": 0.6035,
       "target": 0.6,
-      "executed": 0.6102,
+      "executed": 0.6208,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      }
@@ -7224,26 +7224,26 @@
     "desc": "원/달러 +12%, 코스피 −15%, 미국 −3%",
     "markets": {
      "US": {
-      "trend": 0.0115,
-      "risk": 0.4367,
-      "target": 0.7644,
-      "executed": 0.8005,
+      "trend": 0.0755,
+      "risk": 0.4274,
+      "target": 0.7758,
+      "executed": 0.8035,
       "regime": 1,
       "regime_name": "상승 따라가기"
      },
      "US_TECH": {
-      "trend": -0.5269,
-      "risk": 0.4759,
-      "target": 0.6758,
-      "executed": 0.6933,
+      "trend": -0.4553,
+      "risk": 0.4848,
+      "target": 0.6847,
+      "executed": 0.7025,
       "regime": 3,
       "regime_name": "하락 방어"
      },
      "KR": {
-      "trend": -0.8991,
-      "risk": 0.5191,
-      "target": 0.6113,
-      "executed": 0.6166,
+      "trend": -0.9017,
+      "risk": 0.5003,
+      "target": 0.6147,
+      "executed": 0.6202,
       "regime": 3,
       "regime_name": "하락 방어"
      }
@@ -7255,26 +7255,26 @@
     "desc": "신용 +1.5%p, VIX 55, 미 −20%, 한 −25%",
     "markets": {
      "US": {
-      "trend": -0.513,
-      "risk": 0.6537,
-      "target": 0.6423,
-      "executed": 0.6697,
+      "trend": -0.4975,
+      "risk": 0.6508,
+      "target": 0.6452,
+      "executed": 0.6581,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "US_TECH": {
-      "trend": -0.7648,
-      "risk": 0.6259,
-      "target": 0.6101,
-      "executed": 0.6182,
+      "trend": -0.7571,
+      "risk": 0.625,
+      "target": 0.6114,
+      "executed": 0.6387,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "KR": {
-      "trend": -0.9257,
-      "risk": 0.5744,
+      "trend": -0.9282,
+      "risk": 0.5643,
       "target": 0.6,
-      "executed": 0.6,
+      "executed": 0.6185,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      }
@@ -7286,26 +7286,26 @@
     "desc": "10일 만에 −30%, VIX 75",
     "markets": {
      "US": {
-      "trend": -0.6004,
-      "risk": 0.6589,
-      "target": 0.6282,
-      "executed": 0.667,
+      "trend": -0.5941,
+      "risk": 0.6532,
+      "target": 0.6303,
+      "executed": 0.6695,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "US_TECH": {
-      "trend": -0.7966,
-      "risk": 0.6474,
-      "target": 0.601,
-      "executed": 0.6175,
+      "trend": -0.7933,
+      "risk": 0.6441,
+      "target": 0.6022,
+      "executed": 0.6171,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "KR": {
-      "trend": -0.9338,
-      "risk": 0.6,
+      "trend": -0.9364,
+      "risk": 0.5894,
       "target": 0.6,
-      "executed": 0.6161,
+      "executed": 0.6084,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      }
@@ -7316,24 +7316,24 @@
  "sectors": {
   "universe": "US",
   "label": "미국 섹터 ETF",
-  "as_of": "2026-10-26",
+  "as_of": "2026-10-27",
   "benchmark": {
    "ticker": "SPY",
    "name": "S&P 500",
-   "ret_6m": 0.0756,
-   "trend": 0.4143
+   "ret_6m": 0.0869,
+   "trend": 0.4241
   },
   "sectors": [
    {
     "ticker": "XLE",
     "name": "에너지",
-    "trend": 0.8798,
-    "score": 0.3386,
-    "rel_6m": 0.1555,
-    "ret_1m": 0.1225,
-    "ret_3m": 0.2168,
-    "ret_6m": 0.2429,
-    "drawdown": 0.0,
+    "trend": 0.8739,
+    "score": 0.324,
+    "rel_6m": 0.1018,
+    "ret_1m": 0.0984,
+    "ret_3m": 0.1699,
+    "ret_6m": 0.1975,
+    "drawdown": -0.0205,
     "above_sma200": true,
     "rank": 1,
     "leader": true
@@ -7341,13 +7341,13 @@
    {
     "ticker": "XLK",
     "name": "기술",
-    "trend": 0.3022,
-    "score": 0.264,
-    "rel_6m": 0.0813,
-    "ret_1m": -0.0507,
-    "ret_3m": 0.0903,
-    "ret_6m": 0.1631,
-    "drawdown": -0.0776,
+    "trend": 0.3282,
+    "score": 0.2677,
+    "rel_6m": 0.107,
+    "ret_1m": -0.0259,
+    "ret_3m": 0.1389,
+    "ret_6m": 0.2033,
+    "drawdown": -0.0619,
     "above_sma200": true,
     "rank": 2,
     "leader": true
@@ -7355,27 +7355,27 @@
    {
     "ticker": "XLV",
     "name": "헬스케어",
-    "trend": 0.7563,
+    "trend": 0.7564,
     "score": 0.2242,
-    "rel_6m": 0.1714,
-    "ret_1m": 0.0503,
-    "ret_3m": 0.076,
-    "ret_6m": 0.26,
-    "drawdown": -0.0111,
+    "rel_6m": 0.1555,
+    "ret_1m": 0.0462,
+    "ret_3m": 0.082,
+    "ret_6m": 0.256,
+    "drawdown": -0.0117,
     "above_sma200": true,
     "rank": 3,
     "leader": true
    },
    {
-    "ticker": "XLF",
-    "name": "금융",
-    "trend": 0.2045,
-    "score": 0.0746,
-    "rel_6m": 0.0123,
-    "ret_1m": 0.0215,
-    "ret_3m": -0.024,
-    "ret_6m": 0.0889,
-    "drawdown": -0.04,
+    "ticker": "XLB",
+    "name": "소재",
+    "trend": 0.1624,
+    "score": 0.0737,
+    "rel_6m": -0.0654,
+    "ret_1m": 0.0467,
+    "ret_3m": 0.0054,
+    "ret_6m": 0.0158,
+    "drawdown": -0.0308,
     "above_sma200": true,
     "rank": 4,
     "leader": false
@@ -7383,27 +7383,27 @@
    {
     "ticker": "XLP",
     "name": "필수소비재",
-    "trend": 0.4417,
-    "score": 0.0726,
-    "rel_6m": 0.0066,
-    "ret_1m": 0.0719,
-    "ret_3m": 0.017,
-    "ret_6m": 0.0827,
-    "drawdown": -0.0226,
+    "trend": 0.4313,
+    "score": 0.066,
+    "rel_6m": -0.0218,
+    "ret_1m": 0.0592,
+    "ret_3m": 0.0042,
+    "ret_6m": 0.0632,
+    "drawdown": -0.0316,
     "above_sma200": true,
     "rank": 5,
     "leader": false
    },
    {
-    "ticker": "XLB",
-    "name": "소재",
-    "trend": 0.1373,
-    "score": 0.0675,
-    "rel_6m": -0.0698,
-    "ret_1m": 0.0317,
-    "ret_3m": -0.0138,
-    "ret_6m": 0.0006,
-    "drawdown": -0.0383,
+    "ticker": "XLF",
+    "name": "금융",
+    "trend": 0.2085,
+    "score": 0.0609,
+    "rel_6m": -0.0015,
+    "ret_1m": 0.0312,
+    "ret_3m": -0.0106,
+    "ret_6m": 0.0853,
+    "drawdown": -0.0424,
     "above_sma200": true,
     "rank": 6,
     "leader": false
@@ -7411,13 +7411,13 @@
    {
     "ticker": "XLI",
     "name": "산업재",
-    "trend": -0.3931,
-    "score": 0.0433,
-    "rel_6m": -0.0956,
-    "ret_1m": -0.0204,
-    "ret_3m": -0.0826,
-    "ret_6m": -0.0272,
-    "drawdown": -0.1024,
+    "trend": -0.379,
+    "score": 0.0446,
+    "rel_6m": -0.0918,
+    "ret_1m": -0.0051,
+    "ret_3m": -0.0469,
+    "ret_6m": -0.0128,
+    "drawdown": -0.0973,
     "above_sma200": false,
     "rank": 7,
     "leader": false
@@ -7425,41 +7425,41 @@
    {
     "ticker": "XLRE",
     "name": "부동산",
-    "trend": -0.2245,
-    "score": 0.0067,
-    "rel_6m": -0.0693,
-    "ret_1m": 0.0298,
-    "ret_3m": -0.0619,
-    "ret_6m": 0.0011,
-    "drawdown": -0.0619,
-    "above_sma200": true,
+    "trend": -0.2207,
+    "score": -0.0065,
+    "rel_6m": -0.0954,
+    "ret_1m": 0.0264,
+    "ret_3m": -0.0688,
+    "ret_6m": -0.0168,
+    "drawdown": -0.0698,
+    "above_sma200": false,
     "rank": 8,
     "leader": false
    },
    {
     "ticker": "XLY",
     "name": "임의소비재",
-    "trend": -0.0018,
-    "score": -0.0455,
-    "rel_6m": -0.0948,
-    "ret_1m": 0.0335,
-    "ret_3m": 0.0181,
-    "ret_6m": -0.0263,
-    "drawdown": -0.0767,
-    "above_sma200": false,
+    "trend": 0.0323,
+    "score": -0.0422,
+    "rel_6m": -0.0884,
+    "ret_1m": 0.0592,
+    "ret_3m": 0.0367,
+    "ret_6m": -0.0092,
+    "drawdown": -0.0671,
+    "above_sma200": true,
     "rank": 9,
     "leader": false
    },
    {
     "ticker": "XLC",
     "name": "커뮤니케이션",
-    "trend": -0.1184,
-    "score": -0.0529,
-    "rel_6m": -0.1614,
-    "ret_1m": -0.0806,
-    "ret_3m": -0.0499,
-    "ret_6m": -0.098,
-    "drawdown": -0.1273,
+    "trend": -0.1799,
+    "score": -0.0629,
+    "rel_6m": -0.1718,
+    "ret_1m": -0.0684,
+    "ret_3m": -0.051,
+    "ret_6m": -0.0999,
+    "drawdown": -0.1295,
     "above_sma200": false,
     "rank": 10,
     "leader": false
@@ -7467,13 +7467,13 @@
    {
     "ticker": "XLU",
     "name": "유틸리티",
-    "trend": -0.3005,
-    "score": -0.0832,
-    "rel_6m": -0.1318,
-    "ret_1m": 0.0769,
-    "ret_3m": -0.0584,
-    "ret_6m": -0.0661,
-    "drawdown": -0.0899,
+    "trend": -0.265,
+    "score": -0.0886,
+    "rel_6m": -0.1359,
+    "ret_1m": 0.0917,
+    "ret_3m": -0.0389,
+    "ret_6m": -0.0607,
+    "drawdown": -0.0835,
     "above_sma200": false,
     "rank": 11,
     "leader": false
@@ -7490,25 +7490,25 @@
    {
     "ticker": "QQQ",
     "name": "나스닥100",
-    "trend": 0.2334,
-    "score": 0.1498,
-    "rel_6m": -0.001,
-    "ret_1m": -0.0434,
-    "ret_3m": 0.0554,
-    "ret_6m": 0.0745,
-    "drawdown": -0.0625,
+    "trend": 0.2507,
+    "score": 0.1492,
+    "rel_6m": 0.0113,
+    "ret_1m": -0.0207,
+    "ret_3m": 0.0911,
+    "ret_6m": 0.0992,
+    "drawdown": -0.0506,
     "above_sma200": true
    },
    {
     "ticker": "SOXX",
     "name": "반도체",
-    "trend": -0.4981,
-    "score": 0.5275,
-    "rel_6m": 0.0052,
-    "ret_1m": -0.1412,
-    "ret_3m": 0.0014,
-    "ret_6m": 0.0812,
-    "drawdown": -0.2486,
+    "trend": -0.4666,
+    "score": 0.5339,
+    "rel_6m": 0.073,
+    "ret_1m": -0.0887,
+    "ret_3m": 0.0998,
+    "ret_6m": 0.1662,
+    "drawdown": -0.2193,
     "above_sma200": true
    }
   ],
@@ -7673,12 +7673,12 @@
     "XLK": 2,
     "XLC": 10,
     "XLY": 9,
-    "XLF": 4,
+    "XLF": 6,
     "XLI": 7,
     "XLV": 3,
     "XLP": 5,
     "XLE": 1,
-    "XLB": 6,
+    "XLB": 4,
     "XLU": 11,
     "XLRE": 8
    }
@@ -7688,24 +7688,24 @@
    "validated": false,
    "max_fraction": 0.4,
    "n": 3,
-   "us_trend": 0.3432,
-   "fraction": 0.1373,
-   "core": 0.8627,
+   "us_trend": 0.3551,
+   "fraction": 0.142,
+   "core": 0.858,
    "legs": [
     {
      "ticker": "XLE",
      "name": "에너지",
-     "weight": 0.0458
+     "weight": 0.0473
     },
     {
      "ticker": "XLK",
      "name": "기술",
-     "weight": 0.0458
+     "weight": 0.0473
     },
     {
      "ticker": "XLV",
      "name": "헬스케어",
-     "weight": 0.0458
+     "weight": 0.0473
     }
    ],
    "backtest": {
@@ -7726,12 +7726,12 @@
     "out_of_sample": {
      "period": "2013~2026",
      "spy": {
-      "cagr": 0.1489,
-      "sharpe": 0.91,
+      "cagr": 0.1494,
+      "sharpe": 0.92,
       "mdd": -0.3372
      },
      "rule": {
-      "cagr": 0.1431,
+      "cagr": 0.1434,
       "sharpe": 0.88,
       "mdd": -0.3359
      }
@@ -8162,13 +8162,27 @@
   },
   "US": {
    "since": "2026-10-23",
-   "days": 2,
-   "model_return": 0.0061,
-   "index_return": 0.007,
+   "days": 3,
+   "model_return": 0.0113,
+   "index_return": 0.013,
    "regime_changes": 0,
    "trades": 0,
    "revised_days": 0,
    "rows": [
+    {
+     "as_of": "2026-10-27",
+     "close": 7722.6,
+     "trend": 0.3551,
+     "risk": 0.2136,
+     "regime": 1,
+     "target": 0.8605,
+     "executed": 0.8731,
+     "next_weight": 0.8731,
+     "action": "HOLD",
+     "first_action": "HOLD",
+     "first_next_weight": 0.8731,
+     "revisions": 0
+    },
     {
      "as_of": "2026-10-26",
      "close": 7676.77,
@@ -8201,13 +8215,27 @@
   },
   "US_TECH": {
    "since": "2026-10-23",
-   "days": 2,
-   "model_return": 0.0085,
-   "index_return": 0.0111,
+   "days": 3,
+   "model_return": 0.0184,
+   "index_return": 0.0239,
    "regime_changes": 0,
    "trades": 0,
    "revised_days": 0,
    "rows": [
+    {
+     "as_of": "2026-10-27",
+     "close": 721.25,
+     "trend": -0.1797,
+     "risk": 0.2657,
+     "regime": 3,
+     "target": 0.7699,
+     "executed": 0.7684,
+     "next_weight": 0.7684,
+     "action": "HOLD",
+     "first_action": "HOLD",
+     "first_next_weight": 0.7684,
+     "revisions": 0
+    },
     {
      "as_of": "2026-10-26",
      "close": 712.2,
