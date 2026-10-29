@@ -95,7 +95,12 @@ jobs:
           if [ -f data/vkospi.csv ]; then git add data/vkospi.csv; fi
           if [ -f data/sector_leaders.json ]; then git add data/sector_leaders.json; fi
           git diff --cached --quiet || git commit -m "data: $(date -u +'%Y-%m-%d %H:%M') UTC update"
-          git push
+          # 거의 동시에 두 번 실행되면(버튼 연타·예약과 수동 겹침) 먼저 끝난 쪽이 push 해 거부된다
+          # → 원격을 받아 이번 실행의 데이터(더 최신)를 우선해 다시 올린다.
+          for i in 1 2 3; do
+            git push && break
+            git pull --rebase -X theirs || { git rebase --abort; git pull --no-rebase -X ours; }
+          done
 
       - uses: actions/setup-node@v4
         with:
