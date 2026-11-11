@@ -1,6 +1,6 @@
 {
  "meta": {
-  "fetched_at": "2026-11-11T16:31+09:00",
+  "fetched_at": "2026-11-12T00:39+09:00",
   "vkospi_source": "krx+proxy",
   "kr_credit_source": "ecos",
   "tickers": {
@@ -82,35 +82,35 @@
  "macro": {
   "VIX": {
    "value": 19.46,
-   "chg_10d": 2.55
+   "chg_10d": 1.94
   },
   "VKOSPI": {
    "value": 58.19,
-   "chg_10d": 6.34
+   "chg_10d": 6.86
   },
   "US10Y": {
    "value": 4.983,
-   "chg_10d": -0.062
+   "chg_10d": -0.01
   },
   "USDKRW": {
    "value": 1343.84,
-   "chg_10d": 17.0299
+   "chg_10d": 19.0699
   },
   "DXY": {
    "value": 102.23,
-   "chg_10d": 0.04
+   "chg_10d": -0.09
   },
   "BAA_SPREAD": {
    "value": 1.51,
-   "chg_10d": 0.08
+   "chg_10d": 0.06
   },
   "KR_CREDIT": {
    "value": 0.694,
-   "chg_10d": 0.012
+   "chg_10d": 0.005
   },
   "BREADTH_EW": {
-   "value": 0.0278,
-   "chg_10d": 0.0484
+   "value": 0.03,
+   "chg_10d": 0.0555
   },
   "BREADTH_SECT": {
    "value": 0.3636,
@@ -118,15 +118,15 @@
   },
   "HY_SPREAD": {
    "value": 3.34,
-   "chg_10d": 0.2
+   "chg_10d": 0.16
   },
   "CCC_BB": {
    "value": 11.11,
-   "chg_10d": -0.12
+   "chg_10d": -0.23
   },
   "KR_FOREIGN_60D": {
    "value": -0.0124,
-   "chg_10d": -0.0042
+   "chg_10d": -0.0032
   }
  },
  "markets": {
@@ -2469,12 +2469,12 @@
    },
    "as_of": "2026-11-10",
    "allocation": {
-    "trend_score": -0.6069797196996486,
+    "trend_score": -0.6069797208217644,
     "risk_score": 0.3321068866292079,
-    "base_weight": 0.7589530420450527,
+    "base_weight": 0.7589530418767353,
     "risk_deduction": 0.06642137732584158,
-    "stock_weight": 0.692531664719211,
-    "cash_weight": 0.307468335280789,
+    "stock_weight": 0.6925316645508937,
+    "cash_weight": 0.30746833544910634,
     "regime": 3,
     "regime_name": "하락 방어",
     "regime_raw": 3
@@ -4798,14 +4798,14 @@
   "KR": {
    "label": "한국",
    "index_weights": null,
-   "as_of": "2026-11-11",
+   "as_of": "2026-11-10",
    "allocation": {
-    "trend_score": -0.8609841638545436,
-    "risk_score": 0.37230097218565134,
-    "base_weight": 0.7208523754218185,
-    "risk_deduction": 0.07446019443713027,
-    "stock_weight": 0.6463921809846882,
-    "cash_weight": 0.3536078190153118,
+    "trend_score": -0.8479747949755041,
+    "risk_score": 0.3775117204411868,
+    "base_weight": 0.7228037807536744,
+    "risk_deduction": 0.07550234408823736,
+    "stock_weight": 0.647301436665437,
+    "cash_weight": 0.35269856333456295,
     "regime": 3,
     "regime_name": "하락 방어",
     "regime_raw": 3
@@ -4813,15 +4813,15 @@
    "executed_weight": 0.6453,
    "next_weight": 0.6453,
    "trend_components": {
-    "alignment": -0.9108,
+    "alignment": -0.9681,
     "drawdown": -1.0,
-    "momentum": -0.8565
+    "momentum": -0.9323
    },
    "risk_components": {
-    "vol_index": 0.8118,
-    "realized_vol": 0.6813,
+    "vol_index": 0.8127,
+    "realized_vol": 0.6534,
     "rates": 0.0,
-    "fx": 0.4278,
+    "fx": 0.4798,
     "credit": 0.0,
     "breadth": 0.1364
    },
@@ -4835,27 +4835,36 @@
    },
    "indices": {
     "KOSPI": {
-     "close": 5375.36,
-     "sma20": 5570.99,
-     "sma60": 6380.28,
-     "sma120": 6968.87,
-     "drawdown": -0.4102,
-     "vol_20d": 0.6093,
-     "roc_3m": -0.1411,
-     "trend_score": -0.9124
+     "close": 5239.13,
+     "sma20": 5602.67,
+     "sma60": 6400.34,
+     "sma120": 6986.52,
+     "drawdown": -0.4252,
+     "vol_20d": 0.5981,
+     "roc_3m": -0.1679,
+     "trend_score": -0.9083
     },
     "KOSDAQ": {
-     "close": 705.1,
-     "sma20": 733.15,
-     "sma60": 802.99,
-     "sma120": 852.57,
-     "drawdown": -0.425,
-     "vol_20d": 0.6077,
-     "roc_3m": -0.1173,
-     "trend_score": -0.8095
+     "close": 667.61,
+     "sma20": 739.09,
+     "sma60": 805.55,
+     "sma120": 856.11,
+     "drawdown": -0.4555,
+     "vol_20d": 0.5615,
+     "roc_3m": -0.1672,
+     "trend_score": -0.7877
     }
    },
    "history": [
+    {
+     "date": "2025-11-18",
+     "index": 3953.62,
+     "trend": 0.77,
+     "risk": 0.6055,
+     "target": 0.8444,
+     "executed": 0.8458,
+     "regime": 2
+    },
     {
      "date": "2025-11-19",
      "index": 3929.51,
@@ -7114,15 +7123,6 @@
      "target": 0.6473,
      "executed": 0.6453,
      "regime": 3
-    },
-    {
-     "date": "2026-11-11",
-     "index": 5375.36,
-     "trend": -0.861,
-     "risk": 0.3723,
-     "target": 0.6464,
-     "executed": 0.6453,
-     "regime": 3
     }
    ]
   }
@@ -7147,9 +7147,9 @@
     "regime_name": "하락 방어"
    },
    "KR": {
-    "trend": -0.861,
-    "risk": 0.3723,
-    "target": 0.6464,
+    "trend": -0.848,
+    "risk": 0.3775,
+    "target": 0.6473,
     "executed": 0.6453,
     "regime": 3,
     "regime_name": "하락 방어"
@@ -7162,25 +7162,25 @@
     "desc": "미·한 −8%, VIX 24",
     "markets": {
      "US": {
-      "trend": -0.4441,
-      "risk": 0.3665,
-      "target": 0.7101,
-      "executed": 0.7174,
+      "trend": -0.4413,
+      "risk": 0.367,
+      "target": 0.7104,
+      "executed": 0.7417,
       "regime": 3,
       "regime_name": "하락 방어"
      },
      "US_TECH": {
-      "trend": -0.8453,
-      "risk": 0.3536,
-      "target": 0.6525,
-      "executed": 0.665,
+      "trend": -0.8419,
+      "risk": 0.355,
+      "target": 0.6527,
+      "executed": 0.6639,
       "regime": 3,
       "regime_name": "하락 방어"
      },
      "KR": {
-      "trend": -0.9525,
-      "risk": 0.3108,
-      "target": 0.645,
+      "trend": -0.9651,
+      "risk": 0.3297,
+      "target": 0.6393,
       "executed": 0.6453,
       "regime": 3,
       "regime_name": "하락 방어"
@@ -7193,26 +7193,26 @@
     "desc": "미 10년물 +60bp, 미·한 −10%, 원/달러 +4%",
     "markets": {
      "US": {
-      "trend": -0.4982,
-      "risk": 0.7024,
-      "target": 0.6348,
-      "executed": 0.6595,
+      "trend": -0.4955,
+      "risk": 0.7029,
+      "target": 0.6351,
+      "executed": 0.6656,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "US_TECH": {
-      "trend": -0.8618,
-      "risk": 0.6895,
+      "trend": -0.8584,
+      "risk": 0.691,
       "target": 0.6,
-      "executed": 0.623,
+      "executed": 0.6123,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "KR": {
-      "trend": -0.9589,
-      "risk": 0.5975,
+      "trend": -0.9672,
+      "risk": 0.6168,
       "target": 0.6,
-      "executed": 0.6091,
+      "executed": 0.6055,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      }
@@ -7224,28 +7224,28 @@
     "desc": "원/달러 +12%, 코스피 −15%, 미국 −3%",
     "markets": {
      "US": {
-      "trend": -0.2653,
-      "risk": 0.5435,
-      "target": 0.7015,
-      "executed": 0.7088,
-      "regime": 3,
-      "regime_name": "하락 방어"
+      "trend": -0.2625,
+      "risk": 0.5439,
+      "target": 0.7018,
+      "executed": 0.7152,
+      "regime": 4,
+      "regime_name": "최대 방어 / 공포"
      },
      "US_TECH": {
-      "trend": -0.7726,
-      "risk": 0.5315,
-      "target": 0.6278,
-      "executed": 0.6596,
+      "trend": -0.7692,
+      "risk": 0.532,
+      "target": 0.6282,
+      "executed": 0.6315,
       "regime": 3,
       "regime_name": "하락 방어"
      },
      "KR": {
-      "trend": -0.9668,
-      "risk": 0.5225,
-      "target": 0.6005,
-      "executed": 0.6126,
-      "regime": 3,
-      "regime_name": "하락 방어"
+      "trend": -0.9699,
+      "risk": 0.5413,
+      "target": 0.6,
+      "executed": 0.6147,
+      "regime": 4,
+      "regime_name": "최대 방어 / 공포"
      }
     }
    },
@@ -7255,26 +7255,26 @@
     "desc": "신용 +1.5%p, VIX 55, 미 −20%, 한 −25%",
     "markets": {
      "US": {
-      "trend": -0.6648,
+      "trend": -0.6621,
       "risk": 0.6309,
-      "target": 0.6241,
-      "executed": 0.6518,
+      "target": 0.6245,
+      "executed": 0.6526,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "US_TECH": {
-      "trend": -0.8917,
-      "risk": 0.6175,
+      "trend": -0.8883,
+      "risk": 0.6189,
       "target": 0.6,
-      "executed": 0.6098,
+      "executed": 0.6109,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "KR": {
-      "trend": -0.9718,
-      "risk": 0.5482,
+      "trend": -0.9721,
+      "risk": 0.5642,
       "target": 0.6,
-      "executed": 0.6148,
+      "executed": 0.6028,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      }
@@ -7286,26 +7286,26 @@
     "desc": "10일 만에 −30%, VIX 75",
     "markets": {
      "US": {
-      "trend": -0.7191,
+      "trend": -0.7163,
       "risk": 0.6313,
-      "target": 0.6159,
-      "executed": 0.6505,
+      "target": 0.6163,
+      "executed": 0.6415,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "US_TECH": {
-      "trend": -0.9031,
-      "risk": 0.627,
+      "trend": -0.8997,
+      "risk": 0.628,
       "target": 0.6,
-      "executed": 0.6094,
+      "executed": 0.6129,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      },
      "KR": {
-      "trend": -0.9729,
-      "risk": 0.57,
+      "trend": -0.9728,
+      "risk": 0.5795,
       "target": 0.6,
-      "executed": 0.6021,
+      "executed": 0.6131,
       "regime": 4,
       "regime_name": "최대 방어 / 공포"
      }
