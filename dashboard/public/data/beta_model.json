@@ -1,6 +1,6 @@
 {
  "meta": {
-  "fetched_at": "2026-11-13T11:38+09:00",
+  "fetched_at": "2026-11-13T12:23+09:00",
   "vkospi_source": "krx+proxy",
   "kr_credit_source": "ecos",
   "tickers": {
@@ -97,8 +97,8 @@
    "chg_10d": -4.08
   },
   "DXY": {
-   "value": 103.16,
-   "chg_10d": 1.12
+   "value": 103.162,
+   "chg_10d": 1.122
   },
   "BAA_SPREAD": {
    "value": 1.51,
@@ -2469,12 +2469,12 @@
    },
    "as_of": "2026-11-12",
    "allocation": {
-    "trend_score": -0.6207804323869524,
+    "trend_score": -0.6207804323869502,
     "risk_score": 0.3003229809935709,
-    "base_weight": 0.7568829351419571,
+    "base_weight": 0.7568829351419575,
     "risk_deduction": 0.06006459619871418,
-    "stock_weight": 0.696818338943243,
-    "cash_weight": 0.30318166105675703,
+    "stock_weight": 0.6968183389432433,
+    "cash_weight": 0.3031816610567567,
     "regime": 3,
     "regime_name": "하락 방어",
     "regime_raw": 3
