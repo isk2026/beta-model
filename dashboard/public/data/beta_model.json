@@ -1,6 +1,6 @@
 {
  "meta": {
-  "fetched_at": "2026-11-19T02:20+09:00",
+  "fetched_at": "2026-11-19T03:23+09:00",
   "vkospi_source": "krx+proxy",
   "kr_credit_source": "ecos",
   "tickers": {
@@ -2469,12 +2469,12 @@
    },
    "as_of": "2026-11-17",
    "allocation": {
-    "trend_score": -0.6918798727200726,
+    "trend_score": -0.6918798748408741,
     "risk_score": 0.4178518059419777,
-    "base_weight": 0.7462180190919891,
+    "base_weight": 0.7462180187738688,
     "risk_deduction": 0.08357036118839554,
-    "stock_weight": 0.6626476579035936,
-    "cash_weight": 0.3373523420964064,
+    "stock_weight": 0.6626476575854733,
+    "cash_weight": 0.3373523424145267,
     "regime": 3,
     "regime_name": "하락 방어",
     "regime_raw": 3
