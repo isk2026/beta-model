@@ -1,6 +1,6 @@
 {
  "meta": {
-  "fetched_at": "2026-11-20T12:11+09:00",
+  "fetched_at": "2026-11-20T12:57+09:00",
   "vkospi_source": "krx+proxy",
   "kr_credit_source": "ecos",
   "tickers": {
@@ -97,8 +97,8 @@
    "chg_10d": -9.6699
   },
   "DXY": {
-   "value": 103.9,
-   "chg_10d": 2.35
+   "value": 103.831,
+   "chg_10d": 2.281
   },
   "BAA_SPREAD": {
    "value": 1.52,
