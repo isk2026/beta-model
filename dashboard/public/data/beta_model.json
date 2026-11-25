@@ -1,6 +1,6 @@
 {
  "meta": {
-  "fetched_at": "2026-11-25T13:54+09:00",
+  "fetched_at": "2026-11-25T14:24+09:00",
   "vkospi_source": "krx+proxy",
   "kr_credit_source": "ecos",
   "tickers": {
@@ -97,8 +97,8 @@
    "chg_10d": -2.8199
   },
   "DXY": {
-   "value": 103.974,
-   "chg_10d": 1.744
+   "value": 103.81,
+   "chg_10d": 1.58
   },
   "BAA_SPREAD": {
    "value": 1.59,
@@ -135,12 +135,12 @@
    "index_weights": null,
    "as_of": "2026-11-24",
    "allocation": {
-    "trend_score": -0.3440028183001565,
+    "trend_score": -0.3440027526347842,
     "risk_score": 0.3802711133854438,
-    "base_weight": 0.7983995772549765,
+    "base_weight": 0.7983995871047823,
     "risk_deduction": 0.07605422267708876,
-    "stock_weight": 0.7223453545778877,
-    "cash_weight": 0.27765464542211227,
+    "stock_weight": 0.7223453644276936,
+    "cash_weight": 0.2776546355723064,
     "regime": 3,
     "regime_name": "하락 방어",
     "regime_raw": 3
@@ -2469,12 +2469,12 @@
    },
    "as_of": "2026-11-24",
    "allocation": {
-    "trend_score": -0.7895454284999774,
+    "trend_score": -0.7895454312421936,
     "risk_score": 0.38074920103484616,
-    "base_weight": 0.7315681857250034,
+    "base_weight": 0.731568185313671,
     "risk_deduction": 0.07614984020696924,
-    "stock_weight": 0.6554183455180341,
-    "cash_weight": 0.34458165448196587,
+    "stock_weight": 0.6554183451067017,
+    "cash_weight": 0.3445816548932983,
     "regime": 3,
     "regime_name": "하락 방어",
     "regime_raw": 3
